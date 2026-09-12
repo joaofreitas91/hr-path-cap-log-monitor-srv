@@ -1,9 +1,2 @@
 {
-    "actions": [
-        {
-            "id": "openReadmeFile",
-            "actionType": "FILE",
-            "uri": "file:///home/user/projects/hr-path-cap-log-monitor/.gen/generation.log"
-        }
-    ]
 }

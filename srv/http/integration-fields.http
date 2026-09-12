@@ -1,0 +1,41 @@
+@server=http://localhost:4004
+
+
+### List all Integration Fields
+# @name IntegrationFields_GET
+GET {{server}}/odata/v4/log-monitor/IntegrationFields?$select=fieldName
+
+
+### Get a single Integration Field
+# @name IntegrationFields_GET_ONE
+GET {{server}}/odata/v4/log-monitor/IntegrationFields/f0000001-0005-4000-8000-000000000001
+
+
+### Create Integration Field: jobTitle for SuccessFactors → S/4HANA
+# @name IntegrationFields_POST
+POST {{server}}/odata/v4/log-monitor/IntegrationFields
+Content-Type: application/json
+
+{
+    "ID": "f0000001-0005-4000-8000-000000000001",
+    "integration_ID": "a1b2c3d4-0001-4000-8000-000000000001",
+    "fieldName": "jobTitle",
+    "description": "Employee job title as defined in SuccessFactors",
+    "isSortable": true,
+    "isFilterable": true
+}
+
+
+### Update Integration Field: disable sorting
+# @name IntegrationFields_PATCH
+PATCH {{server}}/odata/v4/log-monitor/IntegrationFields/f0000001-0005-4000-8000-000000000001
+Content-Type: application/json
+
+{
+    "isSortable": false
+}
+
+
+### Delete Integration Field
+# @name IntegrationFields_DELETE
+DELETE {{server}}/odata/v4/log-monitor/IntegrationFields/f0000001-0005-4000-8000-000000000001

@@ -24,7 +24,33 @@ modules:
         properties:
           srv-url: ${default-url}
     requires:
-      []
+      - name: hr-path-cap-log-monitor-auth
+      - name: hr-path-cap-log-monitor-db
+
+  - name: hr-path-cap-log-monitor-db-deployer
+    type: hdb
+    path: gen/db
+    parameters:
+      buildpack: nodejs_buildpack
+    requires:
+      - name: hr-path-cap-log-monitor-db
 
 resources:
-  []
+  - name: hr-path-cap-log-monitor-auth
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: xsuaa
+      service-plan: application
+      path: ./xs-security.json
+      config:
+        xsappname: hr-path-cap-log-monitor-${org}-${space}
+        tenant-mode: dedicated
+        oauth2-configuration:
+          credential-types:
+            - "binding-secret"
+            - "x509"
+  - name: hr-path-cap-log-monitor-db
+    type: com.sap.xs.hdi-container
+    parameters:
+      service: hana
+      service-plan: hdi-shared

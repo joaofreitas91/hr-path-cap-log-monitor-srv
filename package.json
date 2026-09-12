@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "type": "module",
   "dependencies": {
-    "@sap/cds": "^10"
+    "@cap-js/hana": "^3",
+    "@sap/cds": "^10",
+    "@sap/xssec": "^4"
   },
   "devDependencies": {
     "@cap-js/sqlite": "^3",
@@ -12,5 +14,20 @@
   "scripts": {
     "start": "cds-serve"
   },
-  "private": true
+  "private": true,
+  "cds": {
+    "requires": {
+      "auth": "mocked",
+      "db": {
+        "kind": "sqlite",
+        "credentials": {
+          "url": "db.sqlite"
+        }
+      },
+      "[production]": {
+        "auth": "xsuaa",
+        "db": "hana"
+      }
+    }
+  }
 }

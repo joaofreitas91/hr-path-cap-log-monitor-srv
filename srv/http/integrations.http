@@ -1,0 +1,69 @@
+@server=http://localhost:4004
+
+
+### List all Integrations with fields
+# @name Integrations_GET
+GET {{server}}/odata/v4/log-monitor/Integrations?$expand=fields
+
+
+### Get a single Integration with fields
+# @name Integration_GET_ONE
+GET {{server}}/odata/v4/log-monitor/Integrations/a1b2c3d4-0001-4000-8000-000000000001?$expand=fields
+
+### Get a single Integration with logs
+# @name Integration_GET_ONE
+GET {{server}}/odata/v4/log-monitor/Integrations/a1b2c3d4-0001-4000-8000-000000000001?$expand=logs
+
+
+### Create Integration: SAP SuccessFactors → S/4HANA Employee Master Data
+# @name Integrations_POST_SF_TO_S4
+POST {{server}}/odata/v4/log-monitor/Integrations
+Content-Type: application/json
+
+{
+  "ID": "a1b2c3d4-0001-4000-8000-000000000001",
+  "description": "Syncs employee master data from SAP SuccessFactors to S/4HANA HR module",
+  "source": "SAP SuccessFactors EC",
+  "target": "SAP S/4HANA HCM",
+  "fields": [
+    {
+      "fieldName": "employeeId",
+      "description": "Unique employee identifier in SuccessFactors",
+      "isSortable": true,
+      "isFilterable": true
+    },
+    {
+      "fieldName": "firstName",
+      "description": "Employee first name",
+      "isSortable": true,
+      "isFilterable": true
+    },
+    {
+      "fieldName": "lastName",
+      "description": "Employee last name",
+      "isSortable": true,
+      "isFilterable": true
+    },
+    {
+      "fieldName": "costCenter",
+      "description": "Assigned cost center code",
+      "isSortable": false,
+      "isFilterable": true
+    }
+  ]
+}
+
+
+### Update Integration: change source system description
+# @name Integrations_PATCH
+PATCH {{server}}/odata/v4/log-monitor/Integrations/a1b2c3d4-0001-4000-8000-000000000001
+Content-Type: application/json
+
+{
+  "description": "Syncs employee master data from SAP SuccessFactors to S/4HANA HR module (including contingent workers)"
+}
+
+
+### Delete Integration
+# @name Integrations_DELETE
+DELETE {{server}}/odata/v4/log-monitor/Integrations/a1b2c3d4-0001-4000-8000-000000000001
