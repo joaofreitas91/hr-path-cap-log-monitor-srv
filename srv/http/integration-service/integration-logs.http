@@ -1,16 +1,12 @@
 @server=http://localhost:4004
-
-
-### IntegrationLogs
-# @name IntegrationLogs_GET
-GET {{server}}/odata/v4/log-monitor/IntegrationLogs
-
-
+@username=john.doe@dummy.com
+@password=1234
 
 ### IntegrationLogs
 # @name IntegrationLogs_POST
-POST {{server}}/odata/v4/log-monitor/IntegrationLogs
+POST {{server}}/odata/v4/log-monitor-cockpit/IntegrationLogs
 Content-Type: application/json
+Authorization: Basic {{username}}:{{password}}
 
 {
   "ID": "16820079-b627-4813-9e78-0e48006034cf",
@@ -23,9 +19,3 @@ Content-Type: application/json
   "modifiedAt": "2001-03-20T00:00:00.000Z",
   "modifiedBy": "modifiedBy.a0igf@example.net"
 }
-
-
-### IntegrationLogs
-# @name IntegrationLogs_DELETE
-DELETE {{server}}/odata/v4/log-monitor/IntegrationLogs/16820079-b627-4813-9e78-0e48006034cf
-Content-Type: application/json

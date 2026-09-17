@@ -17,7 +17,24 @@
   "private": true,
   "cds": {
     "requires": {
-      "auth": "mocked",
+      "auth": {
+        "kind": "mocked",
+        "users": {
+          "alice@dummy.com": {
+            "password": "1234",
+            "roles": [
+              "user"
+            ]
+          },
+          "john.doe@dummy.com": {
+            "password": "1234",
+            "roles": [
+              "user",
+              "admin"
+            ]
+          }
+        }
+      },
       "db": {
         "kind": "sqlite",
         "credentials": {

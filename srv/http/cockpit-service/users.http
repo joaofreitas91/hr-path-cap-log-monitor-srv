@@ -1,0 +1,51 @@
+@server=http://localhost:4004
+@username=john.doe@dummy.com
+@password=1234
+
+
+### Users
+# @name Users_GET
+GET {{server}}/odata/v4/log-monitor-cockpit/Users
+Authorization: Basic {{username}}:{{password}}
+
+
+### Users
+# @name Users_POST
+POST {{server}}/odata/v4/log-monitor-cockpit/Users
+Content-Type: application/json
+Authorization: Basic {{username}}:{{password}}
+
+{
+  "ID": "591361b7-b299-42ef-955e-ba7878eeb060",
+  "name": "John Doe",
+  "email": "john.doe@dummy.com"
+}
+
+
+### Users
+# @name Users_POST
+POST {{server}}/odata/v4/log-monitor-cockpit/Users
+Content-Type: application/json
+Authorization: Basic {{username}}:{{password}}
+
+{
+  "ID": "9291ac54-b142-423f-bd22-dd3c4a821be4",
+  "name": "Alice",
+  "email": "alice@dummy.com"
+}
+
+
+### Users
+# @name Users_PATCH
+PATCH {{server}}/odata/v4/log-monitor-cockpit/Users/591361b7-b299-42ef-955e-ba7878eeb060
+Content-Type: application/json
+Authorization: Basic {{username}}:{{password}}
+
+{}
+
+
+### Users
+# @name Users_DELETE
+DELETE {{server}}/odata/v4/log-monitor-cockpit/Users/591361b7-b299-42ef-955e-ba7878eeb060
+Content-Type: application/json
+Authorization: Basic {{username}}:{{password}}

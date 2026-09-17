@@ -5,16 +5,31 @@ using {
     managed
 } from '@sap/cds/common';
 
+entity Users : cuid, managed {
+    name             : String(255) not null;
+    email            : String(255) not null;
+    userIntegrations : Association to many UserIntegrations
+                           on userIntegrations.user = $self;
+}
+
 entity Integrations : cuid, managed {
-    description : String(255) not null;
-    source      : String(100) not null;
-    target      : String(100) not null;
+    description      : String(255) not null;
+    source           : String(100) not null;
+    target           : String(100) not null;
 
-    fields      : Composition of many IntegrationFields
-                      on fields.integration = $self;
+    userIntegrations : Association to many UserIntegrations
+                           on userIntegrations.integration = $self;
 
-    logs        : Composition of many IntegrationLogs
-                      on logs.integration = $self;
+    fields           : Composition of many IntegrationFields
+                           on fields.integration = $self;
+
+    logs             : Composition of many IntegrationLogs
+                           on logs.integration = $self;
+}
+
+entity UserIntegrations : cuid, managed {
+    user        : Association to Users;
+    integration : Association to Integrations;
 }
 
 entity IntegrationFields : cuid, managed {
@@ -32,9 +47,24 @@ type ExecutionStatus : String(20) enum {
     Warning = 'WARNING';
 }
 
-entity IntegrationLogs : cuid, managed {
-    integration : Association to Integrations not null;
+entity IntegrationLogs @(restrict: [
+    {
+        grant: ['CREATE'],
+        to   : 'system-user',
+    },
+    {
+        grant: ['READ'],
+        to   : 'user',
+        where: 'integration.userIntegrations.user.email = $user'
+    },
+    {
+        grant: ['*'],
+        to   : 'admin',
+    }
+]) : cuid, managed {
     executedAt  : Timestamp not null;
     status      : ExecutionStatus not null;
     payload     : LargeString;
+
+    integration : Association to Integrations not null;
 }

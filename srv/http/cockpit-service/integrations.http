@@ -1,24 +1,30 @@
 @server=http://localhost:4004
+@username=miranha@dummy.com
+@password=1234
 
 
 ### List all Integrations with fields
 # @name Integrations_GET
-GET {{server}}/odata/v4/log-monitor/Integrations?$expand=fields
+GET {{server}}/odata/v4/log-monitor-cockpit/Integrations?$expand=userIntegrations
+Authorization: Basic {{username}}:{{password}}
 
 
 ### Get a single Integration with fields
 # @name Integration_GET_ONE
-GET {{server}}/odata/v4/log-monitor/Integrations/a1b2c3d4-0001-4000-8000-000000000001?$expand=fields
+GET {{server}}/odata/v4/log-monitor-cockpit/Integrations/a1b2c3d4-0001-4000-8000-000000000001?$expand=fields
+Authorization: Basic {{username}}:{{password}}
 
 ### Get a single Integration with logs
 # @name Integration_GET_ONE
-GET {{server}}/odata/v4/log-monitor/Integrations/a1b2c3d4-0001-4000-8000-000000000001?$expand=logs
+GET {{server}}/odata/v4/log-monitor-cockpit/Integrations/a1b2c3d4-0001-4000-8000-000000000001?$expand=logs
+Authorization: Basic {{username}}:{{password}}
 
 
 ### Create Integration: SAP SuccessFactors → S/4HANA Employee Master Data
 # @name Integrations_POST_SF_TO_S4
-POST {{server}}/odata/v4/log-monitor/Integrations
+POST {{server}}/odata/v4/log-monitor-cockpit/Integrations
 Content-Type: application/json
+Authorization: Basic {{username}}:{{password}}
 
 {
   "ID": "a1b2c3d4-0001-4000-8000-000000000001",
@@ -56,8 +62,9 @@ Content-Type: application/json
 
 ### Update Integration: change source system description
 # @name Integrations_PATCH
-PATCH {{server}}/odata/v4/log-monitor/Integrations/a1b2c3d4-0001-4000-8000-000000000001
+PATCH {{server}}/odata/v4/log-monitor-cockpit/Integrations/a1b2c3d4-0001-4000-8000-000000000001
 Content-Type: application/json
+Authorization: Basic {{username}}:{{password}}
 
 {
   "description": "Syncs employee master data from SAP SuccessFactors to S/4HANA HR module (including contingent workers)"
@@ -66,4 +73,5 @@ Content-Type: application/json
 
 ### Delete Integration
 # @name Integrations_DELETE
-DELETE {{server}}/odata/v4/log-monitor/Integrations/a1b2c3d4-0001-4000-8000-000000000001
+DELETE {{server}}/odata/v4/log-monitor-cockpit/Integrations/a1b2c3d4-0001-4000-8000-000000000001
+Authorization: Basic {{username}}:{{password}}
