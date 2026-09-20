@@ -36,6 +36,18 @@ Authorization: Basic {{username}}:{{password}}
 
 
 ### Users
+# @name Users_POST
+POST {{server}}/odata/v4/log-monitor-cockpit/Users
+Content-Type: application/json
+Authorization: Basic {{username}}:{{password}}
+
+{
+  "ID": "161033c5-c4e9-46d2-a669-161052b0a1f6",
+  "name": "Joao Freitas",
+  "email": "joao.freitas@hr-path.com"
+}
+
+### Users
 # @name Users_PATCH
 PATCH {{server}}/odata/v4/log-monitor-cockpit/Users/591361b7-b299-42ef-955e-ba7878eeb060
 Content-Type: application/json

@@ -1,7 +1,12 @@
-<mvc:View controllerName="com.hrpath.log.monitor.report.controller.App"
+<mvc:View
+    controllerName="com.hrpath.log.monitor.report.controller.App"
     displayBlock="true"
     xmlns:mvc="sap.ui.core.mvc"
-    xmlns="sap.m">
-    <App id="app">
-    </App>
+    height="100%"
+    xmlns="sap.f"
+>
+    <FlexibleColumnLayout
+        id="app"
+        layout="OneColumn"
+    />
 </mvc:View>

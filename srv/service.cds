@@ -11,6 +11,12 @@ service LogMonitorReport @(requires: [
 ]) {
     @readonly
     entity IntegrationLogs as projection on db.IntegrationLogs;
+
+    @readonly
+    entity Integrations    as projection on db.Integrations;
+
+    @readonly
+    entity IntegrationFields as projection on db.IntegrationFields;
 }
 
 service LogMonitorCockpit @(requires: [

@@ -1,0 +1,177 @@
+<mvc:View
+    controllerName="com.hrpath.log.monitor.report.controller.Detail"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:uxap="sap.uxap"
+>
+    <uxap:ObjectPageLayout
+        id="detailPage"
+        showTitleInHeaderContent="true"
+        alwaysShowContentHeader="false"
+    >
+        <uxap:headerTitle>
+            <uxap:ObjectPageDynamicHeaderTitle id="detailHeaderTitle">
+                <uxap:navigationActions>
+                    <!-- <OverflowToolbarButton id="btnFullScreen"
+                        type="Transparent"
+                        icon="sap-icon://full-screen"
+                        press=".onFullScreen"
+                        tooltip="{i18n>fullScreen}"
+                        visible="{= ${fcl>/actionButtonsInfo/midColumn/fullScreen} !== null}"/>
+                    <OverflowToolbarButton id="btnExitFullScreen"
+                        type="Transparent"
+                        icon="sap-icon://exit-full-screen"
+                        press=".onExitFullScreen"
+                        tooltip="{i18n>exitFullScreen}"
+                        visible="{= ${fcl>/actionButtonsInfo/midColumn/exitFullScreen} !== null}"/> -->
+                    <OverflowToolbarButton
+                        id="btnCloseColumn"
+                        type="Transparent"
+                        icon="sap-icon://decline"
+                        press=".onCloseColumn"
+                        tooltip="{i18n>close}"
+                        visible="{= ${fcl>/actionButtonsInfo/midColumn/closeColumn} !== null}"
+                    />
+                </uxap:navigationActions>
+                <uxap:heading>
+                    <Title
+                        id="detailTitle"
+                        text="{detail>/integrationDescription}"
+                    />
+                </uxap:heading>
+                <uxap:expandedContent>
+                    <ObjectStatus
+                        id="detailStatusExpanded"
+                        text="{detail>/status}"
+                        state="{path: 'detail>/status', formatter: '.formatter.statusState'}"
+                    />
+                </uxap:expandedContent>
+                <uxap:snappedContent>
+                    <ObjectStatus
+                        id="detailStatusSnapped"
+                        text="{detail>/status}"
+                        state="{path: 'detail>/status', formatter: '.formatter.statusState'}"
+                    />
+                </uxap:snappedContent>
+            </uxap:ObjectPageDynamicHeaderTitle>
+        </uxap:headerTitle>
+
+        <uxap:headerContent>
+            <VBox id="headerContent">
+                <ObjectAttribute
+                    id="hdrAttrSource"
+                    title="{i18n>source}"
+                    text="{detail>/integrationSource}"
+                />
+                <ObjectAttribute
+                    id="hdrAttrTarget"
+                    title="{i18n>target}"
+                    text="{detail>/integrationTarget}"
+                />
+                <ObjectAttribute
+                    id="hdrAttrDate"
+                    title="{i18n>dateTime}"
+                    text="{detail>/executedAtFormatted}"
+                />
+            </VBox>
+        </uxap:headerContent>
+
+        <uxap:sections>
+            <uxap:ObjectPageSection
+                id="sectionLog"
+                title="{i18n>logData}"
+                titleUppercase="false"
+            >
+                <uxap:subSections>
+                    <uxap:ObjectPageSubSection
+                        id="subSectionLog"
+                        title=""
+                    >
+                        <uxap:blocks>
+                            <VBox
+                                id="logBlock"
+                                class="sapUiMediumMarginBeginEnd sapUiSmallMarginTopBottom"
+                            >
+                                <HBox
+                                    id="statusRow"
+                                    class="sapUiSmallMarginBottom"
+                                    alignItems="Center"
+                                >
+                                    <Label
+                                        id="lblStatus"
+                                        text="{i18n>status}"
+                                        width="10rem"
+                                    />
+                                    <ObjectStatus
+                                        id="logStatus"
+                                        text="{detail>/status}"
+                                        state="{path: 'detail>/status', formatter: '.formatter.statusState'}"
+                                    />
+                                </HBox>
+                                <HBox
+                                    id="dateRow"
+                                    alignItems="Center"
+                                >
+                                    <Label
+                                        id="lblDate"
+                                        text="{i18n>dateTime}"
+                                        width="10rem"
+                                    />
+                                    <Text
+                                        id="logDate"
+                                        text="{detail>/executedAtFormatted}"
+                                    />
+                                </HBox>
+                            </VBox>
+                        </uxap:blocks>
+                    </uxap:ObjectPageSubSection>
+                </uxap:subSections>
+            </uxap:ObjectPageSection>
+
+            <uxap:ObjectPageSection
+                id="sectionFields"
+                title="{i18n>customFields}"
+                titleUppercase="false"
+            >
+                <uxap:subSections>
+                    <uxap:ObjectPageSubSection
+                        id="subSectionFields"
+                        title=""
+                    >
+                        <uxap:blocks>
+                            <Table
+                                id="fieldsTable"
+                                noDataText="{i18n>noLogs}"
+                                width="100%"
+                            />
+                        </uxap:blocks>
+                    </uxap:ObjectPageSubSection>
+                </uxap:subSections>
+            </uxap:ObjectPageSection>
+
+            <uxap:ObjectPageSection
+                id="sectionPayload"
+                title="{i18n>payload}"
+                titleUppercase="false"
+            >
+                <uxap:subSections>
+                    <uxap:ObjectPageSubSection
+                        id="subSectionPayload"
+                        title=""
+                    >
+                        <uxap:blocks>
+                            <TextArea
+                                id="payloadArea"
+                                value="{detail>/payloadFormatted}"
+                                editable="false"
+                                rows="20"
+                                width="100%"
+                                growing="true"
+                            />
+                        </uxap:blocks>
+                    </uxap:ObjectPageSubSection>
+                </uxap:subSections>
+            </uxap:ObjectPageSection>
+        </uxap:sections>
+    </uxap:ObjectPageLayout>
+</mvc:View>

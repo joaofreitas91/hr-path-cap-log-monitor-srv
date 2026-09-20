@@ -94,29 +94,42 @@
     },
     "routing": {
       "config": {
-        "routerClass": "sap.m.routing.Router",
-        "controlAggregation": "pages",
+        "routerClass": "sap.f.routing.Router",
         "controlId": "app",
         "transition": "slide",
         "type": "View",
         "viewType": "XML",
-        "path": "com.hrpath.log.monitor.report.view",
         "async": true,
+        "path": "com.hrpath.log.monitor.report.view",
         "viewPath": "com.hrpath.log.monitor.report.view"
       },
       "routes": [
         {
-          "name": "RouteReport",
-          "pattern": ":?query:",
+          "name": "RouteMaster",
+          "pattern": "",
           "target": [
-            "TargetReport"
+            "TargetMaster"
+          ]
+        },
+        {
+          "name": "RouteDetail",
+          "pattern": "log/{logId}",
+          "target": [
+            "TargetMaster",
+            "TargetLogDetail"
           ]
         }
       ],
       "targets": {
-        "TargetReport": {
+        "TargetMaster": {
           "id": "Report",
-          "name": "Report"
+          "name": "Report",
+          "controlAggregation": "beginColumnPages"
+        },
+        "TargetLogDetail": {
+          "id": "Detail",
+          "name": "Detail",
+          "controlAggregation": "midColumnPages"
         }
       }
     },

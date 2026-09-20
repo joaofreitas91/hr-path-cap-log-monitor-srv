@@ -18,7 +18,7 @@ Authorization: Basic {{username}}:{{password}}
 {
   "ID": "12860188-c5e9-46f4-b0ec-f2b624337162",
   "user": {
-    "ID": "9291ac54-b142-423f-bd22-dd3c4a821be4"
+    "ID": "161033c5-c4e9-46d2-a669-161052b0a1f6"
   },
   "integration": {
     "ID": "a1b2c3d4-0001-4000-8000-000000000001"
