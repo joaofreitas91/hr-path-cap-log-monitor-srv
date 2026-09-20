@@ -1,56 +1,172 @@
 _schema-version: 3.3.0
 ID: hr-path-cap-log-monitor
+description: A simple CAP project.
 version: 1.0.0
-description: "A simple CAP project."
+modules:
+- name: hr-path-cap-log-monitor-srv
+  type: nodejs
+  path: gen/srv
+  requires:
+  - name: hr-path-cap-log-monitor-auth
+  - name: hr-path-cap-log-monitor-db
+  - name: hr-path-cap-log-monitor-destination
+  provides:
+  - name: srv-api
+    properties:
+      srv-url: ${default-url}
+  parameters:
+    buildpack: nodejs_buildpack
+    instances: 1
+  build-parameters:
+    builder: npm-ci
+- name: hr-path-cap-log-monitor-db-deployer
+  type: hdb
+  path: gen/db
+  requires:
+  - name: hr-path-cap-log-monitor-db
+  parameters:
+    buildpack: nodejs_buildpack
+- name: hr-path-cap-log-monitor-app-content
+  type: com.sap.application.content
+  path: .
+  requires:
+  - name: hr-path-cap-log-monitor-html5-repo-host
+    parameters:
+      content-target: true
+  build-parameters:
+    build-result: resources
+    requires:
+    - artifacts:
+      - comhrpathlogmonitorreport.zip
+      name: comhrpathlogmonitorreport
+      target-path: resources/
+- name: comhrpathlogmonitorreport
+  type: html5
+  path: app/log.monitor.report
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
+- name: hr-path-cap-log-monitor-app-deployer
+  type: com.sap.application.content
+  path: gen
+  requires:
+  - name: hr-path-cap-log-monitor-auth
+  - name: srv-api
+  - name: hr-path-cap-log-monitor-html5-repo-host
+    parameters:
+      config:
+        HTML5Runtime_enabled: true
+      content-target: true
+  parameters:
+    config:
+      destinations:
+      - Authentication: NoAuthentication
+        DynamicDestination: true
+        ForwardAuthToken: true
+        Name: srv-api
+        ProxyType: Internet
+        Type: HTTP
+        URL: ~{srv-api/srv-url}
+  build-parameters:
+    build-result: app/
+    requires:
+    - artifacts:
+      - comhrpathlogmonitorreport.zip
+      name: comhrpathlogmonitorreport
+      target-path: app/
+- name: hr-path-cap-log-monitor-destinations
+  type: com.sap.application.content
+  requires:
+  - name: hr-path-cap-log-monitor-auth
+    parameters:
+      service-key:
+        name: hr-path-cap-log-monitor-auth-key
+  - name: hr-path-cap-log-monitor-html5-repo-host
+    parameters:
+      service-key:
+        name: hr-path-cap-log-monitor-html5-repo-host-key
+  - name: srv-api
+  - name: hr-path-cap-log-monitor-destination
+    parameters:
+      content-target: true
+  parameters:
+    content:
+      instance:
+        destinations:
+        - Name: hr-path-cap-log-monitor-html5-repository
+          ServiceInstanceName: hr-path-cap-log-monitor-html5-service
+          ServiceKeyName: hr-path-cap-log-monitor-html5-repo-host-key
+          sap.cloud.service: hrpathcaplogmonitor.service
+        - Authentication: OAuth2UserTokenExchange
+          Name: hr-path-cap-log-monitor-auth
+          ServiceInstanceName: hr-path-cap-log-monitor-auth
+          ServiceKeyName: hr-path-cap-log-monitor-auth-key
+          sap.cloud.service: hrpathcaplogmonitor.service
+        existing_destinations_policy: update
+  build-parameters:
+    no-source: true
+resources:
+- name: hr-path-cap-log-monitor-auth
+  type: org.cloudfoundry.managed-service
+  parameters:
+    config:
+      oauth2-configuration:
+        credential-types:
+        - binding-secret
+        - x509
+      tenant-mode: dedicated
+      xsappname: hr-path-cap-log-monitor-${org}-${space}
+    path: ./xs-security.json
+    service: xsuaa
+    service-plan: application
+- name: hr-path-cap-log-monitor-db
+  type: com.sap.xs.hdi-container
+  parameters:
+    service: hana
+    service-plan: hdi-shared
+- name: hr-path-cap-log-monitor-html5-repo-host
+  type: org.cloudfoundry.managed-service
+  parameters:
+    service: html5-apps-repo
+    service-name: hr-path-cap-log-monitor-html5-service
+    service-plan: app-host
+- name: hr-path-cap-log-monitor-destination
+  type: org.cloudfoundry.managed-service
+  parameters:
+    config:
+      HTML5Runtime_enabled: true
+      init_data:
+        instance:
+          destinations:
+          - Authentication: NoAuthentication
+            Name: ui5
+            ProxyType: Internet
+            Type: HTTP
+            URL: https://ui5.sap.com
+          - Authentication: NoAuthentication
+            HTML5.DynamicDestination: true
+            HTML5.ForwardAuthToken: true
+            Name: srv-api
+            ProxyType: Internet
+            Type: HTTP
+            URL: ~{srv-api/srv-url}
+          existing_destinations_policy: update
+      version: 1.0.0
+    service: destination
+    service-name: hr-path-cap-log-monitor-destination-service
+    service-plan: lite
+  requires:
+  - name: srv-api
 parameters:
+  deploy_mode: html5-repo
   enable-parallel-deployments: true
 build-parameters:
   before-all:
-    - builder: custom
-      commands:
-        - npm ci
-        - npx cds build --production
-modules:
-  - name: hr-path-cap-log-monitor-srv
-    type: nodejs
-    path: gen/srv
-    parameters:
-      instances: 1
-      buildpack: nodejs_buildpack
-    build-parameters:
-      builder: npm-ci
-    provides:
-      - name: srv-api # required by consumers of CAP services (e.g. approuter)
-        properties:
-          srv-url: ${default-url}
-    requires:
-      - name: hr-path-cap-log-monitor-auth
-      - name: hr-path-cap-log-monitor-db
-
-  - name: hr-path-cap-log-monitor-db-deployer
-    type: hdb
-    path: gen/db
-    parameters:
-      buildpack: nodejs_buildpack
-    requires:
-      - name: hr-path-cap-log-monitor-db
-
-resources:
-  - name: hr-path-cap-log-monitor-auth
-    type: org.cloudfoundry.managed-service
-    parameters:
-      service: xsuaa
-      service-plan: application
-      path: ./xs-security.json
-      config:
-        xsappname: hr-path-cap-log-monitor-${org}-${space}
-        tenant-mode: dedicated
-        oauth2-configuration:
-          credential-types:
-            - "binding-secret"
-            - "x509"
-  - name: hr-path-cap-log-monitor-db
-    type: com.sap.xs.hdi-container
-    parameters:
-      service: hana
-      service-plan: hdi-shared
+  - builder: custom
+    commands:
+    - npm ci
+    - npx cds build --production

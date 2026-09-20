@@ -1,5 +1,37 @@
 {
-  "scopes": [],
-  "attributes": [],
-  "role-templates": []
+  "scopes": [
+    {
+      "name": "$XSAPPNAME.administrator",
+      "description": "administrator"
+    },
+    {
+      "name": "$XSAPPNAME.report-viewer",
+      "description": "report-viewer"
+    }
+  ],
+  "role-templates": [
+    {
+      "name": "hr_path_log_monitor_report",
+      "description": "hr_path_log_monitor_report",
+      "scope-references": ["$XSAPPNAME.report-viewer"]
+    },
+    {
+      "name": "hr_path_log_monitor_administrator",
+      "description": "hr_path_log_monitor_administrator",
+      "scope-references": ["$XSAPPNAME.administrator"]
+    }
+  ],
+  "role-collections": [
+    {
+      "name": "HR Path Log Monitor - Report Viewer",
+      "description": "Role collection for HR Path Log Monitor report viewers",
+      "role-template-references": ["$XSAPPNAME.hr_path_log_monitor_report"]
+    },
+    {
+      "name": "HR Path Log Monitor - Administrator",
+      "description": "Role collection for HR Path Log Monitor administrators",
+      "role-template-references": ["$XSAPPNAME.hr_path_log_monitor_administrator"]
+    }
+  ],
+  "attributes": []
 }

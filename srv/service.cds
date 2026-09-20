@@ -1,21 +1,21 @@
 using {log.monitor.db as db} from '../db/schema.cds';
 
-
-service LogMonitorIntegration @(requires: [
-    'admin',
-    'system-user',
-]) {
+service LogMonitorIntegration {
     @insertonly
     entity IntegrationLogs as projection on db.IntegrationLogs;
 }
 
-service LogMonitorReport @(requires: ['user',
+service LogMonitorReport @(requires: [
+    'administrator',
+    'report-viewer',
 ]) {
     @readonly
     entity IntegrationLogs as projection on db.IntegrationLogs;
 }
 
-service LogMonitorCockpit {
+service LogMonitorCockpit @(requires: [
+    'administrator',
+]) {
     entity Users             as projection on db.Users;
     entity Integrations      as projection on db.Integrations;
     entity UserIntegrations  as projection on db.UserIntegrations;

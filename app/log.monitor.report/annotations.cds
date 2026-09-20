@@ -1,0 +1,1 @@
+using LogMonitorReport as service from '../../srv/service';

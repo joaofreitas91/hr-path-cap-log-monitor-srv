@@ -17,3 +17,7 @@ mta_archives/
 
 # @cap-js/cds-typer
 @cds-models
+
+# UI5 app build output
+app/log.monitor.report/dist/
+resources/*.zip

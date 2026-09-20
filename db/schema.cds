@@ -54,12 +54,12 @@ entity IntegrationLogs @(restrict: [
     },
     {
         grant: ['READ'],
-        to   : 'user',
+        to   : 'report-viewer',
         where: 'integration.userIntegrations.user.email = $user'
     },
     {
         grant: ['*'],
-        to   : 'admin',
+        to   : 'administrator',
     }
 ]) : cuid, managed {
     executedAt  : Timestamp not null;
