@@ -170,11 +170,11 @@
                     <attributes>
                         <ObjectAttribute
                             id="attrSource"
-                            text="Source: {integration/source}"
+                            text="{i18n>source}: {integration/source}"
                         />
                         <ObjectAttribute
                             id="attrTarget"
-                            text="Target: {integration/target} "
+                            text="{i18n>target}: {integration/target}"
                         />
                     </attributes>
                 </ObjectListItem>
