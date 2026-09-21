@@ -12,7 +12,17 @@ entity Users : cuid, managed {
                            on userIntegrations.user = $self;
 }
 
-entity Integrations : cuid, managed {
+entity Integrations @(restrict: [
+    {
+        grant: ['READ'],
+        to   : 'report-viewer',
+        where: 'userIntegrations.user.email = $user or not exists userIntegrations'
+    },
+    {
+        grant: ['*'],
+        to   : 'administrator',
+    }
+]) : cuid, managed {
     description      : String(255) not null;
     source           : String(100) not null;
     target           : String(100) not null;
