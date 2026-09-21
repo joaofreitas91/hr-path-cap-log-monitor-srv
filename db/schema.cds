@@ -55,7 +55,7 @@ entity IntegrationLogs @(restrict: [
     {
         grant: ['READ'],
         to   : 'report-viewer',
-        where: 'integration.userIntegrations.user.email = $user'
+        where: 'integration.userIntegrations.user.email = $user or not exists integration.userIntegrations'
     },
     {
         grant: ['*'],

@@ -27,6 +27,23 @@ Authorization: Basic {{username}}:{{password}}
 
 
 ### UserIntegrations
+# @name UserIntegrations_POST_JOHN_DOE_CONCUR
+POST {{server}}/odata/v4/log-monitor-cockpit/UserIntegrations
+Content-Type: application/json
+Authorization: Basic {{username}}:{{password}}
+
+{
+  "ID": "4f7c9e2a-8b1d-4a6e-9c3f-5d2a1e6b7c90",
+  "user": {
+    "ID": "591361b7-b299-42ef-955e-ba7878eeb060"
+  },
+  "integration": {
+    "ID": "a1b2c3d4-0003-4000-8000-000000000003"
+  }
+}
+
+
+### UserIntegrations
 # @name UserIntegrations_PATCH
 PATCH {{server}}/odata/v4/log-monitor-cockpit/UserIntegrations/12860188-c5e9-46f4-b0ec-f2b624337162
 Content-Type: application/json
@@ -38,5 +55,12 @@ Authorization: Basic {{username}}:{{password}}
 ### UserIntegrations
 # @name UserIntegrations_DELETE
 DELETE {{server}}/odata/v4/log-monitor-cockpit/UserIntegrations/12860188-c5e9-46f4-b0ec-f2b624337162
+Content-Type: application/json
+Authorization: Basic {{username}}:{{password}}
+
+
+### UserIntegrations
+# @name UserIntegrations_DELETE
+DELETE {{server}}/odata/v4/log-monitor-cockpit/UserIntegrations/4f7c9e2a-8b1d-4a6e-9c3f-5d2a1e6b7c90
 Content-Type: application/json
 Authorization: Basic {{username}}:{{password}}

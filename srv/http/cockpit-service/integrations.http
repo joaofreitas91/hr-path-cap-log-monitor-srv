@@ -60,6 +60,90 @@ Authorization: Basic {{username}}:{{password}}
 }
 
 
+### Create Integration: SAP Ariba → S/4HANA Purchase Orders
+# @name Integrations_POST_ARIBA_TO_S4
+POST {{server}}/odata/v4/log-monitor-cockpit/Integrations
+Content-Type: application/json
+Authorization: Basic {{username}}:{{password}}
+
+{
+  "ID": "a1b2c3d4-0002-4000-8000-000000000002",
+  "description": "Syncs purchase orders from SAP Ariba to S/4HANA MM module",
+  "source": "SAP Ariba",
+  "target": "SAP S/4HANA MM",
+  "fields": [
+    {
+      "fieldName": "purchaseOrderId",
+      "description": "Unique purchase order identifier in Ariba",
+      "isSortable": true,
+      "isFilterable": true
+    },
+    {
+      "fieldName": "supplierId",
+      "description": "Supplier identifier",
+      "isSortable": true,
+      "isFilterable": true
+    },
+    {
+      "fieldName": "totalAmount",
+      "description": "Total purchase order amount",
+      "isSortable": true,
+      "isFilterable": false
+    },
+    {
+      "fieldName": "currency",
+      "description": "Currency code for the purchase order",
+      "isSortable": false,
+      "isFilterable": true
+    }
+  ]
+}
+
+
+
+
+### Create Integration: SAP Concur → S/4HANA Travel Expenses
+# @name Integrations_POST_CONCUR_TO_S4
+POST {{server}}/odata/v4/log-monitor-cockpit/Integrations
+Content-Type: application/json
+Authorization: Basic {{username}}:{{password}}
+
+{
+  "ID": "a1b2c3d4-0003-4000-8000-000000000003",
+  "description": "Syncs travel expense reports from SAP Concur to S/4HANA FI module",
+  "source": "SAP Concur",
+  "target": "SAP S/4HANA FI",
+  "fields": [
+    {
+      "fieldName": "expenseReportId",
+      "description": "Unique expense report identifier in Concur",
+      "isSortable": true,
+      "isFilterable": true
+    },
+    {
+      "fieldName": "employeeId",
+      "description": "Employee identifier associated with the expense report",
+      "isSortable": true,
+      "isFilterable": true
+    },
+    {
+      "fieldName": "totalAmount",
+      "description": "Total expense report amount",
+      "isSortable": true,
+      "isFilterable": false
+    },
+    {
+      "fieldName": "currency",
+      "description": "Currency code for the expense report",
+      "isSortable": false,
+      "isFilterable": true
+    }
+  ]
+}
+
+
+
+
 ### Update Integration: change source system description
 # @name Integrations_PATCH
 PATCH {{server}}/odata/v4/log-monitor-cockpit/Integrations/a1b2c3d4-0001-4000-8000-000000000001
@@ -74,4 +158,16 @@ Authorization: Basic {{username}}:{{password}}
 ### Delete Integration
 # @name Integrations_DELETE
 DELETE {{server}}/odata/v4/log-monitor-cockpit/Integrations/a1b2c3d4-0001-4000-8000-000000000001
+Authorization: Basic {{username}}:{{password}}
+
+
+### Delete Integration
+# @name Integrations_DELETE
+DELETE {{server}}/odata/v4/log-monitor-cockpit/Integrations/a1b2c3d4-0002-4000-8000-000000000002
+Authorization: Basic {{username}}:{{password}}
+
+
+### Delete Integration
+# @name Integrations_DELETE
+DELETE {{server}}/odata/v4/log-monitor-cockpit/Integrations/a1b2c3d4-0003-4000-8000-000000000003
 Authorization: Basic {{username}}:{{password}}

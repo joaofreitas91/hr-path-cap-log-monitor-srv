@@ -26,7 +26,51 @@ Authorization: Basic {{username}}:{{password}}
 
 
 ### IntegrationLogs
+# @name IntegrationLogs_POST_ARIBA
+POST {{server}}/odata/v4/log-monitor-cockpit/IntegrationLogs
+Content-Type: application/json
+Authorization: Basic {{username}}:{{password}}
+
+{
+  "ID": "27931180-c738-4924-af89-1f59007145df",
+  "integration_ID": "a1b2c3d4-0002-4000-8000-000000000002",
+  "executedAt": "2026-09-21T00:00:00.000Z",
+  "status": "ERROR",
+  "payload": "{\"purchaseOrderId\":\"PO-4521\",\"supplierId\":\"SUP-100\",\"totalAmount\":15230.50,\"currency\":\"BRL\"}"
+}
+
+
+### IntegrationLogs
+# @name IntegrationLogs_POST_CONCUR
+POST {{server}}/odata/v4/log-monitor-cockpit/IntegrationLogs
+Content-Type: application/json
+Authorization: Basic {{username}}:{{password}}
+
+{
+  "ID": "38a42291-d849-4a35-b09a-2f6a018256e0",
+  "integration_ID": "a1b2c3d4-0003-4000-8000-000000000003",
+  "executedAt": "2026-09-21T00:00:00.000Z",
+  "status": "ERROR",
+  "payload": "{\"expenseReportId\":\"ER-7734\",\"employeeId\":\"E-2201\",\"totalAmount\":842.15,\"currency\":\"BRL\"}"
+}
+
+
+### IntegrationLogs
 # @name IntegrationLogs_DELETE
 DELETE {{server}}/odata/v4/log-monitor-cockpit/IntegrationLogs/16820079-b627-4813-9e78-0e48006034cf
+Content-Type: application/json
+Authorization: Basic {{username}}:{{password}}
+
+
+### IntegrationLogs
+# @name IntegrationLogs_DELETE
+DELETE {{server}}/odata/v4/log-monitor-cockpit/IntegrationLogs/27931180-c738-4924-af89-1f59007145df
+Content-Type: application/json
+Authorization: Basic {{username}}:{{password}}
+
+
+### IntegrationLogs
+# @name IntegrationLogs_DELETE
+DELETE {{server}}/odata/v4/log-monitor-cockpit/IntegrationLogs/38a42291-d849-4a35-b09a-2f6a018256e0
 Content-Type: application/json
 Authorization: Basic {{username}}:{{password}}
