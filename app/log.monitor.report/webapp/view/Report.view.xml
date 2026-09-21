@@ -19,18 +19,6 @@
                         text="{i18n>logMasterTitle}"
                     />
                 </f:heading>
-                <f:expandedContent>
-                    <Text
-                        id="itemCountText"
-                        text=""
-                    />
-                </f:expandedContent>
-                <f:snappedContent>
-                    <Text
-                        id="itemCountTextSnapped"
-                        text=""
-                    />
-                </f:snappedContent>
             </f:DynamicPageTitle>
         </f:title>
 
@@ -154,6 +142,7 @@
         <f:content>
             <List
                 id="integrationsList"
+                headerText="{i18n>logListTitle}"
                 items="{path: '/IntegrationLogs', parameters: {$count: true}}"
                 noDataText="{i18n>noIntegrations}"
                 growing="true"

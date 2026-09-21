@@ -76,9 +76,8 @@ sap.ui.define([
 
         onListUpdateFinished(oEvent) {
             const iTotal = oEvent.getParameter("total");
-            const sText = `${iTotal} item${iTotal !== 1 ? "s" : ""}`;
-            this.byId("itemCountText").setText(sText);
-            this.byId("itemCountTextSnapped").setText(sText);
+            const oBundle = this.getOwnerComponent().getModel("i18n").getResourceBundle();
+            this.byId("integrationsList").setHeaderText(`${oBundle.getText("logListTitle")}(${iTotal})`);
         },
 
         onIntegrationPress(oEvent) {
