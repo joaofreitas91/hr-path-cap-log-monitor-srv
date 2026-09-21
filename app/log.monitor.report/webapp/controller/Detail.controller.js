@@ -1,6 +1,8 @@
 sap.ui.define([
     "sap/ui/core/mvc/Controller",
     "sap/ui/model/json/JSONModel",
+    "sap/ui/model/Filter",
+    "sap/ui/model/FilterOperator",
     "sap/m/MessageToast",
     "sap/m/Column",
     "sap/m/Label",
@@ -8,7 +10,7 @@ sap.ui.define([
     "sap/m/ColumnListItem",
     "sap/m/ObjectStatus",
     "com/hrpath/log/monitor/report/model/formatter"
-], (Controller, JSONModel, MessageToast, Column, Label, Text, ColumnListItem, ObjectStatus, formatter) => {
+], (Controller, JSONModel, Filter, FilterOperator, MessageToast, Column, Label, Text, ColumnListItem, ObjectStatus, formatter) => {
     "use strict";
 
     return Controller.extend("com.hrpath.log.monitor.report.controller.Detail", {
@@ -25,27 +27,33 @@ sap.ui.define([
             await this._load(sLogId);
         },
 
-        _buildUri(sPath) {
-            const sServiceUri = this.getOwnerComponent().getManifestEntry("/sap.app/dataSources/mainService/uri");
-            return sServiceUri + sPath;
-        },
-
         async _load(sLogId) {
             const oPage = this.byId("detailPage");
             oPage.setBusy(true);
             try {
+                const oModel = this.getOwnerComponent().getModel();
 
-                const rLog = await fetch(this._buildUri(`IntegrationLogs(${sLogId})?$expand=integration($select=description,source,target)`));
-                if (!rLog.ok) throw new Error("Log not found");
-                const logData = await rLog.json();
+                const oLogBinding = oModel.bindContext(`/IntegrationLogs(${sLogId})`, undefined, {
+                    $select: "ID,executedAt,status,payload,integration_ID",
+                    $expand: "integration($select=description,source,target)"
+                });
+                const logData = await oLogBinding.getBoundContext().requestObject();
+                oLogBinding.destroy();
+                if (!logData) throw new Error("Log not found");
 
                 const integrationId = logData.integration_ID;
 
-                const rFields = await fetch(this._buildUri(`IntegrationFields?$filter=integration_ID eq ${integrationId}`))
-                const fieldsResult = await rFields.json()
+                const oFieldsBinding = oModel.bindList(
+                    "/IntegrationFields",
+                    undefined,
+                    undefined,
+                    new Filter("integration_ID", FilterOperator.EQ, integrationId)
+                );
+                const aFieldsContexts = await oFieldsBinding.requestContexts(0, 1000);
+                const aFields = aFieldsContexts.map(oContext => oContext.getObject());
+                oFieldsBinding.destroy();
 
                 const aLog = [logData] ?? [];
-                const aFields = fieldsResult.value ?? [];
 
                 const sDate = logData.executedAt
                     ? new Date(logData.executedAt).toLocaleString("pt-BR")
