@@ -22,8 +22,13 @@ sap.ui.define([
             const oBinding = this.byId("integrationsList").getBinding("items");
             const aFilters = [];
 
-            const sDesc = this.byId("filterDescription").getValue();
-            if (sDesc) aFilters.push(new Filter("integration/description", FilterOperator.Contains, sDesc));
+            const aIntegrationKeys = this.byId("filterIntegration").getSelectedKeys();
+            if (aIntegrationKeys.length > 0) {
+                aFilters.push(new Filter({
+                    filters: aIntegrationKeys.map(sId => new Filter("integration/ID", FilterOperator.EQ, sId)),
+                    and: false
+                }));
+            }
 
             const sSource = this.byId("filterSource").getValue();
             if (sSource) aFilters.push(new Filter("integration/source", FilterOperator.Contains, sSource));
@@ -61,7 +66,7 @@ sap.ui.define([
         },
 
         onClear() {
-            this.byId("filterDescription").setValue("");
+            this.byId("filterIntegration").setSelectedKeys([]);
             this.byId("filterSource").setValue("");
             this.byId("filterTarget").setValue("");
             this.byId("filterDateRange").setValue("");

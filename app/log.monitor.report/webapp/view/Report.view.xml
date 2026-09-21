@@ -44,21 +44,28 @@
                     search=".onSearch"
                     showGoOnFB="true"
                     showClearOnFB="true"
+                    showFilterConfiguration="false"
                 >
                     <fb:filterGroupItems>
                         <fb:FilterGroupItem
-                            id="fgiDescription"
-                            name="description"
+                            id="fgiIntegration"
+                            name="integration"
                             groupName="filters"
-                            label="{i18n>filterDescription}"
+                            label="{i18n>filterIntegration}"
                             visibleInFilterBar="true"
                         >
                             <fb:control>
-                                <Input
-                                    id="filterDescription"
-                                    placeholder="{i18n>filterDescription}"
-                                    submit=".onSearch"
-                                />
+                                <MultiComboBox
+                                    id="filterIntegration"
+                                    placeholder="{i18n>filterIntegration}"
+                                    items="{path: '/Integrations', sorter: {path: 'description'}}"
+                                >
+                                    <core:Item
+                                        id="integrationFilterItem"
+                                        key="{ID}"
+                                        text="{description}"
+                                    />
+                                </MultiComboBox>
                             </fb:control>
                         </fb:FilterGroupItem>
                         <fb:FilterGroupItem
