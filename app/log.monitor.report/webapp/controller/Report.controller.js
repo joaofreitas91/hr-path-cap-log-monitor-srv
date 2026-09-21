@@ -70,8 +70,8 @@ sap.ui.define([
             this.byId("filterSource").setValue("");
             this.byId("filterTarget").setValue("");
             this.byId("filterDateRange").setValue("");
-            this.byId("filterStatus").setSelectedKeys([]);
-            this.byId("integrationsList").getBinding("items").filter([]);
+            this.byId("filterStatus").setSelectedKeys(["ERROR"]);
+            this.onSearch();
         },
 
         onListUpdateFinished(oEvent) {

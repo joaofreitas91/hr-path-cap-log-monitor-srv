@@ -30,6 +30,7 @@
                 <fb:FilterBar
                     id="filterBar"
                     search=".onSearch"
+                    clear=".onClear"
                     showGoOnFB="true"
                     showClearOnFB="true"
                     showFilterConfiguration="false"
