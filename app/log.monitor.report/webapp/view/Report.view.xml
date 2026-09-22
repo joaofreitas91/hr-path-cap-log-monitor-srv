@@ -44,17 +44,18 @@
                             visibleInFilterBar="true"
                         >
                             <fb:control>
-                                <MultiComboBox
+                                <ComboBox
                                     id="filterIntegration"
                                     placeholder="{i18n>filterIntegration}"
                                     items="{path: '/Integrations', sorter: {path: 'description'}}"
+                                    selectionChange=".onIntegrationChange"
                                 >
                                     <core:Item
                                         id="integrationFilterItem"
                                         key="{ID}"
                                         text="{description}"
                                     />
-                                </MultiComboBox>
+                                </ComboBox>
                             </fb:control>
                         </fb:FilterGroupItem>
                         <fb:FilterGroupItem

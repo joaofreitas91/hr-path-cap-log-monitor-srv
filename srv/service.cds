@@ -17,6 +17,8 @@ service LogMonitorReport @(requires: [
 
     @readonly
     entity IntegrationFields as projection on db.IntegrationFields;
+
+    function matchingLogIds(integrationID : UUID, fieldsFilter : String) returns String;
 }
 
 service LogMonitorCockpit @(requires: [

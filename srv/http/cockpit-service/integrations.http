@@ -5,7 +5,7 @@
 
 ### List all Integrations with fields
 # @name Integrations_GET
-GET {{server}}/odata/v4/log-monitor-cockpit/Integrations?$expand=userIntegrations
+GET {{server}}/odata/v4/log-monitor-cockpit/Integrations?$expand=userIntegrations($expand=user)
 Authorization: Basic {{username}}:{{password}}
 
 

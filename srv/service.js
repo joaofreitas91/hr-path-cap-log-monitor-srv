@@ -1,0 +1,36 @@
+export default function () {
+    if (this.name !== 'LogMonitorReport') return;
+
+    this.on('matchingLogIds', async req => {
+        const { integrationID, fieldsFilter } = req.data;
+
+        let aEntries = [];
+        try {
+            aEntries = Object.entries(JSON.parse(fieldsFilter || '{}')).filter(([, v]) => v);
+        } catch {
+            return JSON.stringify([]);
+        }
+        if (!integrationID || aEntries.length === 0) return JSON.stringify([]);
+
+        const { IntegrationLogs } = this.entities;
+        const aLogs = await this.run(
+            SELECT.from(IntegrationLogs).columns('ID', 'payload').where({ integration_ID: integrationID })
+        );
+
+        const aMatchingIds = aLogs
+            .filter(log => {
+                let oPayload;
+                try {
+                    oPayload = JSON.parse(log.payload ?? '{}');
+                } catch {
+                    return false;
+                }
+                return aEntries.every(([sField, sValue]) =>
+                    String(oPayload[sField] ?? '').toLowerCase().includes(String(sValue).toLowerCase())
+                );
+            })
+            .map(log => log.ID);
+
+        return JSON.stringify(aMatchingIds);
+    });
+};
