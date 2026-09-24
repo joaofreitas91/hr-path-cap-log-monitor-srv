@@ -1,0 +1,66 @@
+@server=http://localhost:4004
+@username=john.doe@dummy.com
+@password=1234
+
+
+### IntegrationGroups
+# @name IntegrationGroups_GET
+GET {{server}}/odata/v4/log-monitor-cockpit/IntegrationGroups?$expand=group,integration
+Authorization: Basic {{username}}:{{password}}
+
+
+### IntegrationGroups
+# @name IntegrationGroups_POST_SF_TO_S4_HR_TEAM_EC
+POST {{server}}/odata/v4/log-monitor-cockpit/IntegrationGroups
+Content-Type: application/json
+Authorization: Basic {{username}}:{{password}}
+
+{
+  "ID": "a2b3c4d5-0001-4000-8000-000000000001",
+  "group": {
+    "ID": "b1b2b3b4-0001-4000-8000-000000000001"
+  },
+  "integration": {
+    "ID": "a1b2c3d4-0001-4000-8000-000000000001"
+  }
+}
+
+
+### IntegrationGroups
+# @name IntegrationGroups_POST_CONCUR_TO_S4_HR_TEAM_LMS
+POST {{server}}/odata/v4/log-monitor-cockpit/IntegrationGroups
+Content-Type: application/json
+Authorization: Basic {{username}}:{{password}}
+
+{
+  "ID": "a2b3c4d5-0002-4000-8000-000000000002",
+  "group": {
+    "ID": "b1b2b3b4-0002-4000-8000-000000000002"
+  },
+  "integration": {
+    "ID": "a1b2c3d4-0003-4000-8000-000000000003"
+  }
+}
+
+
+### IntegrationGroups
+# @name IntegrationGroups_PATCH
+PATCH {{server}}/odata/v4/log-monitor-cockpit/IntegrationGroups/a2b3c4d5-0001-4000-8000-000000000001
+Content-Type: application/json
+Authorization: Basic {{username}}:{{password}}
+
+{
+  "group_ID": "b1b2b3b4-0002-4000-8000-000000000002"
+}
+
+
+### IntegrationGroups
+# @name IntegrationGroups_DELETE_SF_TO_S4_HR_TEAM_EC
+DELETE {{server}}/odata/v4/log-monitor-cockpit/IntegrationGroups/a2b3c4d5-0001-4000-8000-000000000001
+Authorization: Basic {{username}}:{{password}}
+
+
+### IntegrationGroups
+# @name IntegrationGroups_DELETE_CONCUR_TO_S4_HR_TEAM_LMS
+DELETE {{server}}/odata/v4/log-monitor-cockpit/IntegrationGroups/a2b3c4d5-0002-4000-8000-000000000002
+Authorization: Basic {{username}}:{{password}}

@@ -39,6 +39,12 @@
               "report-viewer",
               "administrator"
             ]
+          },
+          "integration": {
+            "password": "1234",
+            "roles": [
+              "system-user"
+            ]
           }
         }
       },

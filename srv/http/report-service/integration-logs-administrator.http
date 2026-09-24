@@ -1,5 +1,5 @@
 @server=http://localhost:4004
-@username=alice@dummy.com
+@username=john.doe@dummy.com
 @password=1234
 
 

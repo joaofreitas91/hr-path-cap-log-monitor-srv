@@ -3,46 +3,46 @@
 @password=1234
 
 
-### List all Integration Fields
+### IntegrationFields
 # @name IntegrationFields_GET
 GET {{server}}/odata/v4/log-monitor-cockpit/IntegrationFields?$select=fieldName
 Authorization: Basic {{username}}:{{password}}
 
 
-### Get a single Integration Field
+### IntegrationFields
 # @name IntegrationFields_GET_ONE
 GET {{server}}/odata/v4/log-monitor-cockpit/IntegrationFields/f0000001-0005-4000-8000-000000000001
 Authorization: Basic {{username}}:{{password}}
 
 
-### Create Integration Field: jobTitle for SuccessFactors → S/4HANA
-# @name IntegrationFields_POST
+### IntegrationFields
+# @name IntegrationFields_POST_SF_TO_S4_JOB_TITLE
 POST {{server}}/odata/v4/log-monitor-cockpit/IntegrationFields
 Content-Type: application/json
 Authorization: Basic {{username}}:{{password}}
 
 {
-    "ID": "f0000001-0005-4000-8000-000000000001",
-    "integration_ID": "a1b2c3d4-0001-4000-8000-000000000001",
-    "fieldName": "jobTitle",
-    "description": "Employee job title as defined in SuccessFactors",
-    "isSortable": true,
-    "isFilterable": true
+  "ID": "f0000001-0005-4000-8000-000000000001",
+  "integration_ID": "a1b2c3d4-0001-4000-8000-000000000001",
+  "fieldName": "jobTitle",
+  "description": "Employee job title as defined in SuccessFactors",
+  "isSortable": true,
+  "isFilterable": true
 }
 
 
-### Update Integration Field: disable sorting
+### IntegrationFields
 # @name IntegrationFields_PATCH
 PATCH {{server}}/odata/v4/log-monitor-cockpit/IntegrationFields/f0000001-0005-4000-8000-000000000001
 Content-Type: application/json
 Authorization: Basic {{username}}:{{password}}
 
 {
-    "isSortable": false
+  "isSortable": false
 }
 
 
-### Delete Integration Field
-# @name IntegrationFields_DELETE
+### IntegrationFields
+# @name IntegrationFields_DELETE_SF_TO_S4_JOB_TITLE
 DELETE {{server}}/odata/v4/log-monitor-cockpit/IntegrationFields/f0000001-0005-4000-8000-000000000001
 Authorization: Basic {{username}}:{{password}}

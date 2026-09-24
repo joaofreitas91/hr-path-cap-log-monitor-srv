@@ -5,13 +5,12 @@
 
 ### IntegrationLogs
 # @name IntegrationLogs_GET
-GET {{server}}/odata/v4/log-monitor-cockpit/IntegrationLogs?$expand=integration($expand=userIntegrations($expand=user))
+GET {{server}}/odata/v4/log-monitor-cockpit/IntegrationLogs?$expand=integration($expand=integrationGroups($expand=group))
 Authorization: Basic {{username}}:{{password}}
 
 
-
 ### IntegrationLogs
-# @name IntegrationLogs_POST
+# @name IntegrationLogs_POST_SF
 POST {{server}}/odata/v4/log-monitor-cockpit/IntegrationLogs
 Content-Type: application/json
 Authorization: Basic {{username}}:{{password}}
@@ -56,21 +55,18 @@ Authorization: Basic {{username}}:{{password}}
 
 
 ### IntegrationLogs
-# @name IntegrationLogs_DELETE
+# @name IntegrationLogs_DELETE_SF
 DELETE {{server}}/odata/v4/log-monitor-cockpit/IntegrationLogs/16820079-b627-4813-9e78-0e48006034cf
-Content-Type: application/json
 Authorization: Basic {{username}}:{{password}}
 
 
 ### IntegrationLogs
-# @name IntegrationLogs_DELETE
+# @name IntegrationLogs_DELETE_ARIBA
 DELETE {{server}}/odata/v4/log-monitor-cockpit/IntegrationLogs/27931180-c738-4924-af89-1f59007145df
-Content-Type: application/json
 Authorization: Basic {{username}}:{{password}}
 
 
 ### IntegrationLogs
-# @name IntegrationLogs_DELETE
+# @name IntegrationLogs_DELETE_CONCUR
 DELETE {{server}}/odata/v4/log-monitor-cockpit/IntegrationLogs/38a42291-d849-4a35-b09a-2f6a018256e0
-Content-Type: application/json
 Authorization: Basic {{username}}:{{password}}

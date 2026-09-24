@@ -1,0 +1,43 @@
+@server=http://localhost:4004
+@username=john.doe@dummy.com
+@password=1234
+
+
+### UserGroups
+# @name UserGroups_GET
+GET {{server}}/odata/v4/log-monitor-cockpit/UserGroups?$expand=user,group
+Authorization: Basic {{username}}:{{password}}
+
+
+### UserGroups
+# @name UserGroups_POST_ALICE_HR_TEAM_EC
+POST {{server}}/odata/v4/log-monitor-cockpit/UserGroups
+Content-Type: application/json
+Authorization: Basic {{username}}:{{password}}
+
+{
+  "ID": "4f7c9e2a-8b1d-4a6e-9c3f-5d2a1e6b7c90",
+  "user": {
+    "ID": "9291ac54-b142-423f-bd22-dd3c4a821be4"
+  },
+  "group": {
+    "ID": "b1b2b3b4-0001-4000-8000-000000000001"
+  }
+}
+
+
+### UserGroups
+# @name UserGroups_PATCH
+PATCH {{server}}/odata/v4/log-monitor-cockpit/UserGroups/4f7c9e2a-8b1d-4a6e-9c3f-5d2a1e6b7c90
+Content-Type: application/json
+Authorization: Basic {{username}}:{{password}}
+
+{
+  "group_ID": "b1b2b3b4-0002-4000-8000-000000000002"
+}
+
+
+### UserGroups
+# @name UserGroups_DELETE_ALICE_HR_TEAM_EC
+DELETE {{server}}/odata/v4/log-monitor-cockpit/UserGroups/4f7c9e2a-8b1d-4a6e-9c3f-5d2a1e6b7c90
+Authorization: Basic {{username}}:{{password}}

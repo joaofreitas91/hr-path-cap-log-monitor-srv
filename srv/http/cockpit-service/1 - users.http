@@ -5,12 +5,12 @@
 
 ### Users
 # @name Users_GET
-GET {{server}}/odata/v4/log-monitor-cockpit/Users
+GET {{server}}/odata/v4/log-monitor-cockpit/Users?$select=name,email&$expand=userGroups($expand=group($expand=integrationGroups($expand=integration)))
 Authorization: Basic {{username}}:{{password}}
 
 
 ### Users
-# @name Users_POST
+# @name Users_POST_JOHN_DOE
 POST {{server}}/odata/v4/log-monitor-cockpit/Users
 Content-Type: application/json
 Authorization: Basic {{username}}:{{password}}
@@ -23,7 +23,7 @@ Authorization: Basic {{username}}:{{password}}
 
 
 ### Users
-# @name Users_POST
+# @name Users_POST_ALICE
 POST {{server}}/odata/v4/log-monitor-cockpit/Users
 Content-Type: application/json
 Authorization: Basic {{username}}:{{password}}
@@ -36,28 +36,23 @@ Authorization: Basic {{username}}:{{password}}
 
 
 ### Users
-# @name Users_POST
-POST {{server}}/odata/v4/log-monitor-cockpit/Users
-Content-Type: application/json
-Authorization: Basic {{username}}:{{password}}
-
-{
-  "ID": "161033c5-c4e9-46d2-a669-161052b0a1f6",
-  "name": "Joao Freitas",
-  "email": "joao.freitas@hr-path.com"
-}
-
-### Users
 # @name Users_PATCH
 PATCH {{server}}/odata/v4/log-monitor-cockpit/Users/591361b7-b299-42ef-955e-ba7878eeb060
 Content-Type: application/json
 Authorization: Basic {{username}}:{{password}}
 
-{}
+{
+  "name": "John Doe Jr."
+}
 
 
 ### Users
-# @name Users_DELETE
+# @name Users_DELETE_JOHN_DOE
 DELETE {{server}}/odata/v4/log-monitor-cockpit/Users/591361b7-b299-42ef-955e-ba7878eeb060
-Content-Type: application/json
+Authorization: Basic {{username}}:{{password}}
+
+
+### Users
+# @name Users_DELETE_ALICE
+DELETE {{server}}/odata/v4/log-monitor-cockpit/Users/9291ac54-b142-423f-bd22-dd3c4a821be4
 Authorization: Basic {{username}}:{{password}}

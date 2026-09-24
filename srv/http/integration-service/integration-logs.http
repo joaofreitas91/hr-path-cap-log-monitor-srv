@@ -1,21 +1,18 @@
 @server=http://localhost:4004
-@username=john.doe@dummy.com
+@username=integration
 @password=1234
 
+
 ### IntegrationLogs
-# @name IntegrationLogs_POST
-POST {{server}}/odata/v4/log-monitor-cockpit/IntegrationLogs
+# @name IntegrationLogs_POST_SF
+POST {{server}}/odata/v4/log-monitor-integration/IntegrationLogs
 Content-Type: application/json
 Authorization: Basic {{username}}:{{password}}
 
 {
-  "ID": "16820079-b627-4813-9e78-0e48006034cf",
-  "integration_ID": "d00b4a9e-d8ea-4d59-bb84-85cd9fc7f801",
+  "ID": "1265ac03-a1a3-4b0d-9dac-0ca70b478198",
+  "integration_ID": "a1b2c3d4-0001-4000-8000-000000000001",
   "executedAt": "2005-11-10T00:00:00.000Z",
   "status": "ERROR",
-  "payload": "{\"employeeId\":\"999\",\"costCenter\":\"001\",\"lastName\":\"Freitas\",\"firstName\":\"joao\",\"jobTitle\":\"developer\"}",
-  "createdAt": "2023-10-14T00:00:00.000Z",
-  "createdBy": "createdBy.a0igf@example.com",
-  "modifiedAt": "2001-03-20T00:00:00.000Z",
-  "modifiedBy": "modifiedBy.a0igf@example.net"
+  "payload": "{\"employeeId\":\"999\",\"costCenter\":\"001\",\"lastName\":\"Freitas\",\"firstName\":\"joao\",\"jobTitle\":\"developer\"}"
 }

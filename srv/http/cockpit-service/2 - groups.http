@@ -1,0 +1,58 @@
+@server=http://localhost:4004
+@username=john.doe@dummy.com
+@password=1234
+
+
+### Groups
+# @name Groups_GET
+GET {{server}}/odata/v4/log-monitor-cockpit/Groups?$select=description,iasUserGroup&$expand=userGroups($expand=user),integrationGroups($expand=integration)
+Authorization: Basic {{username}}:{{password}}
+
+
+### Groups
+# @name Groups_POST_HR_TEAM_EC
+POST {{server}}/odata/v4/log-monitor-cockpit/Groups
+Content-Type: application/json
+Authorization: Basic {{username}}:{{password}}
+
+{
+  "ID": "b1b2b3b4-0001-4000-8000-000000000001",
+  "description": "HR Team - EC",
+  "iasUserGroup": "HR_PATH_HR_TEAM_EC"
+}
+
+
+### Groups
+# @name Groups_POST_HR_TEAM_LMS
+POST {{server}}/odata/v4/log-monitor-cockpit/Groups
+Content-Type: application/json
+Authorization: Basic {{username}}:{{password}}
+
+{
+  "ID": "b1b2b3b4-0002-4000-8000-000000000002",
+  "description": "HR Team - LMS",
+  "iasUserGroup": "HR_PATH_HR_TEAM_LMS"
+}
+
+
+### Groups
+# @name Groups_PATCH
+PATCH {{server}}/odata/v4/log-monitor-cockpit/Groups/b1b2b3b4-0001-4000-8000-000000000001
+Content-Type: application/json
+Authorization: Basic {{username}}:{{password}}
+
+{
+  "description": "HR Team - Employee Central"
+}
+
+
+### Groups
+# @name Groups_DELETE_HR_TEAM_EC
+DELETE {{server}}/odata/v4/log-monitor-cockpit/Groups/b1b2b3b4-0001-4000-8000-000000000001
+Authorization: Basic {{username}}:{{password}}
+
+
+### Groups
+# @name Groups_DELETE_HR_TEAM_LMS
+DELETE {{server}}/odata/v4/log-monitor-cockpit/Groups/b1b2b3b4-0002-4000-8000-000000000002
+Authorization: Basic {{username}}:{{password}}

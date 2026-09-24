@@ -1,0 +1,9 @@
+@server=http://localhost:4004
+@username=alice@dummy.com
+@password=1234
+
+
+### IntegrationLogs
+# @name IntegrationLogs_GET
+GET {{server}}/odata/v4/log-monitor-report/IntegrationLogs
+Authorization: Basic {{username}}:{{password}}

@@ -3,24 +3,25 @@
 @password=1234
 
 
-### List all Integrations with fields
+### Integrations
 # @name Integrations_GET
-GET {{server}}/odata/v4/log-monitor-cockpit/Integrations?$expand=userIntegrations($expand=user)
+GET {{server}}/odata/v4/log-monitor-cockpit/Integrations?$expand=integrationGroups($expand=group)
 Authorization: Basic {{username}}:{{password}}
 
 
-### Get a single Integration with fields
-# @name Integration_GET_ONE
+### Integrations
+# @name Integrations_GET_ONE_WITH_FIELDS
 GET {{server}}/odata/v4/log-monitor-cockpit/Integrations/a1b2c3d4-0001-4000-8000-000000000001?$expand=fields
 Authorization: Basic {{username}}:{{password}}
 
-### Get a single Integration with logs
-# @name Integration_GET_ONE
+
+### Integrations
+# @name Integrations_GET_ONE_WITH_LOGS
 GET {{server}}/odata/v4/log-monitor-cockpit/Integrations/a1b2c3d4-0001-4000-8000-000000000001?$expand=logs
 Authorization: Basic {{username}}:{{password}}
 
 
-### Create Integration: SAP SuccessFactors → S/4HANA Employee Master Data
+### Integrations
 # @name Integrations_POST_SF_TO_S4
 POST {{server}}/odata/v4/log-monitor-cockpit/Integrations
 Content-Type: application/json
@@ -60,7 +61,7 @@ Authorization: Basic {{username}}:{{password}}
 }
 
 
-### Create Integration: SAP Ariba → S/4HANA Purchase Orders
+### Integrations
 # @name Integrations_POST_ARIBA_TO_S4
 POST {{server}}/odata/v4/log-monitor-cockpit/Integrations
 Content-Type: application/json
@@ -100,9 +101,7 @@ Authorization: Basic {{username}}:{{password}}
 }
 
 
-
-
-### Create Integration: SAP Concur → S/4HANA Travel Expenses
+### Integrations
 # @name Integrations_POST_CONCUR_TO_S4
 POST {{server}}/odata/v4/log-monitor-cockpit/Integrations
 Content-Type: application/json
@@ -142,9 +141,7 @@ Authorization: Basic {{username}}:{{password}}
 }
 
 
-
-
-### Update Integration: change source system description
+### Integrations
 # @name Integrations_PATCH
 PATCH {{server}}/odata/v4/log-monitor-cockpit/Integrations/a1b2c3d4-0001-4000-8000-000000000001
 Content-Type: application/json
@@ -155,19 +152,19 @@ Authorization: Basic {{username}}:{{password}}
 }
 
 
-### Delete Integration
-# @name Integrations_DELETE
+### Integrations
+# @name Integrations_DELETE_SF_TO_S4
 DELETE {{server}}/odata/v4/log-monitor-cockpit/Integrations/a1b2c3d4-0001-4000-8000-000000000001
 Authorization: Basic {{username}}:{{password}}
 
 
-### Delete Integration
-# @name Integrations_DELETE
+### Integrations
+# @name Integrations_DELETE_ARIBA_TO_S4
 DELETE {{server}}/odata/v4/log-monitor-cockpit/Integrations/a1b2c3d4-0002-4000-8000-000000000002
 Authorization: Basic {{username}}:{{password}}
 
 
-### Delete Integration
-# @name Integrations_DELETE
+### Integrations
+# @name Integrations_DELETE_CONCUR_TO_S4
 DELETE {{server}}/odata/v4/log-monitor-cockpit/Integrations/a1b2c3d4-0003-4000-8000-000000000003
 Authorization: Basic {{username}}:{{password}}
