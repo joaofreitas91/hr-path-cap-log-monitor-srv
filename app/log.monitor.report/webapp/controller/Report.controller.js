@@ -109,10 +109,20 @@ sap.ui.define([
             }
 
             const sSource = this.byId("filterSource").getValue();
-            if (sSource) aFilters.push(new Filter("integration/source", FilterOperator.Contains, sSource));
+            if (sSource) aFilters.push(new Filter({
+                path: "integration/source",
+                operator: FilterOperator.Contains,
+                value1: sSource,
+                caseSensitive: false
+            }));
 
             const sTarget = this.byId("filterTarget").getValue();
-            if (sTarget) aFilters.push(new Filter("integration/target", FilterOperator.Contains, sTarget));
+            if (sTarget) aFilters.push(new Filter({
+                path: "integration/target",
+                operator: FilterOperator.Contains,
+                value1: sTarget,
+                caseSensitive: false
+            }));
 
             const oDRS = this.byId("filterDateRange");
             const oDateFrom = oDRS.getDateValue();
