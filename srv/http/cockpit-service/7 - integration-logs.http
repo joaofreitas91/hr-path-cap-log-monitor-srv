@@ -55,8 +55,29 @@ Authorization: Basic {{username}}:{{password}}
 
 
 ### IntegrationLogs
+# @name IntegrationLogs_POST_SF_ARRAY
+POST {{server}}/odata/v4/log-monitor-cockpit/IntegrationLogs
+Content-Type: application/json
+Authorization: Basic {{username}}:{{password}}
+
+{
+  "ID": "49b53302-e95a-4b46-b0c1-3f7b029367f1",
+  "integration_ID": "a1b2c3d4-0001-4000-8000-000000000001",
+  "executedAt": "2026-09-25T00:00:00.000Z",
+  "status": "ERROR",
+  "payload": "[{\"employeeId\":\"1001\",\"costCenter\":\"002\",\"lastName\":\"Silva\",\"firstName\":\"maria\",\"jobTitle\":\"analyst\"},{\"employeeId\":\"1002\",\"costCenter\":\"003\",\"lastName\":\"Souza\",\"firstName\":\"pedro\",\"jobTitle\":\"manager\"}]"
+}
+
+
+### IntegrationLogs
 # @name IntegrationLogs_DELETE_SF
 DELETE {{server}}/odata/v4/log-monitor-cockpit/IntegrationLogs/16820079-b627-4813-9e78-0e48006034cf
+Authorization: Basic {{username}}:{{password}}
+
+
+### IntegrationLogs
+# @name IntegrationLogs_DELETE_SF_ARRAY
+DELETE {{server}}/odata/v4/log-monitor-cockpit/IntegrationLogs/49b53302-e95a-4b46-b0c1-3f7b029367f1
 Authorization: Basic {{username}}:{{password}}
 
 

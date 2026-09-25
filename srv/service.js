@@ -19,15 +19,15 @@ export default function () {
 
         const aMatchingIds = aLogs
             .filter(log => {
-                let oPayload;
+                let aRecords;
                 try {
-                    oPayload = JSON.parse(log.payload ?? '{}');
+                    aRecords = [].concat(JSON.parse(log.payload ?? '{}'));
                 } catch {
                     return false;
                 }
-                return aEntries.every(([sField, sValue]) =>
-                    String(oPayload[sField] ?? '').toLowerCase().includes(String(sValue).toLowerCase())
-                );
+                return aRecords.some(oRecord => aEntries.every(([sField, sValue]) =>
+                    String(oRecord[sField] ?? '').toLowerCase().includes(String(sValue).toLowerCase())
+                ));
             })
             .map(log => log.ID);
 

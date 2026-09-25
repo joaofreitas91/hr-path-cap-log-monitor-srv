@@ -100,16 +100,16 @@ sap.ui.define([
                 oTable.addColumn(new Column({ header: new Label({ text: f.label || f.fieldName }) }));
             });
 
-            const aRows = aLogs.map(log => {
-                let payload = {};
-                try { payload = JSON.parse(log.payload ?? "{}"); } catch { /**/ }
-                return {
+            const aRows = aLogs.flatMap(log => {
+                let aRecords = [{}];
+                try { aRecords = [].concat(JSON.parse(log.payload ?? "{}")); } catch { /**/ }
+                return aRecords.map(payload => ({
                     ...log,
                     ...Object.fromEntries(aFields.map(f => [f.fieldName, payload[f.fieldName] ?? null])),
                     executedAtFormatted: log.executedAt
                         ? new Date(log.executedAt).toLocaleString("pt-BR")
                         : ""
-                };
+                }));
             });
 
             this.getView().setModel(new JSONModel({ rows: aRows }), "logs");
