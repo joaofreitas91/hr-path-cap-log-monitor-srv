@@ -4,14 +4,16 @@ sap.ui.define([
     "sap/ui/model/FilterOperator",
     "sap/m/Input",
     "sap/ui/comp/filterbar/FilterGroupItem",
+    "sap/ui/model/type/DateTime",
     "com/hrpath/log/monitor/report/model/formatter"
-], (Controller, Filter, FilterOperator, Input, FilterGroupItem, formatter) => {
+], (Controller, Filter, FilterOperator, Input, FilterGroupItem, DateTimeType, formatter) => {
     "use strict";
 
     const NO_MATCH_ID = "00000000-0000-0000-0000-000000000000";
 
     return Controller.extend("com.hrpath.log.monitor.report.controller.Report", {
         formatter,
+        DateTimeType,
 
         onInit() {
             this._aDynamicFields = [];
