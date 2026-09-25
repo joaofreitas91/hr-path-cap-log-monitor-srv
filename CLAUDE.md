@@ -41,6 +41,8 @@ Local mocked users (Basic auth, password `1234`): `alice@dummy.com` (report-view
 
 **UI5 app** (`app/log.monitor.report`, namespace `com.hrpath.log.monitor.report`): freestyle JS app (not Fiori elements) using `sap.f.FlexibleColumnLayout` — `Report` view in the begin column, `Detail` (route `log/{logId}`) in the mid column. `Report.controller.js` reads the integration's filterable `IntegrationFields`, renders filter inputs for them, calls `matchingLogIds` via `bindContext("/matchingLogIds(...)")`, then applies the returned IDs as an OR of `ID eq` filters alongside the standard filters (integration, source/target, date range, status). `app/services.cds` pulls in the app's `annotations.cds`. In BTP, `xs-app.json` routes `/odata/*` to the `srv-api` destination.
 
+**UI5 formatting**: only write a custom formatter (`webapp/model/formatter.js`) when no standard UI5 type (`sap/ui/model/type/*`, `sap/ui/model/odata/type/*`) covers the case. Import the type in the controller's `sap.ui.define`, expose it as a controller member (e.g. `DateTimeType,` next to `formatter,`) and reference it in the view with a leading dot (`type: '.DateTimeType'`) instead of `core:require` in the XML. OData V4 returns timestamps as ISO strings, so `sap/ui/model/type/DateTime` needs `formatOptions.source: { pattern: "yyyy-MM-dd'T'HH:mm:ss.SSSX" }`.
+
 **Deployment** (`mta.yaml`): `cds build --production` writes to `gen/` (gitignored); modules are the Node srv (`gen/srv`), HDI deployer (`gen/db`), the html5 app (built with `ui5-deploy.yaml` into a zip under `resources/`), and destination content.
 
 ## Commit Messages
