@@ -97,7 +97,7 @@ sap.ui.define([
             oTable.addColumn(new Column({ header: new Label({ text: i18n.getText("status") }), width: "7rem" }));
             oTable.addColumn(new Column({ header: new Label({ text: i18n.getText("dateTime") }), width: "10rem" }));
             aFields.forEach(f => {
-                oTable.addColumn(new Column({ header: new Label({ text: f.description || f.fieldName }) }));
+                oTable.addColumn(new Column({ header: new Label({ text: f.label || f.fieldName }) }));
             });
 
             const aRows = aLogs.map(log => {

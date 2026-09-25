@@ -35,24 +35,28 @@ Authorization: Basic {{username}}:{{password}}
   "fields": [
     {
       "fieldName": "employeeId",
+      "label": "Matrícula",
       "description": "Unique employee identifier in SuccessFactors",
       "isSortable": true,
       "isFilterable": true
     },
     {
       "fieldName": "firstName",
+      "label": "Nome",
       "description": "Employee first name",
       "isSortable": true,
       "isFilterable": true
     },
     {
       "fieldName": "lastName",
+      "label": "Sobrenome",
       "description": "Employee last name",
       "isSortable": true,
       "isFilterable": true
     },
     {
       "fieldName": "costCenter",
+      "label": "Centro de Custo",
       "description": "Assigned cost center code",
       "isSortable": false,
       "isFilterable": true
@@ -75,24 +79,28 @@ Authorization: Basic {{username}}:{{password}}
   "fields": [
     {
       "fieldName": "purchaseOrderId",
+      "label": "Pedido de Compra",
       "description": "Unique purchase order identifier in Ariba",
       "isSortable": true,
       "isFilterable": true
     },
     {
       "fieldName": "supplierId",
+      "label": "Fornecedor",
       "description": "Supplier identifier",
       "isSortable": true,
       "isFilterable": true
     },
     {
       "fieldName": "totalAmount",
+      "label": "Valor Total",
       "description": "Total purchase order amount",
       "isSortable": true,
       "isFilterable": false
     },
     {
       "fieldName": "currency",
+      "label": "Moeda",
       "description": "Currency code for the purchase order",
       "isSortable": false,
       "isFilterable": true
@@ -115,24 +123,28 @@ Authorization: Basic {{username}}:{{password}}
   "fields": [
     {
       "fieldName": "expenseReportId",
+      "label": "Relatório de Despesas",
       "description": "Unique expense report identifier in Concur",
       "isSortable": true,
       "isFilterable": true
     },
     {
       "fieldName": "employeeId",
+      "label": "Matrícula",
       "description": "Employee identifier associated with the expense report",
       "isSortable": true,
       "isFilterable": true
     },
     {
       "fieldName": "totalAmount",
+      "label": "Valor Total",
       "description": "Total expense report amount",
       "isSortable": true,
       "isFilterable": false
     },
     {
       "fieldName": "currency",
+      "label": "Moeda",
       "description": "Currency code for the expense report",
       "isSortable": false,
       "isFilterable": true

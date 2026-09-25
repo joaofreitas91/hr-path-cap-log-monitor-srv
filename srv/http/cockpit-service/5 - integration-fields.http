@@ -5,7 +5,7 @@
 
 ### IntegrationFields
 # @name IntegrationFields_GET
-GET {{server}}/odata/v4/log-monitor-cockpit/IntegrationFields?$select=fieldName
+GET {{server}}/odata/v4/log-monitor-cockpit/IntegrationFields?$select=fieldName,label
 Authorization: Basic {{username}}:{{password}}
 
 
@@ -25,6 +25,7 @@ Authorization: Basic {{username}}:{{password}}
   "ID": "f0000001-0005-4000-8000-000000000001",
   "integration_ID": "a1b2c3d4-0001-4000-8000-000000000001",
   "fieldName": "jobTitle",
+  "label": "Cargo",
   "description": "Employee job title as defined in SuccessFactors",
   "isSortable": true,
   "isFilterable": true
@@ -38,6 +39,7 @@ Content-Type: application/json
 Authorization: Basic {{username}}:{{password}}
 
 {
+  "label": "Cargo Atual",
   "isSortable": false
 }
 

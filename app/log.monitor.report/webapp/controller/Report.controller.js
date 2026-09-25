@@ -51,13 +51,13 @@ sap.ui.define([
             this._aDynamicFields.forEach(oField => {
                 const sSafeName = this._toControlIdPart(oField.fieldName);
                 const oInput = new Input(this.createId(`filterField-${sSafeName}`), {
-                    placeholder: oField.description || oField.fieldName,
+                    placeholder: oField.label || oField.fieldName,
                     submit: () => this.onSearch()
                 });
                 const oFilterGroupItem = new FilterGroupItem(this.createId(`fgiField-${sSafeName}`), {
                     name: `field_${sSafeName}`,
                     groupName: "filters",
-                    label: oField.description || oField.fieldName,
+                    label: oField.label || oField.fieldName,
                     visibleInFilterBar: true,
                     control: oInput
                 });
