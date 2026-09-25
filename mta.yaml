@@ -40,6 +40,10 @@ modules:
       - comhrpathlogmonitorreport.zip
       name: comhrpathlogmonitorreport
       target-path: resources/
+    - artifacts:
+      - comhrpathlogmonitorcockpit.zip
+      name: comhrpathlogmonitorcockpit
+      target-path: resources/
 - name: comhrpathlogmonitorreport
   type: html5
   path: app/log.monitor.report
@@ -78,6 +82,10 @@ modules:
       - comhrpathlogmonitorreport.zip
       name: comhrpathlogmonitorreport
       target-path: app/
+    - artifacts:
+      - comhrpathlogmonitorcockpit.zip
+      name: comhrpathlogmonitorcockpit
+      target-path: app/
 - name: hr-path-cap-log-monitor-destinations
   type: com.sap.application.content
   requires:
@@ -109,6 +117,16 @@ modules:
         existing_destinations_policy: update
   build-parameters:
     no-source: true
+- name: comhrpathlogmonitorcockpit
+  type: html5
+  path: app/log.monitor.cockpit
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
 resources:
 - name: hr-path-cap-log-monitor-auth
   type: org.cloudfoundry.managed-service

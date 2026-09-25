@@ -1,0 +1,1 @@
+using LogMonitorCockpit as service from '../../srv/service';

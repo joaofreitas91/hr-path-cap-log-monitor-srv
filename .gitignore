@@ -22,4 +22,5 @@ mta_archives/
 
 # UI5 app build output
 app/log.monitor.report/dist/
+app/log.monitor.cockpit/dist/
 resources/*.zip

@@ -19,7 +19,8 @@
     "watch-log.monitor.report": "cds watch --open com.hrpath.log.monitor.report/index.html?sap-ui-xx-viewCache=false --livereload false",
     "undeploy": "cf undeploy hr-path-cap-log-monitor --delete-services --delete-service-keys --delete-service-brokers",
     "build": "rimraf resources mta_archives && mbt build --mtar archive",
-    "deploy": "cf deploy mta_archives/archive.mtar --retries 1"
+    "deploy": "cf deploy mta_archives/archive.mtar --retries 1",
+    "watch-log.monitor.cockpit": "cds watch --open com.hrpath.log.monitor.cockpit/index.html?sap-ui-xx-viewCache=false --livereload false"
   },
   "private": true,
   "cds": {
@@ -65,5 +66,9 @@
   },
   "workspaces": [
     "app/*"
+  ],
+  "sapux": [
+    "app/log.monitor.report",
+    "app/log.monitor.cockpit"
   ]
 }
