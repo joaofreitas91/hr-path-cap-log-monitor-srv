@@ -12,7 +12,6 @@ SAP CAP (Node.js, ESM, `@sap/cds` 10) service that stores integration execution 
 npm install                      # installs root + app workspace
 cds watch                        # dev server on :4004 (SQLite db.sqlite, mocked auth)
 npm run watch-log.monitor.report # cds watch + open the UI5 app (served via cds-plugin-ui5)
-npx eslint .                     # lint (CAP recommended config); app has its own eslint.config.mjs
 cds deploy --to sqlite           # (re)create local db.sqlite from db/schema.cds
 npm run build                    # mbt build -> mta_archives/archive.mtar (runs `cds build --production`)
 npm run deploy                   # cf deploy the archive
@@ -102,7 +101,7 @@ Transform tasks into verifiable goals:
 - "Fix the bug" → "Write a test that reproduces it, then make it pass"
 - "Refactor X" → "Ensure tests pass before and after"
 
-Since this repo has no automated tests, verification usually means running `cds watch` and exercising the change with the `srv/http/` requests (or the UI5 app), plus `npx eslint .`.
+Since this repo has no automated tests, verification usually means running `cds watch` and exercising the change with the `srv/http/` requests (or the UI5 app).
 
 For multi-step tasks, state a brief plan:
 ```
