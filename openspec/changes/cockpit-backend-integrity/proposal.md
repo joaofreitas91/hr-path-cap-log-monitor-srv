@@ -23,8 +23,8 @@ The `LogMonitorCockpit` service is about to get an administrator UI (change `log
 
 ## Impact
 
-- `srv/service.cds`: `LogMonitorCockpit` gets the `logMetrics` function, its return types and the virtual/calculated counts on `Integrations`.
-- `srv/service.js`: handlers for `LogMonitorCockpit` (the file currently returns early for anything but `LogMonitorReport`; that block stays unchanged).
+- `srv/cockpit-service.cds` (was `srv/service.cds`, now split per service): `LogMonitorCockpit` gets the `logMetrics` function, its return types and the virtual/calculated counts on `Integrations`.
+- `srv/cockpit-service.js`: handlers for `LogMonitorCockpit`; the report handler moves unchanged to `srv/report-service.js`.
 - `srv/http/cockpit-service/*.http`: new requests for deletes, duplicate links and metrics.
 - No schema (`db/schema.cds`) change, no HDI impact, no new dependencies. `LogMonitorReport` and `LogMonitorIntegration` are unchanged.
 - The UI change `log-monitor-cockpit-ui` depends on this change.

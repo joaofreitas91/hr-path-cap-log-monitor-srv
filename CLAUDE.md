@@ -31,12 +31,12 @@ Local mocked users (Basic auth, password `1234`): `alice@dummy.com` (report-view
 - `administrator` has full access; `system-user` can only CREATE logs.
 - `xs-security.json` defines only `administrator` and `report-viewer` scopes; `system-user` exists only in the mocked config.
 
-**Services** (`srv/service.cds`, all projections on the db entities, so restrictions apply everywhere):
-- `LogMonitorIntegration` (`/odata/v4/log-monitor-integration`) — insert-only log ingestion for external systems.
-- `LogMonitorReport` (`/odata/v4/log-monitor-report`) — read-only; backs the UI5 app.
-- `LogMonitorCockpit` (`/odata/v4/log-monitor-cockpit`) — admin CRUD over everything.
+**Services** (one `srv/<name>-service.cds` per service, all projections on the db entities, so restrictions apply everywhere; CAP binds each `.cds` to the `.js` with the same name):
+- `LogMonitorIntegration` (`integration-service.cds`, `/odata/v4/log-monitor-integration`) — insert-only log ingestion for external systems.
+- `LogMonitorReport` (`report-service.cds`, `/odata/v4/log-monitor-report`) — read-only; backs the UI5 app.
+- `LogMonitorCockpit` (`cockpit-service.cds`, `/odata/v4/log-monitor-cockpit`) — admin CRUD over everything. Its handlers (`srv/cockpit-service.js`) delete the `UserGroups`/`IntegrationGroups` rows of a deleted `User`/`Group`/`Integration` (on the db tables, since a service-level DELETE matching no rows throws 404), reject duplicate user–group / integration–group links with 409 (also within one `$batch` changeset), fill the virtual `logCount`/`fieldCount`/`groupCount` on `Integrations`, and implement `logMetrics(from, to, integrationID)`, which returns log counts `byStatus` and `byIntegration` (sorted by total) from one grouped query. Error texts live in `_i18n/messages.properties`.
 
-**Dynamic payload fields**: `IntegrationLogs.payload` is a JSON string whose keys are declared per integration in `IntegrationFields` (`isFilterable`, `isSortable`). Because payload can't be filtered in OData, `srv/service.js` implements the `matchingLogIds(integrationID, fieldsFilter)` function: it loads all logs of the integration, parses payloads in JS, does case-insensitive substring matching, and returns a JSON-stringified array of IDs. The handler file uses a default-exported function scoped by `this.name` to `LogMonitorReport`.
+**Dynamic payload fields**: `IntegrationLogs.payload` is a JSON string whose keys are declared per integration in `IntegrationFields` (`isFilterable`, `isSortable`). Because payload can't be filtered in OData, `srv/report-service.js` implements the `matchingLogIds(integrationID, fieldsFilter)` function: it loads all logs of the integration, parses payloads in JS, does case-insensitive substring matching, and returns a JSON-stringified array of IDs.
 
 **UI5 app** (`app/log.monitor.report`, namespace `com.hrpath.log.monitor.report`): freestyle JS app (not Fiori elements) using `sap.f.FlexibleColumnLayout` — `Report` view in the begin column, `Detail` (route `log/{logId}`) in the mid column. `Report.controller.js` reads the integration's filterable `IntegrationFields`, renders filter inputs for them, calls `matchingLogIds` via `bindContext("/matchingLogIds(...)")`, then applies the returned IDs as an OR of `ID eq` filters alongside the standard filters (integration, source/target, date range, status). `app/services.cds` pulls in the app's `annotations.cds`. In BTP, `xs-app.json` routes `/odata/*` to the `srv-api` destination.
 

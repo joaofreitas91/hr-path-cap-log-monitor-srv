@@ -21,9 +21,9 @@
 ## Decisions
 
 1. **Link cleanup and duplicate check as `LogMonitorCockpit` handlers, not schema changes.**
-   Restructure the default export into `if (this.name === 'LogMonitorReport') {...}` (existing code unchanged) and `if (this.name === 'LogMonitorCockpit') {...}`.
-   - `before('DELETE', 'Users')` → `DELETE.from(UserGroups).where({ user_ID: req.data.ID })`; `Groups` → delete from both link entities by `group_ID`; `Integrations` → `IntegrationGroups` by `integration_ID`. Handlers run inside the request transaction, so a failing delete rolls back the link deletes too.
-   - `before('CREATE', ['UserGroups','IntegrationGroups'])` → `SELECT.one` for the same pair; `req.reject(409, 'LINK_ALREADY_EXISTS')` with a readable message (`i18n` in `_i18n/messages.properties`, pt-BR default text). Batch-created links from the UI run in one changeset, so a duplicate inside the batch is also caught by the second insert's SELECT.
+   Services are split into one file pair per service (`srv/report-service.{cds,js}`, `srv/cockpit-service.{cds,js}`, `srv/integration-service.cds`), so the cockpit handlers live in `srv/cockpit-service.js` with no `this.name` guard.
+   - `before('DELETE', 'Users')` → `cds.run(DELETE.from(db.UserGroups).where({ user_ID: req.data.ID }))` on the **db** entities (a service-level bulk DELETE that matches no rows is rejected by CAP 10 with 404, which would break deleting an unlinked user/group/integration); `Groups` → delete from both link entities by `group_ID`; `Integrations` → `IntegrationGroups` by `integration_ID`. Handlers run inside the request transaction, so a failing delete rolls back the link deletes too.
+   - `before('CREATE', ['UserGroups','IntegrationGroups'])` → `SELECT.one` for the same pair; `req.reject(409, 'LINK_ALREADY_EXISTS')` with a readable message (`i18n` in `_i18n/messages.properties`, pt-BR default text). Requests of one `$batch` changeset run in parallel, so the SELECT alone misses a pair repeated inside the same batch; the handler also keeps a per-transaction set of pairs (`WeakMap` keyed by `req.tx`) and rejects the second occurrence.
    *Alternative:* `Composition of many` on both sides or `@assert.unique` on the link entities — cleaner, but changes the persisted model and HDI artifacts; kept out of scope.
 
 2. **Integration delete relies on CAP's composition cascade + Decision 1's `IntegrationGroups` cleanup.** No extra code for logs/fields; the requirement is verified, not implemented.

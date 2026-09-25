@@ -152,6 +152,11 @@ Authorization: Basic {{username}}:{{password}}
   ]
 }
 
+### Integrations
+# @name Integrations_GET_DELETE_IMPACT
+GET {{server}}/odata/v4/log-monitor-cockpit/Integrations?$select=ID,description,logCount,fieldCount,groupCount
+Authorization: Basic {{username}}:{{password}}
+
 
 ### Integrations
 # @name Integrations_PATCH
@@ -179,4 +184,21 @@ Authorization: Basic {{username}}:{{password}}
 ### Integrations
 # @name Integrations_DELETE_CONCUR_TO_S4
 DELETE {{server}}/odata/v4/log-monitor-cockpit/Integrations/a1b2c3d4-0003-4000-8000-000000000003
+Authorization: Basic {{username}}:{{password}}
+
+### Integrations
+# @name IntegrationLogs_GET_AFTER_DELETE_SF_TO_S4 (expect empty)
+GET {{server}}/odata/v4/log-monitor-cockpit/IntegrationLogs?$filter=integration_ID eq a1b2c3d4-0001-4000-8000-000000000001
+Authorization: Basic {{username}}:{{password}}
+
+
+### Integrations
+# @name IntegrationFields_GET_AFTER_DELETE_SF_TO_S4 (expect empty)
+GET {{server}}/odata/v4/log-monitor-cockpit/IntegrationFields?$filter=integration_ID eq a1b2c3d4-0001-4000-8000-000000000001
+Authorization: Basic {{username}}:{{password}}
+
+
+### Integrations
+# @name IntegrationGroups_GET_AFTER_DELETE_SF_TO_S4 (expect empty, group still exists)
+GET {{server}}/odata/v4/log-monitor-cockpit/IntegrationGroups?$filter=integration_ID eq a1b2c3d4-0001-4000-8000-000000000001
 Authorization: Basic {{username}}:{{password}}

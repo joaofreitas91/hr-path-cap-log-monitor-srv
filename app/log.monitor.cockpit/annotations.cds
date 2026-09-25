@@ -1,1 +1,1 @@
-using LogMonitorCockpit as service from '../../srv/service';
+using LogMonitorCockpit as service from '../../srv/cockpit-service';

@@ -42,6 +42,17 @@ Authorization: Basic {{username}}:{{password}}
   }
 }
 
+### IntegrationGroups
+# @name IntegrationGroups_POST_SF_TO_S4_HR_TEAM_EC_DUPLICATE (expect 409)
+POST {{server}}/odata/v4/log-monitor-cockpit/IntegrationGroups
+Content-Type: application/json
+Authorization: Basic {{username}}:{{password}}
+
+{
+  "integration_ID": "a1b2c3d4-0001-4000-8000-000000000001",
+  "group_ID": "b1b2b3b4-0001-4000-8000-000000000001"
+}
+
 
 ### IntegrationGroups
 # @name IntegrationGroups_PATCH

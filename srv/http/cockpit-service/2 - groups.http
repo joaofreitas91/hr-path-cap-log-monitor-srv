@@ -56,3 +56,20 @@ Authorization: Basic {{username}}:{{password}}
 # @name Groups_DELETE_HR_TEAM_LMS
 DELETE {{server}}/odata/v4/log-monitor-cockpit/Groups/b1b2b3b4-0002-4000-8000-000000000002
 Authorization: Basic {{username}}:{{password}}
+
+### Groups
+# @name Links_GET_AFTER_DELETE_HR_TEAM_EC (expect empty)
+GET {{server}}/odata/v4/log-monitor-cockpit/Groups?$filter=ID eq b1b2b3b4-0001-4000-8000-000000000001&$expand=userGroups,integrationGroups
+Authorization: Basic {{username}}:{{password}}
+
+
+### Groups
+# @name UserGroups_GET_AFTER_DELETE_HR_TEAM_EC (expect empty, users still exist)
+GET {{server}}/odata/v4/log-monitor-cockpit/UserGroups?$filter=group_ID eq b1b2b3b4-0001-4000-8000-000000000001&$expand=user
+Authorization: Basic {{username}}:{{password}}
+
+
+### Groups
+# @name IntegrationGroups_GET_AFTER_DELETE_HR_TEAM_EC (expect empty)
+GET {{server}}/odata/v4/log-monitor-cockpit/IntegrationGroups?$filter=group_ID eq b1b2b3b4-0001-4000-8000-000000000001
+Authorization: Basic {{username}}:{{password}}

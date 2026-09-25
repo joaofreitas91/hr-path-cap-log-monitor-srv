@@ -68,6 +68,35 @@ Authorization: Basic {{username}}:{{password}}
   "payload": "[{\"employeeId\":\"1001\",\"costCenter\":\"002\",\"lastName\":\"Silva\",\"firstName\":\"maria\",\"jobTitle\":\"analyst\"},{\"employeeId\":\"1002\",\"costCenter\":\"003\",\"lastName\":\"Souza\",\"firstName\":\"pedro\",\"jobTitle\":\"manager\"}]"
 }
 
+### IntegrationLogs
+# @name logMetrics_LAST_7_DAYS
+GET {{server}}/odata/v4/log-monitor-cockpit/logMetrics(from=2026-09-18T00:00:00Z,to=2026-09-25T23:59:59Z)
+Authorization: Basic {{username}}:{{password}}
+
+
+### IntegrationLogs
+# @name logMetrics_ONE_INTEGRATION
+GET {{server}}/odata/v4/log-monitor-cockpit/logMetrics(from=2000-01-01T00:00:00Z,to=2026-12-31T23:59:59Z,integrationID=a1b2c3d4-0001-4000-8000-000000000001)
+Authorization: Basic {{username}}:{{password}}
+
+
+### IntegrationLogs
+# @name logMetrics_EMPTY_PERIOD
+GET {{server}}/odata/v4/log-monitor-cockpit/logMetrics(from=2010-01-01T00:00:00Z,to=2010-12-31T23:59:59Z)
+Authorization: Basic {{username}}:{{password}}
+
+
+### IntegrationLogs
+# @name logMetrics_INVALID_PERIOD (expect 400)
+GET {{server}}/odata/v4/log-monitor-cockpit/logMetrics(from=2026-09-25T00:00:00Z,to=2026-09-18T00:00:00Z)
+Authorization: Basic {{username}}:{{password}}
+
+
+### IntegrationLogs
+# @name logMetrics_REPORT_VIEWER (expect 403)
+GET {{server}}/odata/v4/log-monitor-cockpit/logMetrics(from=2026-09-18T00:00:00Z,to=2026-09-25T23:59:59Z)
+Authorization: Basic alice@dummy.com:{{password}}
+
 
 ### IntegrationLogs
 # @name IntegrationLogs_DELETE_SF

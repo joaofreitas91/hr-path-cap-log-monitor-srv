@@ -56,3 +56,8 @@ Authorization: Basic {{username}}:{{password}}
 # @name Users_DELETE_ALICE
 DELETE {{server}}/odata/v4/log-monitor-cockpit/Users/9291ac54-b142-423f-bd22-dd3c4a821be4
 Authorization: Basic {{username}}:{{password}}
+
+### Users
+# @name UserGroups_GET_AFTER_DELETE_ALICE (expect empty)
+GET {{server}}/odata/v4/log-monitor-cockpit/UserGroups?$filter=user_ID eq 9291ac54-b142-423f-bd22-dd3c4a821be4
+Authorization: Basic {{username}}:{{password}}

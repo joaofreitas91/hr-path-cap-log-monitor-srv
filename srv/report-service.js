@@ -1,6 +1,4 @@
 export default function () {
-    if (this.name !== 'LogMonitorReport') return;
-
     this.on('matchingLogIds', async req => {
         const { integrationID, fieldsFilter } = req.data;
 

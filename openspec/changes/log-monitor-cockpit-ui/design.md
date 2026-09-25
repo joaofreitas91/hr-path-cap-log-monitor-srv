@@ -3,7 +3,7 @@
 ## Context
 
 - `app/log.monitor.cockpit` is a bare `@sap/generator-fiori:basic` scaffold: `App.view.xml` holds an empty `sap.m.App` (`id="app"`), one `Dashboard` route/target, libs `sap.m` + `sap.ui.core`, OData V4 default model on `/odata/v4/log-monitor-cockpit/` (`operationMode: Server`, `autoExpandSelect`). It is already wired into `app/services.cds`, `mta.yaml` and `package.json` (`watch-log.monitor.cockpit`).
-- `LogMonitorCockpit` (`srv/service.cds`) exposes every db entity as a writable projection, `requires: administrator`. The change `cockpit-backend-integrity` (applied first) adds link cleanup on delete, 409 on duplicate links, virtual `logCount`/`fieldCount`/`groupCount` on `Integrations` and the `logMetrics(from, to, integrationID)` function.
+- `LogMonitorCockpit` (`srv/cockpit-service.cds`) exposes every db entity as a writable projection, `requires: administrator`. The change `cockpit-backend-integrity` (applied first) adds link cleanup on delete, 409 on duplicate links, virtual `logCount`/`fieldCount`/`groupCount` on `Integrations` and the `logMetrics(from, to, integrationID)` function.
 - The report app is the reference for code style (freestyle XML views, `sap.ui.define`, i18n in pt-BR, standard UI5 types over formatters per CLAUDE.md, `formatter.statusState` mapping).
 - Visual reference: Claude Design prototype built from `design-prompt.md` (in this change folder).
 

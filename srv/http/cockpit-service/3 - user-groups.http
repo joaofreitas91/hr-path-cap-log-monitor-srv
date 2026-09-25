@@ -25,6 +25,17 @@ Authorization: Basic {{username}}:{{password}}
   }
 }
 
+### UserGroups
+# @name UserGroups_POST_ALICE_HR_TEAM_EC_DUPLICATE (expect 409)
+POST {{server}}/odata/v4/log-monitor-cockpit/UserGroups
+Content-Type: application/json
+Authorization: Basic {{username}}:{{password}}
+
+{
+  "user_ID": "9291ac54-b142-423f-bd22-dd3c4a821be4",
+  "group_ID": "b1b2b3b4-0001-4000-8000-000000000001"
+}
+
 
 ### UserGroups
 # @name UserGroups_PATCH

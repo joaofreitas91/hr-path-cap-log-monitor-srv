@@ -30,5 +30,5 @@ Master data for the log monitor (users, access groups, integrations, their paylo
 ## Impact
 
 - `app/log.monitor.cockpit/webapp/**`: manifest (libs `sap.tnt`, `sap.f`, `sap.uxap`, `sap.viz`; routes/targets), new views, fragments, controllers, i18n (pt-BR texts).
-- Depends on `cockpit-backend-integrity` (`srv/service.cds`, `srv/service.js`); this change itself does not touch `srv/` or `db/`.
+- Depends on `cockpit-backend-integrity` (`srv/cockpit-service.cds`, `srv/cockpit-service.js`); this change itself does not touch `srv/` or `db/`.
 - No new npm dependencies. `sap.viz` requires SAPUI5 (already served from `sapui5.hana.ondemand.com`).
