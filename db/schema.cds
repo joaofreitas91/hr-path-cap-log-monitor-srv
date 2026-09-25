@@ -56,7 +56,7 @@ entity Integrations @(restrict: [
 entity IntegrationFields : cuid, managed {
     integration  : Association to Integrations not null;
     fieldName    : String(100) not null;
-    label        : String(100) not null;
+    label        : String(100) not null @mandatory;
     description  : String(255);
     isSortable   : Boolean default false;
     isFilterable : Boolean default false;
