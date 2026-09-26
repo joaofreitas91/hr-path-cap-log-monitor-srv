@@ -10,6 +10,7 @@
         id="page"
         headerExpanded="true"
         toggleHeaderOnTitleClick="true"
+        class="lmcPage"
     >
         <f:title>
             <f:DynamicPageTitle id="pageTitle">
@@ -17,6 +18,8 @@
                     <Title
                         id="titleLogs"
                         text="{i18n>logMasterTitle}"
+                        level="H1"
+                        class="lmcPageHeading"
                     />
                 </f:heading>
             </f:DynamicPageTitle>
@@ -142,53 +145,78 @@
         </f:header>
 
         <f:content>
-            <List
-                id="integrationsList"
-                headerText="{i18n>logListTitle}"
-                items="{path: '/IntegrationLogs', parameters: {$count: true}}"
-                noDataText="{i18n>noIntegrations}"
+            <Table
+                id="logsTable"
+                class="lmcCard"
                 growing="true"
-                growingThreshold="5"
-                updateFinished=".onListUpdateFinished"
+                growingThreshold="20"
+                growingTriggerText="{i18n>more}"
+                sticky="ColumnHeaders,HeaderToolbar"
+                updateFinished=".onTableUpdateFinished"
+                items="{path: '/IntegrationLogs', parameters: {$count: true}}"
             >
-                <ObjectListItem
-                    id="integrationItem"
-                    title="{integration/description}"
-                    intro="ID: {ID}"
-                    press=".onIntegrationPress"
-                    type="Navigation"
-                >
-                    <firstStatus>
-                        <ObjectStatus
-                            id="statusItem"
-                            text="{status}"
-                            state="{path: 'status', formatter: '.formatter.statusState'}"
+                <headerToolbar>
+                    <OverflowToolbar id="logsToolbar">
+                        <Title
+                            id="logsTableTitle"
+                            text="{= ${i18n>logsTableTitle} + ' (' + (${view>/counts/logsTable} || 0) + ')' }"
+                            level="H2"
                         />
-                    </firstStatus>
-                    <attributes>
-                        <ObjectAttribute
-                            id="attrSource"
-                            text="{i18n>source}: {integration/source}"
-                        />
-                        <ObjectAttribute
-                            id="attrTarget"
-                            text="{i18n>target}: {integration/target}"
-                        />
-                        <ObjectAttribute
-                            id="attrExecutedAt"
-                            title="{i18n>executedAt}"
-                            text="{
-                                path: 'executedAt',
-                                type: '.DateTimeType',
-                                formatOptions: {
-                                    style: 'medium',
-                                    source: { pattern: 'yyyy-MM-dd\'T\'HH:mm:ss.SSSX' }
-                                }
-                            }"
-                        />
-                    </attributes>
-                </ObjectListItem>
-            </List>
+                    </OverflowToolbar>
+                </headerToolbar>
+                <noData>
+                    <IllustratedMessage
+                        id="logsNoData"
+                        illustrationType="{= ${view>/hasFilters} ? 'sapIllus-NoSearchResults' : 'sapIllus-NoEntries' }"
+                        title="{= ${view>/hasFilters} ? ${i18n>noLogsFiltered} : ${i18n>noLogs} }"
+                        description="{= ${view>/hasFilters} ? ${i18n>noLogsFilteredHint} : ${i18n>noLogsHint} }"
+                        enableVerticalResponsiveness="true"
+                    />
+                </noData>
+                <columns>
+                    <Column id="colLogIntegration">
+                        <Text id="hdrLogIntegration" text="{i18n>integration}" />
+                    </Column>
+                    <Column id="colLogExecutedAt" width="13rem" minScreenWidth="Tablet" demandPopin="true">
+                        <Text id="hdrLogExecutedAt" text="{i18n>dateTime}" />
+                    </Column>
+                    <Column id="colLogStatus" width="10rem">
+                        <Text id="hdrLogStatus" text="{i18n>status}" />
+                    </Column>
+                </columns>
+                <items>
+                    <ColumnListItem
+                        id="logItem"
+                        type="Navigation"
+                        press=".onIntegrationPress"
+                    >
+                        <cells>
+                            <ObjectIdentifier
+                                id="cellLogIntegration"
+                                title="{integration/description}"
+                                text="{integration/source} → {integration/target}"
+                            />
+                            <Text
+                                id="cellLogExecutedAt"
+                                text="{
+                                    path: 'executedAt',
+                                    type: '.DateTimeType',
+                                    formatOptions: {
+                                        pattern: 'dd/MM/yyyy HH:mm:ss',
+                                        source: { pattern: 'yyyy-MM-dd\'T\'HH:mm:ss.SSSX' }
+                                    }
+                                }"
+                            />
+                            <ObjectStatus
+                                id="cellLogStatus"
+                                text="{path: 'status', formatter: '.formatter.statusText'}"
+                                state="{path: 'status', formatter: '.formatter.statusState'}"
+                                icon="{path: 'status', formatter: '.formatter.statusIcon'}"
+                            />
+                        </cells>
+                    </ColumnListItem>
+                </items>
+            </Table>
         </f:content>
     </f:DynamicPage>
 </mvc:View>

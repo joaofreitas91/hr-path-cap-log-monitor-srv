@@ -1,1 +1,50 @@
-/* Enter your custom styles here */
+/* Page layout: grey body with white cards, as in the cockpit app */
+.lmcPage .sapFDynamicPageContent {
+    background: var(--sapBackgroundColor);
+}
+
+.lmcPageHeading.sapMTitle {
+    font-size: 1.75rem;
+    font-weight: bold;
+}
+
+.lmcCard {
+    background: var(--sapTile_Background);
+    border-radius: 1rem;
+    box-shadow: var(--sapContent_Shadow0);
+    overflow: hidden;
+}
+
+/* Technical values (payload, field names, IAS groups) */
+.lmcMonospace,
+.lmcMonospace textarea {
+    font-family: var(--sapContent_MonospaceFontFamily), monospace;
+}
+
+.lmcHint {
+    color: var(--sapContent_LabelColor);
+    font-size: var(--sapFontSmallSize);
+}
+
+.lmcStrong {
+    font-weight: bold;
+}
+
+/* Object page header attributes (label over value) */
+.lmcHeaderAttributes > .sapMFlexItem {
+    margin-right: 3rem;
+    margin-bottom: 0.5rem;
+}
+
+.lmcHeaderCount.sapMText {
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+
+.lmcPage .sapUxAPObjectPageWrapper {
+    background: var(--sapBackgroundColor);
+}
+
+.lmcPayload textarea {
+    background: var(--sapShell_Background);
+}

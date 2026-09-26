@@ -8,6 +8,8 @@
         id="detailPage"
         showTitleInHeaderContent="true"
         alwaysShowContentHeader="false"
+        upperCaseAnchorBar="false"
+        class="lmcPage"
     >
         <uxap:headerTitle>
             <uxap:ObjectPageDynamicHeaderTitle id="detailHeaderTitle">
@@ -36,98 +38,90 @@
                 <uxap:heading>
                     <Title
                         id="detailTitle"
-                        text="{detail>/integrationDescription}"
+                        text="{integration/description}"
+                        level="H1"
+                        class="lmcPageHeading"
                     />
                 </uxap:heading>
                 <uxap:expandedContent>
                     <ObjectStatus
                         id="detailStatusExpanded"
-                        text="{detail>/status}"
-                        state="{path: 'detail>/status', formatter: '.formatter.statusState'}"
+                        text="{path: 'status', formatter: '.formatter.statusText'}"
+                        state="{path: 'status', formatter: '.formatter.statusState'}"
+                        icon="{path: 'status', formatter: '.formatter.statusIcon'}"
                     />
                 </uxap:expandedContent>
                 <uxap:snappedContent>
                     <ObjectStatus
                         id="detailStatusSnapped"
-                        text="{detail>/status}"
-                        state="{path: 'detail>/status', formatter: '.formatter.statusState'}"
+                        text="{path: 'status', formatter: '.formatter.statusText'}"
+                        state="{path: 'status', formatter: '.formatter.statusState'}"
+                        icon="{path: 'status', formatter: '.formatter.statusIcon'}"
                     />
                 </uxap:snappedContent>
             </uxap:ObjectPageDynamicHeaderTitle>
         </uxap:headerTitle>
 
         <uxap:headerContent>
-            <VBox id="headerContent">
-                <ObjectAttribute
-                    id="hdrAttrSource"
-                    title="{i18n>source}"
-                    text="{detail>/integrationSource}"
-                />
-                <ObjectAttribute
-                    id="hdrAttrTarget"
-                    title="{i18n>target}"
-                    text="{detail>/integrationTarget}"
-                />
-                <ObjectAttribute
-                    id="hdrAttrDate"
-                    title="{i18n>dateTime}"
-                    text="{detail>/executedAtFormatted}"
-                />
-            </VBox>
+            <HBox
+                id="headerContent"
+                wrap="Wrap"
+                class="lmcHeaderAttributes"
+            >
+                <VBox id="attrSource">
+                    <Label
+                        id="lblAttrSource"
+                        text="{i18n>source}"
+                    />
+                    <Text
+                        id="txtAttrSource"
+                        text="{integration/source}"
+                        class="lmcStrong"
+                    />
+                </VBox>
+                <VBox id="attrTarget">
+                    <Label
+                        id="lblAttrTarget"
+                        text="{i18n>target}"
+                    />
+                    <Text
+                        id="txtAttrTarget"
+                        text="{integration/target}"
+                        class="lmcStrong"
+                    />
+                </VBox>
+                <VBox id="attrExecutedAt">
+                    <Label
+                        id="lblAttrExecutedAt"
+                        text="{i18n>executedAtShort}"
+                    />
+                    <Text
+                        id="txtAttrExecutedAt"
+                        text="{
+                            path: 'executedAt',
+                            type: '.DateTimeType',
+                            formatOptions: {
+                                pattern: 'dd/MM/yyyy HH:mm:ss',
+                                source: { pattern: 'yyyy-MM-dd\'T\'HH:mm:ss.SSSX' }
+                            }
+                        }"
+                    />
+                </VBox>
+                <VBox id="attrLogId">
+                    <Label
+                        id="lblAttrLogId"
+                        text="{i18n>logId}"
+                    />
+                    <Text
+                        id="txtAttrLogId"
+                        text="{ID}"
+                        class="lmcMonospace"
+                    />
+                </VBox>
+            </HBox>
         </uxap:headerContent>
 
         <uxap:sections>
-            <uxap:ObjectPageSection
-                id="sectionLog"
-                title="{i18n>logData}"
-                titleUppercase="false"
-            >
-                <uxap:subSections>
-                    <uxap:ObjectPageSubSection
-                        id="subSectionLog"
-                        title=""
-                    >
-                        <uxap:blocks>
-                            <VBox
-                                id="logBlock"
-                                class="sapUiMediumMarginBeginEnd sapUiSmallMarginTopBottom"
-                            >
-                                <HBox
-                                    id="statusRow"
-                                    class="sapUiSmallMarginBottom"
-                                    alignItems="Center"
-                                >
-                                    <Label
-                                        id="lblStatus"
-                                        text="{i18n>status}"
-                                        width="10rem"
-                                    />
-                                    <ObjectStatus
-                                        id="logStatus"
-                                        text="{detail>/status}"
-                                        state="{path: 'detail>/status', formatter: '.formatter.statusState'}"
-                                    />
-                                </HBox>
-                                <HBox
-                                    id="dateRow"
-                                    alignItems="Center"
-                                >
-                                    <Label
-                                        id="lblDate"
-                                        text="{i18n>dateTime}"
-                                        width="10rem"
-                                    />
-                                    <Text
-                                        id="logDate"
-                                        text="{detail>/executedAtFormatted}"
-                                    />
-                                </HBox>
-                            </VBox>
-                        </uxap:blocks>
-                    </uxap:ObjectPageSubSection>
-                </uxap:subSections>
-            </uxap:ObjectPageSection>
-
             <uxap:ObjectPageSection
                 id="sectionFields"
                 title="{i18n>customFields}"
@@ -136,14 +130,24 @@
                 <uxap:subSections>
                     <uxap:ObjectPageSubSection
                         id="subSectionFields"
-                        title=""
+                        showTitle="false"
                     >
                         <uxap:blocks>
                             <Table
                                 id="fieldsTable"
-                                noDataText="{i18n>noLogs}"
+                                class="lmcCard"
                                 width="100%"
-                            />
+                            >
+                                <noData>
+                                    <IllustratedMessage
+                                        id="fieldsNoData"
+                                        illustrationType="sapIllus-NoEntries"
+                                        illustrationSize="Dot"
+                                        title="{i18n>noFields}"
+                                        description="{i18n>noFieldsForLogHint}"
+                                    />
+                                </noData>
+                            </Table>
                         </uxap:blocks>
                     </uxap:ObjectPageSubSection>
                 </uxap:subSections>
@@ -157,17 +161,43 @@
                 <uxap:subSections>
                     <uxap:ObjectPageSubSection
                         id="subSectionPayload"
-                        title=""
+                        showTitle="false"
                     >
                         <uxap:blocks>
-                            <TextArea
-                                id="payloadArea"
-                                value="{detail>/payloadFormatted}"
-                                editable="false"
-                                rows="20"
-                                width="100%"
-                                growing="true"
-                            />
+                            <VBox id="payloadBlock">
+                                <OverflowToolbar
+                                    id="payloadToolbar"
+                                    style="Clear"
+                                >
+                                    <Title
+                                        id="payloadTitle"
+                                        text="{i18n>payload}"
+                                        level="H3"
+                                    />
+                                    <Text
+                                        id="payloadType"
+                                        text="{detail>/type}"
+                                        class="lmcHint"
+                                    />
+                                    <ToolbarSpacer id="payloadToolbarSpacer" />
+                                    <Button
+                                        id="btnCopyPayload"
+                                        text="{i18n>copy}"
+                                        icon="sap-icon://copy"
+                                        type="Transparent"
+                                        press=".onCopyPayload"
+                                    />
+                                </OverflowToolbar>
+                                <TextArea
+                                    id="payloadArea"
+                                    value="{detail>/text}"
+                                    editable="false"
+                                    rows="20"
+                                    width="100%"
+                                    growing="true"
+                                    class="lmcMonospace lmcPayload"
+                                />
+                            </VBox>
                         </uxap:blocks>
                     </uxap:ObjectPageSubSection>
                 </uxap:subSections>

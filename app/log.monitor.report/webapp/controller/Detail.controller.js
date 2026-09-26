@@ -3,20 +3,22 @@ sap.ui.define([
     "sap/ui/model/json/JSONModel",
     "sap/ui/model/Filter",
     "sap/ui/model/FilterOperator",
+    "sap/ui/model/type/DateTime",
     "sap/m/MessageToast",
     "sap/m/Column",
     "sap/m/Label",
     "sap/m/Text",
     "sap/m/ColumnListItem",
-    "sap/m/ObjectStatus",
     "com/hrpath/log/monitor/report/model/formatter"
-], (Controller, JSONModel, Filter, FilterOperator, MessageToast, Column, Label, Text, ColumnListItem, ObjectStatus, formatter) => {
+], (Controller, JSONModel, Filter, FilterOperator, DateTimeType, MessageToast, Column, Label, Text, ColumnListItem, formatter) => {
     "use strict";
 
     return Controller.extend("com.hrpath.log.monitor.report.controller.Detail", {
         formatter,
+        DateTimeType,
 
         onInit() {
+            this.getView().setModel(new JSONModel({ text: "", type: "" }), "detail");
             this.getOwnerComponent().getRouter()
                 .getRoute("RouteDetail")
                 .attachPatternMatched(this._onRouteMatched, this);
@@ -31,100 +33,102 @@ sap.ui.define([
             const oPage = this.byId("detailPage");
             oPage.setBusy(true);
             try {
-                const oModel = this.getOwnerComponent().getModel();
+                const oView = this.getView();
+                oView.bindElement({ path: `/IntegrationLogs(${sLogId})` });
+                const oContext = oView.getElementBinding().getBoundContext();
 
-                const oLogBinding = oModel.bindContext(`/IntegrationLogs(${sLogId})`, undefined, {
-                    $select: "ID,executedAt,status,payload,integration_ID",
-                    $expand: "integration($select=description,source,target)"
-                });
-                const logData = await oLogBinding.getBoundContext().requestObject();
-                oLogBinding.destroy();
-                if (!logData) throw new Error("Log not found");
+                const [sPayload, sIntegrationId] = await Promise.all([
+                    oContext.requestProperty("payload"),
+                    oContext.requestProperty("integration_ID")
+                ]);
 
-                const integrationId = logData.integration_ID;
-
-                const oFieldsBinding = oModel.bindList(
-                    "/IntegrationFields",
-                    undefined,
-                    undefined,
-                    new Filter("integration_ID", FilterOperator.EQ, integrationId)
-                );
-                const aFieldsContexts = await oFieldsBinding.requestContexts(0, 1000);
-                const aFields = aFieldsContexts.map(oContext => oContext.getObject());
-                oFieldsBinding.destroy();
-
-                const aLog = [logData] ?? [];
-
-                const sDate = logData.executedAt
-                    ? new Date(logData.executedAt).toLocaleString("pt-BR")
-                    : "";
-
-                let payloadFormatted = "";
-                try {
-                    payloadFormatted = JSON.stringify(JSON.parse(logData.payload ?? "{}"), null, 2);
-                } catch {
-                    payloadFormatted = logData.payload ?? "";
-                }
-
-                this.getView().setModel(new JSONModel({
-                    status: logData.status ?? "",
-                    executedAtFormatted: sDate,
-                    integrationDescription: logData.integration?.description ?? "",
-                    integrationSource: logData.integration?.source ?? "",
-                    integrationTarget: logData.integration?.target ?? "",
-                    payloadFormatted
-                }), "detail");
-
-                this._buildLogsTable(aFields, aLog);
+                oView.getModel("detail").setData(this._describePayload(sPayload));
+                this._buildFieldsTable(await this._readFields(sIntegrationId), sPayload);
             } catch (e) {
-                MessageToast.show(
-                    this.getOwnerComponent().getModel("i18n").getResourceBundle().getText("errorLoadingLogs")
-                );
+                MessageToast.show(this.getText("errorLoadingLogs"));
                 console.error(e);
             } finally {
                 oPage.setBusy(false);
             }
         },
 
-        _buildLogsTable(aFields, aLogs) {
+        async _readFields(sIntegrationId) {
+            const oFieldsBinding = this.getOwnerComponent().getModel().bindList(
+                "/IntegrationFields",
+                undefined,
+                undefined,
+                new Filter("integration_ID", FilterOperator.EQ, sIntegrationId)
+            );
+            const aContexts = await oFieldsBinding.requestContexts(0, 1000);
+            const aFields = aContexts.map(oContext => oContext.getObject());
+            oFieldsBinding.destroy();
+            return aFields;
+        },
+
+        /**
+         * One column per declared field; an array payload yields one row per element,
+         * any other payload a single row.
+         */
+        _buildFieldsTable(aFields, sPayload) {
             const oTable = this.byId("fieldsTable");
             oTable.unbindItems();
             oTable.destroyColumns();
             oTable.destroyItems();
 
-            const i18n = this.getOwnerComponent().getModel("i18n").getResourceBundle();
+            if (aFields.length === 0) return;
 
-            oTable.addColumn(new Column({ header: new Label({ text: i18n.getText("status") }), width: "7rem" }));
-            oTable.addColumn(new Column({ header: new Label({ text: i18n.getText("dateTime") }), width: "10rem" }));
-            aFields.forEach(f => {
-                oTable.addColumn(new Column({ header: new Label({ text: f.label || f.fieldName }) }));
+            aFields.forEach(oField => {
+                oTable.addColumn(new Column({ header: new Label({ text: oField.label || oField.fieldName }) }));
             });
 
-            const aRows = aLogs.flatMap(log => {
-                let aRecords = [{}];
-                try { aRecords = [].concat(JSON.parse(log.payload ?? "{}")); } catch { /**/ }
-                return aRecords.map(payload => ({
-                    ...log,
-                    ...Object.fromEntries(aFields.map(f => [f.fieldName, payload[f.fieldName] ?? null])),
-                    executedAtFormatted: log.executedAt
-                        ? new Date(log.executedAt).toLocaleString("pt-BR")
-                        : ""
-                }));
-            });
+            let aRecords = [{}];
+            try {
+                aRecords = [].concat(JSON.parse(sPayload || "{}"));
+            } catch { /* not JSON: the payload block shows the raw text */ }
 
+            const aRows = aRecords.map(oRecord => Object.fromEntries(
+                aFields.map(oField => [oField.fieldName, oRecord?.[oField.fieldName] ?? null])
+            ));
             this.getView().setModel(new JSONModel({ rows: aRows }), "logs");
 
             const oTemplate = new ColumnListItem();
-            oTemplate.addCell(new ObjectStatus({
-                text: "{logs>status}",
-                state: { path: "logs>status", formatter: formatter.statusState }
-            }));
-            oTemplate.addCell(new Text({ text: "{logs>executedAtFormatted}" }));
-            aFields.forEach(f => {
-                oTemplate.addCell(new Text({ text: `{logs>${f.fieldName}}` }));
+            aFields.forEach(oField => {
+                oTemplate.addCell(new Text({ text: `{logs>${oField.fieldName}}` }));
             });
-
             oTable.bindItems({ path: "logs>/rows", template: oTemplate });
+        },
+
+        _describePayload(sPayload) {
+            if (sPayload === null || sPayload === undefined || sPayload === "") {
+                return { text: "", type: this.getText("payloadEmpty") };
+            }
+            try {
+                const vPayload = JSON.parse(sPayload);
+                let sType = this.getText("payloadText");
+                if (Array.isArray(vPayload)) sType = this.getCountText("payloadArray", vPayload.length);
+                else if (vPayload && typeof vPayload === "object") sType = this.getText("payloadObject");
+                return { text: JSON.stringify(vPayload, null, 2), type: sType };
+            } catch {
+                return { text: sPayload, type: this.getText("payloadText") };
+            }
+        },
+
+        async onCopyPayload() {
+            try {
+                await navigator.clipboard.writeText(this.getView().getModel("detail").getProperty("/text"));
+                MessageToast.show(this.getText("payloadCopied"));
+            } catch {
+                MessageToast.show(this.getText("payloadCopyFailed"));
+            }
+        },
+
+        getText(sKey, aArgs) {
+            return this.getOwnerComponent().getModel("i18n").getResourceBundle().getText(sKey, aArgs);
+        },
+
+        // Picks "<key>_one" or "<key>_other" by count and passes the count as {0}
+        getCountText(sKey, iCount) {
+            return this.getText(`${sKey}_${iCount === 1 ? "one" : "other"}`, [iCount]);
         },
 
         onFullScreen() {

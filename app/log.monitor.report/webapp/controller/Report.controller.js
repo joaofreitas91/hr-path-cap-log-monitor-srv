@@ -5,8 +5,9 @@ sap.ui.define([
     "sap/m/Input",
     "sap/ui/comp/filterbar/FilterGroupItem",
     "sap/ui/model/type/DateTime",
+    "sap/ui/model/json/JSONModel",
     "com/hrpath/log/monitor/report/model/formatter"
-], (Controller, Filter, FilterOperator, Input, FilterGroupItem, DateTimeType, formatter) => {
+], (Controller, Filter, FilterOperator, Input, FilterGroupItem, DateTimeType, JSONModel, formatter) => {
     "use strict";
 
     const NO_MATCH_ID = "00000000-0000-0000-0000-000000000000";
@@ -18,6 +19,7 @@ sap.ui.define([
         onInit() {
             this._aDynamicFields = [];
             this._aDynamicFieldItems = [];
+            this.getView().setModel(new JSONModel({ counts: {}, hasFilters: false }), "view");
         },
 
         onAfterRendering() {
@@ -100,7 +102,7 @@ sap.ui.define([
         },
 
         async onSearch() {
-            const oBinding = this.byId("integrationsList").getBinding("items");
+            const oBinding = this.byId("logsTable").getBinding("items");
             const aFilters = [];
 
             const sIntegrationKey = this.byId("filterIntegration").getSelectedKey();
@@ -168,6 +170,7 @@ sap.ui.define([
                 }
             }
 
+            this.getView().getModel("view").setProperty("/hasFilters", aFilters.length > 0);
             oBinding.filter(aFilters);
         },
 
@@ -181,10 +184,9 @@ sap.ui.define([
             this.onSearch();
         },
 
-        onListUpdateFinished(oEvent) {
-            const iTotal = oEvent.getParameter("total");
-            const oBundle = this.getOwnerComponent().getModel("i18n").getResourceBundle();
-            this.byId("integrationsList").setHeaderText(`${oBundle.getText("logListTitle")}(${iTotal})`);
+        onTableUpdateFinished(oEvent) {
+            const oHeaderContext = oEvent.getSource().getBinding("items").getHeaderContext();
+            this.getView().getModel("view").setProperty("/counts/logsTable", oHeaderContext.getProperty("$count") ?? 0);
         },
 
         onIntegrationPress(oEvent) {
