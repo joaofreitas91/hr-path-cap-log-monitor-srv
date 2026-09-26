@@ -1,0 +1,38 @@
+<core:FragmentDefinition
+    xmlns:core="sap.ui.core"
+    xmlns="sap.m"
+>
+    <Dialog
+        id="groupDialog"
+        title="{view>/dialogTitle}"
+        contentWidth="32rem"
+        escapeHandler=".onDialogEscape"
+    >
+        <VBox id="groupDialogContent" class="sapUiSmallMargin">
+            <Label id="lblGroupDescription" text="{i18n>description}" labelFor="inpGroupDescription" required="true" showColon="true" />
+            <Input
+                id="inpGroupDescription"
+                value="{description}"
+                required="true"
+                maxLength="255"
+                placeholder="{i18n>groupDescriptionPlaceholder}"
+                class="sapUiSmallMarginBottom"
+            />
+            <Label id="lblGroupIas" text="{i18n>iasGroup}" labelFor="inpGroupIas" showColon="true" />
+            <Input
+                id="inpGroupIas"
+                value="{iasUserGroup}"
+                maxLength="255"
+                placeholder="{i18n>groupIasPlaceholder}"
+                class="lmcMonospace"
+            />
+            <Text id="txtGroupIasHelp" text="{i18n>groupIasHelp}" class="lmcHint" />
+        </VBox>
+        <beginButton>
+            <Button id="btnGroupSave" text="{i18n>save}" type="Emphasized" press=".onDialogSave" />
+        </beginButton>
+        <endButton>
+            <Button id="btnGroupCancel" text="{i18n>cancel}" press=".onDialogCancel" />
+        </endButton>
+    </Dialog>
+</core:FragmentDefinition>

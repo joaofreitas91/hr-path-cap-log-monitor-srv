@@ -1,0 +1,38 @@
+<core:FragmentDefinition
+    xmlns:core="sap.ui.core"
+    xmlns="sap.m"
+>
+    <Dialog
+        id="userDialog"
+        title="{view>/dialogTitle}"
+        contentWidth="32rem"
+        escapeHandler=".onDialogEscape"
+    >
+        <VBox id="userDialogContent" class="sapUiSmallMargin">
+            <Label id="lblUserName" text="{i18n>name}" labelFor="inpUserName" required="true" showColon="true" />
+            <Input
+                id="inpUserName"
+                value="{name}"
+                required="true"
+                maxLength="255"
+                placeholder="{i18n>userNamePlaceholder}"
+                class="sapUiSmallMarginBottom"
+            />
+            <Label id="lblUserEmail" text="{i18n>email}" labelFor="inpUserEmail" required="true" showColon="true" />
+            <Input
+                id="inpUserEmail"
+                value="{email}"
+                type="Email"
+                required="true"
+                maxLength="255"
+                placeholder="{i18n>userEmailPlaceholder}"
+            />
+        </VBox>
+        <beginButton>
+            <Button id="btnUserSave" text="{i18n>save}" type="Emphasized" press=".onDialogSave" />
+        </beginButton>
+        <endButton>
+            <Button id="btnUserCancel" text="{i18n>cancel}" press=".onDialogCancel" />
+        </endButton>
+    </Dialog>
+</core:FragmentDefinition>

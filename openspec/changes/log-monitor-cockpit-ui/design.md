@@ -58,3 +58,15 @@
 ## Migration Plan
 
 No data migration. Existing orphan links (if any) are not cleaned retroactively. Deploy as usual with `npm run build && npm run deploy`; rollback = redeploy the previous mtar.
+
+## Implementation Notes
+
+Adjustments made while implementing, verified in a headless browser against the Claude Design prototype (`prototype/`):
+
+- **Counters (Decision 2):** titles and header counters read `view>/counts/<tableId>`, filled from the list binding's header context on `updateFinished`. Binding `{$count}` directly made auto-`$select` resolve it against the page entity (`$expand=($count…)`), which CAP rejects.
+- **Dialogs (Decision 3):** fragments are added to the view only after their binding context is set, otherwise auto-`$select` requests the dialog's properties on the page entity (e.g. `fieldName` on `Integrations`). Relative tables (integration fields, group links) are refreshed through the parent element binding, since `refresh()` is not supported on them.
+- **Groups with access:** the integration detail lists `/Groups` filtered by `integrationGroups/any(…)` instead of `integrationGroups` with a nested `$expand`, because counting `group/userGroups` nested produced a `$expand` CAP cannot parse.
+- **Dashboard (Decision 7):** the donut is a `sap.viz` VizFrame (`innerRadiusRatio` 0.72, colors from the Horizon semantic element colors); the per-integration stacked bars are plain `HBox` segments, which match the prototype (two-line labels, totals) better than a VizFrame `stacked_bar`.
+- **Labels:** the prototype says "Source"/"Target"; the specs' "Origem"/"Destino" were kept. The prototype's notification bell and user menu have no backing feature and were left out; the avatar shows a generic icon because no user-info endpoint exists.
+- **Booleans in expressions:** `%{isFilterable}` (raw value) is required; `${…}` passes through the V4 type and yields a truthy string for `false`.
+- **Router:** `sap.f.routing.Router` (same class as the report) targeting the `pages` of the shell's `NavContainer`. A split-screen variant (`FlexibleColumnLayout`, list beside detail) was built and then reverted at the user's request in favour of full-page navigation.

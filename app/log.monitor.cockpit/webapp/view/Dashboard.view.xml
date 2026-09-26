@@ -1,6 +1,274 @@
-<mvc:View controllerName="com.hrpath.log.monitor.cockpit.controller.Dashboard"
+<mvc:View
+    controllerName="com.hrpath.log.monitor.cockpit.controller.Dashboard"
     xmlns:mvc="sap.ui.core.mvc"
-    xmlns="sap.m">
-    <Page id="page" title="{i18n>title}">
-    </Page>
+    xmlns:core="sap.ui.core"
+    xmlns:f="sap.f"
+    xmlns:viz="sap.viz.ui5.controls"
+    xmlns:vizData="sap.viz.ui5.data"
+    xmlns:vizFeeds="sap.viz.ui5.controls.common.feeds"
+    xmlns="sap.m"
+>
+    <f:DynamicPage
+        id="dashboardPage"
+        toggleHeaderOnTitleClick="false"
+        class="lmcPage"
+    >
+        <f:title>
+            <f:DynamicPageTitle id="dashboardPageTitle">
+                <f:heading>
+                    <Title id="dashboardHeading" text="{i18n>navDashboard}" level="H1" class="lmcPageHeading" />
+                </f:heading>
+            </f:DynamicPageTitle>
+        </f:title>
+        <f:header>
+            <f:DynamicPageHeader id="dashboardHeader" pinnable="false">
+                <HBox id="dashboardFilters" wrap="Wrap" alignItems="End" class="lmcFilters">
+                    <VBox id="filterPeriodBox">
+                        <Label id="lblFilterPeriod" text="{i18n>period}" labelFor="filterPeriod" />
+                        <DateRangeSelection
+                            id="filterPeriod"
+                            width="18rem"
+                            displayFormat="dd/MM/yyyy"
+                            dateValue="{dashboard>/from}"
+                            secondDateValue="{dashboard>/to}"
+                            change=".onPeriodChange"
+                        />
+                    </VBox>
+                    <VBox id="filterIntegrationBox">
+                        <Label id="lblFilterIntegration" text="{i18n>integration}" labelFor="filterIntegration" />
+                        <ComboBox
+                            id="filterIntegration"
+                            width="24rem"
+                            placeholder="{i18n>allIntegrations}"
+                            showClearIcon="true"
+                            selectedKey="{dashboard>/integrationID}"
+                            selectionChange=".onIntegrationChange"
+                            items="{ path: '/Integrations', sorter: { path: 'description' } }"
+                        >
+                            <core:Item id="filterIntegrationItem" key="{ID}" text="{description}" />
+                        </ComboBox>
+                    </VBox>
+                    <Link id="lnkLast7Days" text="{i18n>last7Days}" press=".onQuickPeriod" class="lmcQuickLink">
+                        <customData>
+                            <core:CustomData key="days" value="7" />
+                        </customData>
+                    </Link>
+                    <Link id="lnkLast30Days" text="{i18n>last30Days}" press=".onQuickPeriod" class="lmcQuickLink">
+                        <customData>
+                            <core:CustomData key="days" value="30" />
+                        </customData>
+                    </Link>
+                </HBox>
+            </f:DynamicPageHeader>
+        </f:header>
+        <f:content>
+            <VBox id="dashboardContent" busy="{dashboard>/busy}" busyIndicatorDelay="0">
+                <!-- KPI tiles -->
+                <FlexBox id="kpiRow" class="lmcKpiRow" items="{dashboard>/kpis}">
+                    <VBox id="kpiTile" class="lmcCard lmcKpi">
+                        <Text id="kpiTitle" text="{dashboard>title}" class="lmcKpiTitle" />
+                        <Text id="kpiValue" text="{dashboard>value}" class="lmcKpiValue">
+                            <customData>
+                                <core:CustomData key="status" value="{dashboard>key}" writeToDom="true" />
+                            </customData>
+                        </Text>
+                        <Text id="kpiSubtitle" text="{dashboard>subtitle}" class="lmcHint" />
+                    </VBox>
+                </FlexBox>
+
+                <!-- Charts -->
+                <FlexBox id="chartsRow" class="lmcChartsRow">
+                    <VBox id="statusCard" class="lmcCard lmcChartCard">
+                        <HBox id="statusCardHeader" alignItems="Center" class="lmcCardHeader">
+                            <core:Icon id="statusCardIcon" src="sap-icon://donut-chart" size="1.75rem" class="sapUiSmallMarginEnd" />
+                            <VBox id="statusCardTitles">
+                                <Title id="statusCardTitle" text="{i18n>logsByStatus}" level="H3" />
+                                <Text id="statusCardSubtitle" text="{dashboard>/periodText}" class="lmcHint" />
+                            </VBox>
+                        </HBox>
+                        <IllustratedMessage
+                            id="statusEmpty"
+                            visible="{= !${dashboard>/total} }"
+                            illustrationType="sapIllus-NoData"
+                            illustrationSize="Dot"
+                            title="{i18n>noLogsInPeriod}"
+                            description="{i18n>noLogsInPeriodHint}"
+                        />
+                        <VBox id="statusChartBox" visible="{= ${dashboard>/total} > 0 }" alignItems="Center">
+                            <VBox id="donutWrapper" class="lmcDonut">
+                                <viz:VizFrame
+                                    id="statusChart"
+                                    vizType="donut"
+                                    width="17rem"
+                                    height="17rem"
+                                    uiConfig="{ applicationSet: 'fiori' }"
+                                >
+                                    <viz:dataset>
+                                        <vizData:FlattenedDataset id="statusDataset" data="{dashboard>/statusData}">
+                                            <vizData:dimensions>
+                                                <vizData:DimensionDefinition id="statusDimension" name="Status" value="{dashboard>label}" />
+                                            </vizData:dimensions>
+                                            <vizData:measures>
+                                                <vizData:MeasureDefinition id="statusMeasure" name="Logs" value="{dashboard>count}" />
+                                            </vizData:measures>
+                                        </vizData:FlattenedDataset>
+                                    </viz:dataset>
+                                    <viz:feeds>
+                                        <vizFeeds:FeedItem id="statusFeedSize" uid="size" type="Measure" values="Logs" />
+                                        <vizFeeds:FeedItem id="statusFeedColor" uid="color" type="Dimension" values="Status" />
+                                    </viz:feeds>
+                                </viz:VizFrame>
+                                <VBox id="donutCenter" class="lmcDonutCenter" alignItems="Center">
+                                    <Text id="donutTotal" text="{dashboard>/totalText}" class="lmcDonutTotal" />
+                                    <Text id="donutTotalLabel" text="{i18n>executions}" class="lmcHint" />
+                                </VBox>
+                            </VBox>
+                            <VBox id="statusLegend" items="{dashboard>/statusData}" class="lmcLegend">
+                                <HBox id="statusLegendRow" alignItems="Center" class="lmcLegendRow">
+                                    <core:Icon id="statusLegendDot" src="sap-icon://color-fill" class="lmcDot">
+                                        <core:customData>
+                                            <core:CustomData key="status" value="{dashboard>key}" writeToDom="true" />
+                                        </core:customData>
+                                    </core:Icon>
+                                    <Text id="statusLegendLabel" text="{dashboard>label}" />
+                                    <Text id="statusLegendCount" text="{dashboard>count}" class="lmcStrong lmcLegendNumber" />
+                                    <Text id="statusLegendPercent" text="{dashboard>percentText}" class="lmcHint lmcLegendNumber" />
+                                </HBox>
+                            </VBox>
+                        </VBox>
+                    </VBox>
+
+                    <VBox id="integrationCard" class="lmcCard lmcChartCard">
+                        <HBox id="integrationCardHeader" alignItems="Center" class="lmcCardHeader">
+                            <core:Icon id="integrationCardIcon" src="sap-icon://horizontal-bar-chart" size="1.75rem" class="sapUiSmallMarginEnd" />
+                            <VBox id="integrationCardTitles">
+                                <Title id="integrationCardTitle" text="{i18n>logsByIntegration}" level="H3" />
+                                <Text id="integrationCardSubtitle" text="{i18n>top10ByTotal}" class="lmcHint" />
+                            </VBox>
+                        </HBox>
+                        <IllustratedMessage
+                            id="integrationEmpty"
+                            visible="{= !${dashboard>/total} }"
+                            illustrationType="sapIllus-NoData"
+                            illustrationSize="Dot"
+                            title="{i18n>noLogsInPeriod}"
+                            description="{i18n>noLogsInPeriodHint}"
+                        />
+                        <VBox id="integrationBars" visible="{= ${dashboard>/total} > 0 }" items="{dashboard>/topIntegrations}">
+                            <HBox id="integrationBarRow" alignItems="Center" class="lmcBarRow">
+                                <VBox id="integrationBarLabel" class="lmcBarLabel">
+                                    <Text id="integrationBarName" text="{dashboard>description}" wrapping="false" tooltip="{dashboard>description}" />
+                                    <Text id="integrationBarSystems" text="{dashboard>systems}" wrapping="false" class="lmcHint" tooltip="{dashboard>systems}" />
+                                </VBox>
+                                <HBox id="integrationBarTrack">
+                                    <HBox id="integrationBar" width="{dashboard>widthPercent}" class="lmcBar">
+                                        <HBox id="barSuccess" width="{dashboard>successPercent}" class="lmcBarSegment lmcStatusSUCCESS" />
+                                        <HBox id="barError" width="{dashboard>errorPercent}" class="lmcBarSegment lmcStatusERROR" />
+                                        <HBox id="barWarning" width="{dashboard>warningPercent}" class="lmcBarSegment lmcStatusWARNING" />
+                                        <HBox id="barRunning" width="{dashboard>runningPercent}" class="lmcBarSegment lmcStatusRUNNING" />
+                                    </HBox>
+                                </HBox>
+                                <Text id="integrationBarTotal" text="{dashboard>total}" class="lmcStrong lmcBarTotal" />
+                            </HBox>
+                        </VBox>
+                        <HBox id="integrationLegend" visible="{= ${dashboard>/total} > 0 }" items="{dashboard>/statusData}" wrap="Wrap" class="lmcLegendInline">
+                            <HBox id="integrationLegendItem" alignItems="Center" class="sapUiSmallMarginEnd">
+                                <core:Icon id="integrationLegendDot" src="sap-icon://color-fill" class="lmcDot">
+                                    <core:customData>
+                                        <core:CustomData key="status" value="{dashboard>key}" writeToDom="true" />
+                                    </core:customData>
+                                </core:Icon>
+                                <Text id="integrationLegendLabel" text="{dashboard>label}" />
+                            </HBox>
+                        </HBox>
+                    </VBox>
+                </FlexBox>
+
+                <!-- Latest error logs -->
+                <Table
+                    id="errorLogsTable"
+                    class="lmcCard"
+                    growing="true"
+                    growingThreshold="20"
+                    growingTriggerText="{i18n>more}"
+                    updateFinished=".onTableUpdateFinished"
+                    items="{
+                        path: '/IntegrationLogs',
+                        parameters: {
+                            $count: true,
+                            $expand: 'integration($select=ID,description,source,target)'
+                        },
+                        sorter: { path: 'executedAt', descending: true },
+                        suspended: true
+                    }"
+                >
+                    <headerToolbar>
+                        <OverflowToolbar id="errorLogsToolbar">
+                            <Title
+                                id="errorLogsTableTitle"
+                                text="{= ${i18n>latestErrorLogs} + ' (' + (${view>/counts/errorLogsTable} || 0) + ')' }"
+                                level="H2"
+                            />
+                        </OverflowToolbar>
+                    </headerToolbar>
+                    <noData>
+                        <IllustratedMessage
+                            id="errorLogsNoData"
+                            illustrationType="sapIllus-SuccessHighFive"
+                            illustrationSize="Dot"
+                            title="{i18n>noErrorLogs}"
+                            description="{i18n>noErrorLogsHint}"
+                        />
+                    </noData>
+                    <columns>
+                        <Column id="colErrorIntegration">
+                            <Text id="hdrErrorIntegration" text="{i18n>integration}" />
+                        </Column>
+                        <Column id="colErrorExecutedAt" width="13rem">
+                            <Text id="hdrErrorExecutedAt" text="{i18n>executedAt}" />
+                        </Column>
+                        <Column id="colErrorStatus" width="8rem">
+                            <Text id="hdrErrorStatus" text="{i18n>status}" />
+                        </Column>
+                        <Column id="colErrorDetail" hAlign="End" width="8rem" />
+                    </columns>
+                    <items>
+                        <ColumnListItem id="errorLogItem">
+                            <cells>
+                                <ObjectIdentifier
+                                    id="cellErrorIntegration"
+                                    title="{integration/description}"
+                                    text="{integration/source} → {integration/target}"
+                                />
+                                <Text
+                                    id="cellErrorExecutedAt"
+                                    text="{
+                                        path: 'executedAt',
+                                        type: '.DateTimeType',
+                                        formatOptions: {
+                                            pattern: 'dd/MM/yyyy HH:mm:ss',
+                                            source: { pattern: 'yyyy-MM-dd\'T\'HH:mm:ss.SSSX' }
+                                        }
+                                    }"
+                                />
+                                <ObjectStatus
+                                    id="cellErrorStatus"
+                                    text="{path: 'status', formatter: '.formatter.statusText'}"
+                                    state="{path: 'status', formatter: '.formatter.statusState'}"
+                                    icon="{path: 'status', formatter: '.formatter.statusIcon'}"
+                                />
+                                <Button
+                                    id="btnErrorDetail"
+                                    text="{i18n>detail}"
+                                    icon="sap-icon://detail-view"
+                                    type="Transparent"
+                                    press=".onShowPayload"
+                                />
+                            </cells>
+                        </ColumnListItem>
+                    </items>
+                </Table>
+            </VBox>
+        </f:content>
+    </f:DynamicPage>
 </mvc:View>

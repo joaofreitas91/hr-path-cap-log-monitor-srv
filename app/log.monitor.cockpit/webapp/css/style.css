@@ -1,1 +1,201 @@
-/* Enter your custom styles here */
+/* Page layout: grey body with white cards, as in the Claude Design prototype */
+.lmcPage .sapFDynamicPageContent {
+    background: var(--sapBackgroundColor);
+}
+
+.lmcPageHeading.sapMTitle {
+    font-size: 1.75rem;
+    font-weight: bold;
+}
+
+.lmcCard {
+    background: var(--sapTile_Background);
+    border-radius: 1rem;
+    box-shadow: var(--sapContent_Shadow0);
+    overflow: hidden;
+}
+
+/* Technical values (payload, field names, IAS groups) */
+.lmcMonospace,
+.lmcMonospace textarea {
+    font-family: var(--sapContent_MonospaceFontFamily), monospace;
+}
+
+.lmcHint {
+    color: var(--sapContent_LabelColor);
+    font-size: var(--sapFontSmallSize);
+}
+
+.lmcStrong {
+    font-weight: bold;
+}
+
+/* Object page header attributes (label over value) */
+.lmcHeaderAttributes > .sapMFlexItem {
+    margin-right: 3rem;
+    margin-bottom: 0.5rem;
+}
+
+.lmcHeaderCount.sapMText {
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+
+.lmcPage .sapUxAPObjectPageWrapper {
+    background: var(--sapBackgroundColor);
+}
+
+/* Dashboard */
+.lmcFilters > .sapMFlexItem {
+    margin-right: 1.5rem;
+}
+
+.lmcQuickLink {
+    line-height: 2.25rem;
+}
+
+.lmcKpiRow {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.lmcKpi {
+    padding: 1rem 1.25rem;
+}
+
+.lmcKpiTitle.sapMText {
+    font-weight: bold;
+}
+
+.lmcKpiValue.sapMText {
+    font-size: 2.5rem;
+    line-height: 3.5rem;
+    font-weight: 300;
+}
+
+.lmcChartsRow {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(24rem, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.lmcChartsRow > .sapMFlexItem > .lmcCard {
+    height: 100%;
+}
+
+.lmcChartCard {
+    padding: 1.25rem 1.5rem;
+}
+
+.lmcCardHeader {
+    margin-bottom: 1rem;
+}
+
+/* Donut with the total in its center */
+.lmcDonut {
+    position: relative;
+}
+
+.lmcDonutCenter {
+    position: absolute;
+    inset: 0;
+    justify-content: center;
+    pointer-events: none;
+}
+
+.lmcDonutTotal.sapMText {
+    font-size: 2.25rem;
+    line-height: 2.5rem;
+    font-weight: bold;
+}
+
+.lmcLegend {
+    width: 22rem;
+    max-width: 100%;
+    margin-top: 1rem;
+}
+
+.lmcLegendRow {
+    display: grid !important;
+    grid-template-columns: 1.5rem 1fr 3rem 4.5rem;
+    align-items: center;
+    width: 100%;
+    padding: 0.25rem 0;
+}
+
+.lmcLegendNumber {
+    text-align: end;
+}
+
+.lmcDot {
+    margin-right: 0.5rem;
+}
+
+.lmcLegendInline {
+    margin-top: 1rem;
+}
+
+/* Stacked bars by integration: label | bar | total */
+.lmcBarRow {
+    display: grid !important;
+    grid-template-columns: minmax(8rem, 16rem) 1fr 3rem;
+    column-gap: 1rem;
+    align-items: center;
+    padding: 0.35rem 0;
+}
+
+.lmcBarLabel {
+    overflow: hidden;
+}
+
+.lmcBar {
+    height: 1rem;
+    border-radius: 0.25rem;
+    overflow: hidden;
+}
+
+.lmcBarSegment {
+    height: 100%;
+}
+
+.lmcBarTotal {
+    text-align: end;
+}
+
+/* Status colors (Horizon semantic element colors) */
+.lmcStatusSUCCESS,
+[data-status="SUCCESS"] {
+    background-color: var(--sapPositiveElementColor);
+    color: var(--sapPositiveElementColor);
+}
+
+.lmcStatusERROR,
+[data-status="ERROR"] {
+    background-color: var(--sapNegativeElementColor);
+    color: var(--sapNegativeElementColor);
+}
+
+.lmcStatusWARNING,
+[data-status="WARNING"] {
+    background-color: var(--sapCriticalElementColor);
+    color: var(--sapCriticalElementColor);
+}
+
+.lmcStatusRUNNING,
+[data-status="RUNNING"] {
+    background-color: var(--sapInformativeElementColor);
+    color: var(--sapInformativeElementColor);
+}
+
+/* Text-like elements only take the color */
+.sapMText[data-status],
+.sapUiIcon[data-status] {
+    background-color: transparent;
+}
+
+.lmcPayload textarea {
+    background: var(--sapShell_Background);
+}

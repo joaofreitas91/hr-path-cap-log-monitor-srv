@@ -1,0 +1,46 @@
+<core:FragmentDefinition
+    xmlns:core="sap.ui.core"
+    xmlns="sap.m"
+>
+    <Dialog
+        id="integrationDialog"
+        title="{view>/dialogTitle}"
+        contentWidth="32rem"
+        escapeHandler=".onDialogEscape"
+    >
+        <VBox id="integrationDialogContent" class="sapUiSmallMargin">
+            <Label id="lblIntegrationDescription" text="{i18n>description}" labelFor="inpIntegrationDescription" required="true" showColon="true" />
+            <Input
+                id="inpIntegrationDescription"
+                value="{description}"
+                required="true"
+                maxLength="255"
+                placeholder="{i18n>integrationDescriptionPlaceholder}"
+                class="sapUiSmallMarginBottom"
+            />
+            <Label id="lblIntegrationSource" text="{i18n>source}" labelFor="inpIntegrationSource" required="true" showColon="true" />
+            <Input
+                id="inpIntegrationSource"
+                value="{source}"
+                required="true"
+                maxLength="100"
+                placeholder="{i18n>integrationSourcePlaceholder}"
+                class="sapUiSmallMarginBottom"
+            />
+            <Label id="lblIntegrationTarget" text="{i18n>target}" labelFor="inpIntegrationTarget" required="true" showColon="true" />
+            <Input
+                id="inpIntegrationTarget"
+                value="{target}"
+                required="true"
+                maxLength="100"
+                placeholder="{i18n>integrationTargetPlaceholder}"
+            />
+        </VBox>
+        <beginButton>
+            <Button id="btnIntegrationSave" text="{i18n>save}" type="Emphasized" press=".onDialogSave" />
+        </beginButton>
+        <endButton>
+            <Button id="btnIntegrationCancel" text="{i18n>cancel}" press=".onDialogCancel" />
+        </endButton>
+    </Dialog>
+</core:FragmentDefinition>

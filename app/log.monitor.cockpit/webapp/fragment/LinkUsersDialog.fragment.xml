@@ -1,0 +1,39 @@
+<core:FragmentDefinition
+    xmlns:core="sap.ui.core"
+    xmlns="sap.m"
+>
+    <TableSelectDialog
+        id="linkUsersDialog"
+        title="{i18n>linkUsersTitle}"
+        multiSelect="true"
+        rememberSelections="false"
+        confirmButtonText="{i18n>link}"
+        noDataText="{i18n>noUsersToLink}"
+        searchPlaceholder="{i18n>searchUsers}"
+        growingThreshold="50"
+        contentWidth="48rem"
+        search=".onLinkDialogSearch"
+        liveChange=".onLinkDialogSearch"
+        confirm=".onLinkDialogConfirm"
+        items="{
+            path: '/Users',
+            sorter: { path: 'name' },
+            suspended: true
+        }"
+    >
+        <columns>
+            <Column id="colLinkUserName">
+                <Text id="hdrLinkUserName" text="{i18n>name}" />
+            </Column>
+            <Column id="colLinkUserEmail">
+                <Text id="hdrLinkUserEmail" text="{i18n>email}" />
+            </Column>
+        </columns>
+        <ColumnListItem id="linkUserItem">
+            <cells>
+                <Text id="cellLinkUserName" text="{name}" />
+                <Text id="cellLinkUserEmail" text="{email}" />
+            </cells>
+        </ColumnListItem>
+    </TableSelectDialog>
+</core:FragmentDefinition>

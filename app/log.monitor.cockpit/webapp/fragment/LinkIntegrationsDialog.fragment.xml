@@ -1,0 +1,39 @@
+<core:FragmentDefinition
+    xmlns:core="sap.ui.core"
+    xmlns="sap.m"
+>
+    <TableSelectDialog
+        id="linkIntegrationsDialog"
+        title="{i18n>linkIntegrationsTitle}"
+        multiSelect="true"
+        rememberSelections="false"
+        confirmButtonText="{i18n>link}"
+        noDataText="{i18n>noIntegrationsToLink}"
+        searchPlaceholder="{i18n>searchIntegrations}"
+        growingThreshold="50"
+        contentWidth="56rem"
+        search=".onLinkDialogSearch"
+        liveChange=".onLinkDialogSearch"
+        confirm=".onLinkDialogConfirm"
+        items="{
+            path: '/Integrations',
+            sorter: { path: 'description' },
+            suspended: true
+        }"
+    >
+        <columns>
+            <Column id="colLinkIntegrationDescription">
+                <Text id="hdrLinkIntegrationDescription" text="{i18n>description}" />
+            </Column>
+            <Column id="colLinkIntegrationSystems">
+                <Text id="hdrLinkIntegrationSystems" text="{i18n>sourceToTarget}" />
+            </Column>
+        </columns>
+        <ColumnListItem id="linkIntegrationItem">
+            <cells>
+                <Text id="cellLinkIntegrationDescription" text="{description}" />
+                <Text id="cellLinkIntegrationSystems" text="{source} → {target}" />
+            </cells>
+        </ColumnListItem>
+    </TableSelectDialog>
+</core:FragmentDefinition>

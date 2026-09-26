@@ -4,14 +4,16 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-SAP CAP (Node.js, ESM, `@sap/cds` 10) service that stores integration execution logs and exposes them to a freestyle SAPUI5 report app. Deployed to SAP BTP Cloud Foundry as an MTA (HANA HDI + XSUAA + HTML5 repo). The root is an npm workspace containing the UI5 app at `app/log.monitor.report`.
+SAP CAP (Node.js, ESM, `@sap/cds` 10) service that stores integration execution logs and exposes them to two freestyle SAPUI5 apps: a report for log viewers and an admin cockpit. Deployed to SAP BTP Cloud Foundry as an MTA (HANA HDI + XSUAA + HTML5 repo). The root is an npm workspace containing the UI5 apps at `app/log.monitor.report` and `app/log.monitor.cockpit`.
 
 ## Commands
 
 ```bash
 npm install                      # installs root + app workspace
 cds watch                        # dev server on :4004 (SQLite db.sqlite, mocked auth)
-npm run watch-log.monitor.report # cds watch + open the UI5 app (served via cds-plugin-ui5)
+npm run watch-log.monitor.report # cds watch + open the report app (served via cds-plugin-ui5)
+npm run watch-log.monitor.cockpit # cds watch + open the cockpit app (administrator only)
+npm run watch:hybrid             # cds watch --profile hybrid (HANA via .cdsrc-private.json)
 cds deploy --to sqlite           # (re)create local db.sqlite from db/schema.cds
 npm run build                    # mbt build -> mta_archives/archive.mtar (runs `cds build --production`)
 npm run deploy                   # cf deploy the archive
@@ -33,12 +35,14 @@ Local mocked users (Basic auth, password `1234`): `alice@dummy.com` (report-view
 
 **Services** (one `srv/<name>-service.cds` per service, all projections on the db entities, so restrictions apply everywhere; CAP binds each `.cds` to the `.js` with the same name):
 - `LogMonitorIntegration` (`integration-service.cds`, `/odata/v4/log-monitor-integration`) — insert-only log ingestion for external systems.
-- `LogMonitorReport` (`report-service.cds`, `/odata/v4/log-monitor-report`) — read-only; backs the UI5 app.
+- `LogMonitorReport` (`report-service.cds`, `/odata/v4/log-monitor-report`) — read-only; backs the report app.
 - `LogMonitorCockpit` (`cockpit-service.cds`, `/odata/v4/log-monitor-cockpit`) — admin CRUD over everything. Its handlers (`srv/cockpit-service.js`) delete the `UserGroups`/`IntegrationGroups` rows of a deleted `User`/`Group`/`Integration` (on the db tables, since a service-level DELETE matching no rows throws 404), reject duplicate user–group / integration–group links with 409 (also within one `$batch` changeset), fill the virtual `logCount`/`fieldCount`/`groupCount` on `Integrations`, and implement `logMetrics(from, to, integrationID)`, which returns log counts `byStatus` and `byIntegration` (sorted by total) from one grouped query. Error texts live in `_i18n/messages.properties`.
 
 **Dynamic payload fields**: `IntegrationLogs.payload` is a JSON string whose keys are declared per integration in `IntegrationFields` (`isFilterable`, `isSortable`). Because payload can't be filtered in OData, `srv/report-service.js` implements the `matchingLogIds(integrationID, fieldsFilter)` function: it loads all logs of the integration, parses payloads in JS, does case-insensitive substring matching, and returns a JSON-stringified array of IDs.
 
-**UI5 app** (`app/log.monitor.report`, namespace `com.hrpath.log.monitor.report`): freestyle JS app (not Fiori elements) using `sap.f.FlexibleColumnLayout` — `Report` view in the begin column, `Detail` (route `log/{logId}`) in the mid column. `Report.controller.js` reads the integration's filterable `IntegrationFields`, renders filter inputs for them, calls `matchingLogIds` via `bindContext("/matchingLogIds(...)")`, then applies the returned IDs as an OR of `ID eq` filters alongside the standard filters (integration, source/target, date range, status). `app/services.cds` pulls in the app's `annotations.cds`. In BTP, `xs-app.json` routes `/odata/*` to the `srv-api` destination.
+**Report app** (`app/log.monitor.report`, namespace `com.hrpath.log.monitor.report`): freestyle JS app (not Fiori elements) using `sap.f.FlexibleColumnLayout` — `Report` view in the begin column, `Detail` (route `log/{logId}`) in the mid column. `Report.controller.js` reads the integration's filterable `IntegrationFields`, renders filter inputs for them, calls `matchingLogIds` via `bindContext("/matchingLogIds(...)")`, then applies the returned IDs as an OR of `ID eq` filters alongside the standard filters (integration, source/target, date range, status). `app/services.cds` pulls in each app's `annotations.cds`. In BTP, each app's `xs-app.json` routes `/odata/*` to the `srv-api` destination.
+
+**Cockpit app** (`app/log.monitor.cockpit`, namespace `com.hrpath.log.monitor.cockpit`, service `LogMonitorCockpit`): freestyle app with a `sap.tnt.ToolPage` shell (`App.view.xml`) whose `SideNavigation` drives the router (`sap.f.routing.Router`, like the report); it targets the `pages` of the inner `NavContainer` `app`, so details open as full pages. Routes: `dashboard` (empty hash), `integrations`, `integrationDetail` (`integrations/{id}`), `users`, `groups`, `groupDetail` (`groups/{id}`); detail routes keep their parent menu entry selected. All screens except the shell extend `controller/BaseController.js`, which holds the shared list pattern: search (`searchTable`), counters in `view>/counts/<tableId>` (set on the table's `updateFinished`), multi-select delete with confirmation (`confirmDelete`), and one create/edit dialog per entity (`openEntityDialog`) whose edits run in the deferred `dialog` update group (`submitBatch` on save, `resetChanges` on cancel). Integration/group detail pages bind the view with `bindViewElement`. The dashboard reads `logMetrics` for the KPIs, a `sap.viz` donut and the stacked bars (plain `HBox` segments), and lists the latest `ERROR` logs with a payload dialog. Group linking uses `TableSelectDialog`s filtered with `…Groups/all(link: link/group_ID ne <id>)`. Texts are pt-BR in `i18n/i18n.properties`; plural texts use `_one`/`_other` keys via `getCountText`. In expression bindings on OData V4 booleans use `%{path}` (raw value) — `${path}` goes through the V4 type and turns `false` into a truthy string.
 
 **UI5 formatting**: only write a custom formatter (`webapp/model/formatter.js`) when no standard UI5 type (`sap/ui/model/type/*`, `sap/ui/model/odata/type/*`) covers the case. Import the type in the controller's `sap.ui.define`, expose it as a controller member (e.g. `DateTimeType,` next to `formatter,`) and reference it in the view with a leading dot (`type: '.DateTimeType'`) instead of `core:require` in the XML. OData V4 returns timestamps as ISO strings, so `sap/ui/model/type/DateTime` needs `formatOptions.source: { pattern: "yyyy-MM-dd'T'HH:mm:ss.SSSX" }`.
 

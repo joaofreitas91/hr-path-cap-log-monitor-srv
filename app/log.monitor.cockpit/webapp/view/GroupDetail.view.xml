@@ -1,0 +1,232 @@
+<mvc:View
+    controllerName="com.hrpath.log.monitor.cockpit.controller.GroupDetail"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:uxap="sap.uxap"
+    xmlns="sap.m"
+>
+    <uxap:ObjectPageLayout
+        id="groupDetailPage"
+        useIconTabBar="true"
+        showTitleInHeaderContent="false"
+        upperCaseAnchorBar="false"
+        class="lmcPage"
+    >
+        <uxap:headerTitle>
+            <uxap:ObjectPageDynamicHeaderTitle id="groupDetailTitle">
+                <uxap:breadcrumbs>
+                    <Breadcrumbs id="groupBreadcrumbs" currentLocationText="{description}">
+                        <Link id="lnkGroups" text="{i18n>navGroups}" press=".onNavBack" />
+                    </Breadcrumbs>
+                </uxap:breadcrumbs>
+                <uxap:heading>
+                    <Title id="groupDetailHeading" text="{description}" level="H1" class="lmcPageHeading" />
+                </uxap:heading>
+                <uxap:actions>
+                    <Button
+                        id="btnEditGroupDetail"
+                        text="{i18n>edit}"
+                        icon="sap-icon://edit"
+                        type="Emphasized"
+                        press=".onEdit"
+                    />
+                </uxap:actions>
+            </uxap:ObjectPageDynamicHeaderTitle>
+        </uxap:headerTitle>
+        <uxap:headerContent>
+            <HBox id="groupDetailAttributes" wrap="Wrap" class="lmcHeaderAttributes">
+                <VBox id="attrGroupIas">
+                    <Label id="lblAttrGroupIas" text="{i18n>iasGroup}" />
+                    <Text id="txtAttrGroupIas" text="{= ${iasUserGroup} || '—' }" class="lmcMonospace" />
+                </VBox>
+                <VBox id="attrGroupUsers">
+                    <Label id="lblAttrGroupUsers" text="{i18n>users}" />
+                    <Text id="txtAttrGroupUsers" text="{view>/counts/linkedUsersTable}" class="lmcHeaderCount" />
+                </VBox>
+                <VBox id="attrGroupIntegrations">
+                    <Label id="lblAttrGroupIntegrations" text="{i18n>integrations}" />
+                    <Text id="txtAttrGroupIntegrations" text="{view>/counts/linkedIntegrationsTable}" class="lmcHeaderCount" />
+                </VBox>
+                <VBox id="attrGroupModified">
+                    <Label id="lblAttrGroupModified" text="{i18n>modifiedAt}" />
+                    <Text
+                        id="txtAttrGroupModified"
+                        text="{
+                            path: 'modifiedAt',
+                            type: '.DateTimeType',
+                            formatOptions: {
+                                pattern: 'dd/MM/yyyy HH:mm',
+                                source: { pattern: 'yyyy-MM-dd\'T\'HH:mm:ss.SSSX' }
+                            }
+                        }"
+                    />
+                </VBox>
+            </HBox>
+        </uxap:headerContent>
+        <uxap:sections>
+            <uxap:ObjectPageSection id="sectionLinkedUsers" title="{i18n>users}" titleUppercase="false">
+                <uxap:subSections>
+                    <uxap:ObjectPageSubSection id="subSectionLinkedUsers" showTitle="false">
+                        <Table
+                            id="linkedUsersTable"
+                            class="lmcCard"
+                            mode="MultiSelect"
+                            growing="true"
+                            growingThreshold="50"
+                            selectionChange=".onTableSelectionChange"
+                            updateFinished=".onTableUpdateFinished"
+                            items="{
+                                path: 'userGroups',
+                                parameters: {
+                                    $count: true,
+                                    $expand: 'user($select=ID,name,email)'
+                                },
+                                sorter: { path: 'user/name' }
+                            }"
+                        >
+                            <headerToolbar>
+                                <OverflowToolbar id="linkedUsersToolbar">
+                                    <Title
+                                        id="linkedUsersTableTitle"
+                                        text="{= ${i18n>users} + ' (' + (${view>/counts/linkedUsersTable} || 0) + ')' }"
+                                        level="H2"
+                                    />
+                                    <ToolbarSpacer id="linkedUsersToolbarSpacer" />
+                                    <SearchField
+                                        id="linkedUsersSearch"
+                                        width="20rem"
+                                        placeholder="{i18n>searchUsers}"
+                                        liveChange=".onSearchLinkedUsers"
+                                    />
+                                    <Button
+                                        id="btnLinkUsers"
+                                        text="{i18n>link}"
+                                        icon="sap-icon://chain-link"
+                                        type="Emphasized"
+                                        press=".onLinkUsers"
+                                    />
+                                    <Button
+                                        id="btnUnlinkUsers"
+                                        text="{i18n>unlink}"
+                                        icon="sap-icon://broken-link"
+                                        type="Transparent"
+                                        enabled="{= ${view>/selected/linkedUsersTable} > 0 }"
+                                        press=".onUnlinkUsers"
+                                    />
+                                </OverflowToolbar>
+                            </headerToolbar>
+                            <noData>
+                                <IllustratedMessage
+                                    id="linkedUsersNoData"
+                                    illustrationType="{= ${view>/search/linkedUsersTable} ? 'sapIllus-NoSearchResults' : 'sapIllus-NoEntries' }"
+                                    illustrationSize="Dot"
+                                    title="{i18n>noLinkedUsers}"
+                                    description="{= ${view>/search/linkedUsersTable} ? ${i18n>noResultsFor}.replace('{0}', ${view>/search/linkedUsersTable}) : ${i18n>noLinkedUsersHint} }"
+                                />
+                            </noData>
+                            <columns>
+                                <Column id="colLinkedUserName">
+                                    <Text id="hdrLinkedUserName" text="{i18n>name}" />
+                                </Column>
+                                <Column id="colLinkedUserEmail">
+                                    <Text id="hdrLinkedUserEmail" text="{i18n>email}" />
+                                </Column>
+                            </columns>
+                            <items>
+                                <ColumnListItem id="linkedUserItem">
+                                    <cells>
+                                        <Text id="cellLinkedUserName" text="{user/name}" />
+                                        <Link id="cellLinkedUserEmail" text="{user/email}" href="{= 'mailto:' + ${user/email} }" />
+                                    </cells>
+                                </ColumnListItem>
+                            </items>
+                        </Table>
+                    </uxap:ObjectPageSubSection>
+                </uxap:subSections>
+            </uxap:ObjectPageSection>
+            <uxap:ObjectPageSection id="sectionLinkedIntegrations" title="{i18n>integrations}" titleUppercase="false">
+                <uxap:subSections>
+                    <uxap:ObjectPageSubSection id="subSectionLinkedIntegrations" showTitle="false">
+                        <Table
+                            id="linkedIntegrationsTable"
+                            class="lmcCard"
+                            mode="MultiSelect"
+                            growing="true"
+                            growingThreshold="50"
+                            selectionChange=".onTableSelectionChange"
+                            updateFinished=".onTableUpdateFinished"
+                            items="{
+                                path: 'integrationGroups',
+                                parameters: {
+                                    $count: true,
+                                    $expand: 'integration($select=ID,description,source,target)'
+                                },
+                                sorter: { path: 'integration/description' }
+                            }"
+                        >
+                            <headerToolbar>
+                                <OverflowToolbar id="linkedIntegrationsToolbar">
+                                    <Title
+                                        id="linkedIntegrationsTableTitle"
+                                        text="{= ${i18n>integrations} + ' (' + (${view>/counts/linkedIntegrationsTable} || 0) + ')' }"
+                                        level="H2"
+                                    />
+                                    <ToolbarSpacer id="linkedIntegrationsToolbarSpacer" />
+                                    <SearchField
+                                        id="linkedIntegrationsSearch"
+                                        width="20rem"
+                                        placeholder="{i18n>searchIntegrations}"
+                                        liveChange=".onSearchLinkedIntegrations"
+                                    />
+                                    <Button
+                                        id="btnLinkIntegrations"
+                                        text="{i18n>link}"
+                                        icon="sap-icon://chain-link"
+                                        type="Emphasized"
+                                        press=".onLinkIntegrations"
+                                    />
+                                    <Button
+                                        id="btnUnlinkIntegrations"
+                                        text="{i18n>unlink}"
+                                        icon="sap-icon://broken-link"
+                                        type="Transparent"
+                                        enabled="{= ${view>/selected/linkedIntegrationsTable} > 0 }"
+                                        press=".onUnlinkIntegrations"
+                                    />
+                                </OverflowToolbar>
+                            </headerToolbar>
+                            <noData>
+                                <IllustratedMessage
+                                    id="linkedIntegrationsNoData"
+                                    illustrationType="{= ${view>/search/linkedIntegrationsTable} ? 'sapIllus-NoSearchResults' : 'sapIllus-NoEntries' }"
+                                    illustrationSize="Dot"
+                                    title="{i18n>noLinkedIntegrations}"
+                                    description="{= ${view>/search/linkedIntegrationsTable} ? ${i18n>noResultsFor}.replace('{0}', ${view>/search/linkedIntegrationsTable}) : ${i18n>noLinkedIntegrationsHint} }"
+                                />
+                            </noData>
+                            <columns>
+                                <Column id="colLinkedIntegrationDescription">
+                                    <Text id="hdrLinkedIntegrationDescription" text="{i18n>description}" />
+                                </Column>
+                                <Column id="colLinkedIntegrationSource" minScreenWidth="Tablet" demandPopin="true">
+                                    <Text id="hdrLinkedIntegrationSource" text="{i18n>source}" />
+                                </Column>
+                                <Column id="colLinkedIntegrationTarget" minScreenWidth="Tablet" demandPopin="true">
+                                    <Text id="hdrLinkedIntegrationTarget" text="{i18n>target}" />
+                                </Column>
+                            </columns>
+                            <items>
+                                <ColumnListItem id="linkedIntegrationItem" type="Navigation" press=".onLinkedIntegrationPress">
+                                    <cells>
+                                        <ObjectIdentifier id="cellLinkedIntegrationDescription" title="{integration/description}" />
+                                        <Text id="cellLinkedIntegrationSource" text="{integration/source}" />
+                                        <Text id="cellLinkedIntegrationTarget" text="{integration/target}" />
+                                    </cells>
+                                </ColumnListItem>
+                            </items>
+                        </Table>
+                    </uxap:ObjectPageSubSection>
+                </uxap:subSections>
+            </uxap:ObjectPageSection>
+        </uxap:sections>
+    </uxap:ObjectPageLayout>
+</mvc:View>

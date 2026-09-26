@@ -1,0 +1,141 @@
+<mvc:View
+    controllerName="com.hrpath.log.monitor.cockpit.controller.Integrations"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:f="sap.f"
+    xmlns="sap.m"
+>
+    <f:DynamicPage
+        id="integrationsPage"
+        toggleHeaderOnTitleClick="false"
+        class="lmcPage"
+    >
+        <f:title>
+            <f:DynamicPageTitle id="integrationsPageTitle">
+                <f:heading>
+                    <Title
+                        id="integrationsHeading"
+                        text="{i18n>navIntegrations}"
+                        level="H1"
+                        class="lmcPageHeading"
+                    />
+                </f:heading>
+            </f:DynamicPageTitle>
+        </f:title>
+        <f:content>
+            <Table
+                id="integrationsTable"
+                class="lmcCard"
+                mode="MultiSelect"
+                growing="true"
+                growingThreshold="50"
+                sticky="ColumnHeaders,HeaderToolbar"
+                selectionChange=".onTableSelectionChange"
+                updateFinished=".onTableUpdateFinished"
+                items="{
+                    path: '/Integrations',
+                    parameters: {
+                        $count: true,
+                        $$updateGroupId: 'dialog',
+                        $select: 'logCount'
+                    },
+                    sorter: { path: 'description' }
+                }"
+            >
+                <headerToolbar>
+                    <OverflowToolbar id="integrationsToolbar">
+                        <Title
+                            id="integrationsTableTitle"
+                            text="{= ${i18n>navIntegrations} + ' (' + (${view>/counts/integrationsTable} || 0) + ')' }"
+                            level="H2"
+                        />
+                        <ToolbarSpacer id="integrationsToolbarSpacer" />
+                        <SearchField
+                            id="integrationsSearch"
+                            width="20rem"
+                            placeholder="{i18n>searchIntegrations}"
+                            liveChange=".onSearch"
+                        />
+                        <Button
+                            id="btnAddIntegration"
+                            text="{i18n>add}"
+                            icon="sap-icon://add"
+                            type="Emphasized"
+                            press=".onAdd"
+                        />
+                        <Button
+                            id="btnDeleteIntegrations"
+                            text="{i18n>delete}"
+                            icon="sap-icon://delete"
+                            type="Transparent"
+                            enabled="{= ${view>/selected/integrationsTable} > 0 }"
+                            press=".onDelete"
+                        />
+                    </OverflowToolbar>
+                </headerToolbar>
+                <noData>
+                    <IllustratedMessage
+                        id="integrationsNoData"
+                        illustrationType="{= ${view>/search/integrationsTable} ? 'sapIllus-NoSearchResults' : 'sapIllus-NoEntries' }"
+                        title="{i18n>noIntegrations}"
+                        description="{= ${view>/search/integrationsTable} ? ${i18n>noResultsFor}.replace('{0}', ${view>/search/integrationsTable}) : ${i18n>noIntegrationsHint} }"
+                        enableVerticalResponsiveness="true"
+                    />
+                </noData>
+                <columns>
+                    <Column id="colIntegrationDescription">
+                        <Text id="hdrIntegrationDescription" text="{i18n>description}" />
+                    </Column>
+                    <Column id="colIntegrationSource" minScreenWidth="Tablet" demandPopin="true">
+                        <Text id="hdrIntegrationSource" text="{i18n>source}" />
+                    </Column>
+                    <Column id="colIntegrationTarget" minScreenWidth="Tablet" demandPopin="true">
+                        <Text id="hdrIntegrationTarget" text="{i18n>target}" />
+                    </Column>
+                    <Column id="colIntegrationFields" hAlign="End" width="6rem">
+                        <Text id="hdrIntegrationFields" text="{i18n>fields}" />
+                    </Column>
+                    <Column id="colIntegrationGroups" hAlign="End" width="6rem">
+                        <Text id="hdrIntegrationGroups" text="{i18n>groups}" />
+                    </Column>
+                    <Column id="colIntegrationModified" width="11rem" minScreenWidth="Desktop" demandPopin="true">
+                        <Text id="hdrIntegrationModified" text="{i18n>modifiedAt}" />
+                    </Column>
+                    <Column id="colIntegrationEdit" hAlign="End" width="4rem" />
+                </columns>
+                <items>
+                    <ColumnListItem
+                        id="integrationItem"
+                        type="Navigation"
+                        press=".onRowPress"
+                    >
+                        <cells>
+                            <ObjectIdentifier id="cellIntegrationDescription" title="{description}" />
+                            <Text id="cellIntegrationSource" text="{source}" />
+                            <Text id="cellIntegrationTarget" text="{target}" />
+                            <Text id="cellIntegrationFields" text="{fieldCount}" />
+                            <Text id="cellIntegrationGroups" text="{groupCount}" />
+                            <Text
+                                id="cellIntegrationModified"
+                                text="{
+                                    path: 'modifiedAt',
+                                    type: '.DateTimeType',
+                                    formatOptions: {
+                                        pattern: 'dd/MM/yyyy HH:mm',
+                                        source: { pattern: 'yyyy-MM-dd\'T\'HH:mm:ss.SSSX' }
+                                    }
+                                }"
+                            />
+                            <Button
+                                id="btnEditIntegration"
+                                icon="sap-icon://edit"
+                                type="Transparent"
+                                tooltip="{i18n>edit}"
+                                press=".onEdit"
+                            />
+                        </cells>
+                    </ColumnListItem>
+                </items>
+            </Table>
+        </f:content>
+    </f:DynamicPage>
+</mvc:View>

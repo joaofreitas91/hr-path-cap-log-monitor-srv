@@ -1,0 +1,262 @@
+<mvc:View
+    controllerName="com.hrpath.log.monitor.cockpit.controller.IntegrationDetail"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:uxap="sap.uxap"
+    xmlns:core="sap.ui.core"
+    xmlns="sap.m"
+>
+    <uxap:ObjectPageLayout
+        id="integrationDetailPage"
+        useIconTabBar="true"
+        showTitleInHeaderContent="false"
+        upperCaseAnchorBar="false"
+        class="lmcPage"
+    >
+        <uxap:headerTitle>
+            <uxap:ObjectPageDynamicHeaderTitle id="integrationDetailTitle">
+                <uxap:breadcrumbs>
+                    <Breadcrumbs id="integrationBreadcrumbs" currentLocationText="{description}">
+                        <Link id="lnkIntegrations" text="{i18n>navIntegrations}" press=".onNavBack" />
+                    </Breadcrumbs>
+                </uxap:breadcrumbs>
+                <uxap:heading>
+                    <Title id="integrationDetailHeading" text="{description}" level="H1" class="lmcPageHeading" />
+                </uxap:heading>
+                <uxap:expandedContent>
+                    <Text id="integrationDetailSubtitle" text="{source} → {target}" />
+                </uxap:expandedContent>
+                <uxap:actions>
+                    <Button
+                        id="btnEditIntegrationDetail"
+                        text="{i18n>edit}"
+                        icon="sap-icon://edit"
+                        type="Emphasized"
+                        press=".onEdit"
+                    />
+                </uxap:actions>
+            </uxap:ObjectPageDynamicHeaderTitle>
+        </uxap:headerTitle>
+        <uxap:headerContent>
+            <HBox id="integrationDetailAttributes" wrap="Wrap" class="lmcHeaderAttributes">
+                <VBox id="attrSource">
+                    <Label id="lblAttrSource" text="{i18n>source}" />
+                    <Text id="txtAttrSource" text="{source}" class="lmcStrong" />
+                </VBox>
+                <VBox id="attrTarget">
+                    <Label id="lblAttrTarget" text="{i18n>target}" />
+                    <Text id="txtAttrTarget" text="{target}" class="lmcStrong" />
+                </VBox>
+                <VBox id="attrCreated">
+                    <Label id="lblAttrCreated" text="{i18n>createdAt}" />
+                    <Text
+                        id="txtAttrCreated"
+                        text="{
+                            path: 'createdAt',
+                            type: '.DateTimeType',
+                            formatOptions: {
+                                pattern: 'dd/MM/yyyy HH:mm',
+                                source: { pattern: 'yyyy-MM-dd\'T\'HH:mm:ss.SSSX' }
+                            }
+                        }"
+                    />
+                </VBox>
+                <VBox id="attrModified">
+                    <Label id="lblAttrModified" text="{i18n>modifiedAt}" />
+                    <Text
+                        id="txtAttrModified"
+                        text="{
+                            path: 'modifiedAt',
+                            type: '.DateTimeType',
+                            formatOptions: {
+                                pattern: 'dd/MM/yyyy HH:mm',
+                                source: { pattern: 'yyyy-MM-dd\'T\'HH:mm:ss.SSSX' }
+                            }
+                        }"
+                    />
+                </VBox>
+                <VBox id="attrFieldCount">
+                    <Label id="lblAttrFieldCount" text="{i18n>fields}" />
+                    <Text id="txtAttrFieldCount" text="{view>/counts/fieldsTable}" class="lmcHeaderCount" />
+                </VBox>
+                <VBox id="attrGroupCount">
+                    <Label id="lblAttrGroupCount" text="{i18n>groups}" />
+                    <Text id="txtAttrGroupCount" text="{view>/counts/accessGroupsTable}" class="lmcHeaderCount" />
+                </VBox>
+            </HBox>
+        </uxap:headerContent>
+        <uxap:sections>
+            <uxap:ObjectPageSection id="sectionFields" title="{i18n>payloadFields}" titleUppercase="false">
+                <uxap:subSections>
+                    <uxap:ObjectPageSubSection id="subSectionFields" showTitle="false">
+                        <Table
+                            id="fieldsTable"
+                            class="lmcCard"
+                            mode="MultiSelect"
+                            growing="true"
+                            growingThreshold="50"
+                            selectionChange=".onTableSelectionChange"
+                            updateFinished=".onTableUpdateFinished"
+                            items="{
+                                path: 'fields',
+                                parameters: {
+                                    $count: true,
+                                    $$updateGroupId: 'dialog'
+                                },
+                                sorter: { path: 'fieldName' }
+                            }"
+                        >
+                            <headerToolbar>
+                                <OverflowToolbar id="fieldsToolbar">
+                                    <Title
+                                        id="fieldsTableTitle"
+                                        text="{= ${i18n>payloadFields} + ' (' + (${view>/counts/fieldsTable} || 0) + ')' }"
+                                        level="H2"
+                                    />
+                                    <ToolbarSpacer id="fieldsToolbarSpacer" />
+                                    <SearchField
+                                        id="fieldsSearch"
+                                        width="20rem"
+                                        placeholder="{i18n>searchFields}"
+                                        liveChange=".onSearchFields"
+                                    />
+                                    <Button
+                                        id="btnAddField"
+                                        text="{i18n>add}"
+                                        icon="sap-icon://add"
+                                        type="Emphasized"
+                                        press=".onAddField"
+                                    />
+                                    <Button
+                                        id="btnDeleteFields"
+                                        text="{i18n>delete}"
+                                        icon="sap-icon://delete"
+                                        type="Transparent"
+                                        enabled="{= ${view>/selected/fieldsTable} > 0 }"
+                                        press=".onDeleteFields"
+                                    />
+                                </OverflowToolbar>
+                            </headerToolbar>
+                            <noData>
+                                <IllustratedMessage
+                                    id="fieldsNoData"
+                                    illustrationType="{= ${view>/search/fieldsTable} ? 'sapIllus-NoSearchResults' : 'sapIllus-NoEntries' }"
+                                    illustrationSize="Dot"
+                                    title="{i18n>noFields}"
+                                    description="{= ${view>/search/fieldsTable} ? ${i18n>noResultsFor}.replace('{0}', ${view>/search/fieldsTable}) : ${i18n>noFieldsHint} }"
+                                />
+                            </noData>
+                            <columns>
+                                <Column id="colFieldName">
+                                    <Text id="hdrFieldName" text="{i18n>fieldName}" />
+                                </Column>
+                                <Column id="colFieldLabel">
+                                    <Text id="hdrFieldLabel" text="{i18n>fieldLabel}" />
+                                </Column>
+                                <Column id="colFieldDescription" minScreenWidth="Tablet" demandPopin="true">
+                                    <Text id="hdrFieldDescription" text="{i18n>description}" />
+                                </Column>
+                                <Column id="colFieldFilterable" hAlign="Center" width="7rem">
+                                    <Text id="hdrFieldFilterable" text="{i18n>filterable}" />
+                                </Column>
+                                <Column id="colFieldSortable" hAlign="Center" width="7rem">
+                                    <Text id="hdrFieldSortable" text="{i18n>sortable}" />
+                                </Column>
+                                <Column id="colFieldEdit" hAlign="End" width="4rem" />
+                            </columns>
+                            <items>
+                                <ColumnListItem id="fieldItem">
+                                    <cells>
+                                        <Text id="cellFieldName" text="{fieldName}" class="lmcMonospace" />
+                                        <ObjectIdentifier id="cellFieldLabel" title="{label}" />
+                                        <Text id="cellFieldDescription" text="{= ${description} || '—' }" />
+                                        <core:Icon
+                                            id="cellFieldFilterable"
+                                            src="{= %{isFilterable} ? 'sap-icon://accept' : 'sap-icon://less' }"
+                                            color="{= %{isFilterable} ? 'Positive' : 'Neutral' }"
+                                            tooltip="{= %{isFilterable} ? ${i18n>yes} : ${i18n>no} }"
+                                        />
+                                        <core:Icon
+                                            id="cellFieldSortable"
+                                            src="{= %{isSortable} ? 'sap-icon://accept' : 'sap-icon://less' }"
+                                            color="{= %{isSortable} ? 'Positive' : 'Neutral' }"
+                                            tooltip="{= %{isSortable} ? ${i18n>yes} : ${i18n>no} }"
+                                        />
+                                        <Button
+                                            id="btnEditField"
+                                            icon="sap-icon://edit"
+                                            type="Transparent"
+                                            tooltip="{i18n>edit}"
+                                            press=".onEditField"
+                                        />
+                                    </cells>
+                                </ColumnListItem>
+                            </items>
+                        </Table>
+                    </uxap:ObjectPageSubSection>
+                </uxap:subSections>
+            </uxap:ObjectPageSection>
+            <uxap:ObjectPageSection id="sectionAccessGroups" title="{i18n>groupsWithAccess}" titleUppercase="false">
+                <uxap:subSections>
+                    <uxap:ObjectPageSubSection id="subSectionAccessGroups" showTitle="false">
+                        <Table
+                            id="accessGroupsTable"
+                            class="lmcCard"
+                            growing="true"
+                            updateFinished=".onTableUpdateFinished"
+                            items="{
+                                path: '/Groups',
+                                parameters: {
+                                    $count: true,
+                                    $expand: 'userGroups($select=ID)'
+                                },
+                                sorter: { path: 'description' },
+                                suspended: true
+                            }"
+                        >
+                            <headerToolbar>
+                                <OverflowToolbar id="accessGroupsToolbar">
+                                    <Title
+                                        id="accessGroupsTableTitle"
+                                        text="{= ${i18n>groupsWithAccess} + ' (' + (${view>/counts/accessGroupsTable} || 0) + ')' }"
+                                        level="H2"
+                                    />
+                                    <ToolbarSpacer id="accessGroupsToolbarSpacer" />
+                                    <Text id="accessGroupsHint" text="{i18n>manageLinksHint}" class="lmcHint" />
+                                </OverflowToolbar>
+                            </headerToolbar>
+                            <noData>
+                                <IllustratedMessage
+                                    id="accessGroupsNoData"
+                                    illustrationType="sapIllus-NoEntries"
+                                    illustrationSize="Dot"
+                                    title="{i18n>noAccessGroups}"
+                                    description="{i18n>noAccessGroupsHint}"
+                                />
+                            </noData>
+                            <columns>
+                                <Column id="colAccessGroupDescription">
+                                    <Text id="hdrAccessGroupDescription" text="{i18n>description}" />
+                                </Column>
+                                <Column id="colAccessGroupIas">
+                                    <Text id="hdrAccessGroupIas" text="{i18n>iasGroup}" />
+                                </Column>
+                                <Column id="colAccessGroupUsers" hAlign="End" width="7rem">
+                                    <Text id="hdrAccessGroupUsers" text="{i18n>users}" />
+                                </Column>
+                            </columns>
+                            <items>
+                                <ColumnListItem id="accessGroupItem" type="Navigation" press=".onAccessGroupPress">
+                                    <cells>
+                                        <ObjectIdentifier id="cellAccessGroupDescription" title="{description}" />
+                                        <Text id="cellAccessGroupIas" text="{= ${iasUserGroup} || '—' }" class="lmcMonospace" />
+                                        <Text id="cellAccessGroupUsers" text="{userGroups/$count}" />
+                                    </cells>
+                                </ColumnListItem>
+                            </items>
+                        </Table>
+                    </uxap:ObjectPageSubSection>
+                </uxap:subSections>
+            </uxap:ObjectPageSection>
+        </uxap:sections>
+    </uxap:ObjectPageLayout>
+</mvc:View>

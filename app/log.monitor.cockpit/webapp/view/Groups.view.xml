@@ -1,0 +1,137 @@
+<mvc:View
+    controllerName="com.hrpath.log.monitor.cockpit.controller.Groups"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:f="sap.f"
+    xmlns="sap.m"
+>
+    <f:DynamicPage
+        id="groupsPage"
+        toggleHeaderOnTitleClick="false"
+        class="lmcPage"
+    >
+        <f:title>
+            <f:DynamicPageTitle id="groupsPageTitle">
+                <f:heading>
+                    <Title
+                        id="groupsHeading"
+                        text="{i18n>navGroups}"
+                        level="H1"
+                        class="lmcPageHeading"
+                    />
+                </f:heading>
+            </f:DynamicPageTitle>
+        </f:title>
+        <f:content>
+            <Table
+                id="groupsTable"
+                class="lmcCard"
+                mode="MultiSelect"
+                growing="true"
+                growingThreshold="50"
+                sticky="ColumnHeaders,HeaderToolbar"
+                selectionChange=".onTableSelectionChange"
+                updateFinished=".onTableUpdateFinished"
+                items="{
+                    path: '/Groups',
+                    parameters: {
+                        $count: true,
+                        $$updateGroupId: 'dialog',
+                        $expand: 'userGroups($select=ID),integrationGroups($select=ID)'
+                    },
+                    sorter: { path: 'description' }
+                }"
+            >
+                <headerToolbar>
+                    <OverflowToolbar id="groupsToolbar">
+                        <Title
+                            id="groupsTableTitle"
+                            text="{= ${i18n>navGroups} + ' (' + (${view>/counts/groupsTable} || 0) + ')' }"
+                            level="H2"
+                        />
+                        <ToolbarSpacer id="groupsToolbarSpacer" />
+                        <SearchField
+                            id="groupsSearch"
+                            width="20rem"
+                            placeholder="{i18n>searchGroups}"
+                            liveChange=".onSearch"
+                        />
+                        <Button
+                            id="btnAddGroup"
+                            text="{i18n>add}"
+                            icon="sap-icon://add"
+                            type="Emphasized"
+                            press=".onAdd"
+                        />
+                        <Button
+                            id="btnDeleteGroups"
+                            text="{i18n>delete}"
+                            icon="sap-icon://delete"
+                            type="Transparent"
+                            enabled="{= ${view>/selected/groupsTable} > 0 }"
+                            press=".onDelete"
+                        />
+                    </OverflowToolbar>
+                </headerToolbar>
+                <noData>
+                    <IllustratedMessage
+                        id="groupsNoData"
+                        illustrationType="{= ${view>/search/groupsTable} ? 'sapIllus-NoSearchResults' : 'sapIllus-NoEntries' }"
+                        title="{i18n>noGroups}"
+                        description="{= ${view>/search/groupsTable} ? ${i18n>noResultsFor}.replace('{0}', ${view>/search/groupsTable}) : ${i18n>noGroupsHint} }"
+                        enableVerticalResponsiveness="true"
+                    />
+                </noData>
+                <columns>
+                    <Column id="colGroupDescription">
+                        <Text id="hdrGroupDescription" text="{i18n>description}" />
+                    </Column>
+                    <Column id="colGroupIas" minScreenWidth="Tablet" demandPopin="true">
+                        <Text id="hdrGroupIas" text="{i18n>iasGroup}" />
+                    </Column>
+                    <Column id="colGroupUsers" hAlign="End" width="7rem">
+                        <Text id="hdrGroupUsers" text="{i18n>users}" />
+                    </Column>
+                    <Column id="colGroupIntegrations" hAlign="End" width="7rem">
+                        <Text id="hdrGroupIntegrations" text="{i18n>integrations}" />
+                    </Column>
+                    <Column id="colGroupModified" width="11rem" minScreenWidth="Desktop" demandPopin="true">
+                        <Text id="hdrGroupModified" text="{i18n>modifiedAt}" />
+                    </Column>
+                    <Column id="colGroupEdit" hAlign="End" width="4rem" />
+                </columns>
+                <items>
+                    <ColumnListItem
+                        id="groupItem"
+                        type="Navigation"
+                        press=".onRowPress"
+                    >
+                        <cells>
+                            <ObjectIdentifier id="cellGroupDescription" title="{description}" />
+                            <Text id="cellGroupIas" text="{= ${iasUserGroup} || '—' }" class="lmcMonospace" />
+                            <Text id="cellGroupUsers" text="{userGroups/$count}" />
+                            <Text id="cellGroupIntegrations" text="{integrationGroups/$count}" />
+                            <Text
+                                id="cellGroupModified"
+                                text="{
+                                    path: 'modifiedAt',
+                                    type: '.DateTimeType',
+                                    formatOptions: {
+                                        pattern: 'dd/MM/yyyy HH:mm',
+                                        source: { pattern: 'yyyy-MM-dd\'T\'HH:mm:ss.SSSX' }
+                                    }
+                                }"
+                            />
+                            <Button
+                                id="btnEditGroup"
+                                icon="sap-icon://edit"
+                                type="Transparent"
+                                tooltip="{i18n>edit}"
+                                press=".onEdit"
+                            />
+                        </cells>
+                    </ColumnListItem>
+                </items>
+            </Table>
+        </f:content>
+    </f:DynamicPage>
+</mvc:View>

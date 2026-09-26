@@ -1,7 +1,69 @@
-<mvc:View controllerName="com.hrpath.log.monitor.cockpit.controller.App"
+<mvc:View
+    controllerName="com.hrpath.log.monitor.cockpit.controller.App"
     displayBlock="true"
     xmlns:mvc="sap.ui.core.mvc"
-    xmlns="sap.m">
-    <App id="app">
-    </App>
+    xmlns:tnt="sap.tnt"
+    xmlns="sap.m"
+>
+    <tnt:ToolPage id="toolPage">
+        <tnt:header>
+            <tnt:ToolHeader id="toolHeader">
+                <Button
+                    id="btnSideNavToggle"
+                    icon="sap-icon://menu2"
+                    type="Transparent"
+                    tooltip="{i18n>toggleMenu}"
+                    press=".onSideNavToggle"
+                />
+                <Title
+                    id="appTitle"
+                    text="{i18n>appTitle}"
+                    level="H1"
+                />
+                <ToolbarSpacer id="headerSpacer" />
+                <Avatar
+                    id="userAvatar"
+                    src="sap-icon://person-placeholder"
+                    displaySize="XS"
+                    tooltip="{i18n>user}"
+                />
+            </tnt:ToolHeader>
+        </tnt:header>
+        <tnt:sideContent>
+            <tnt:SideNavigation
+                id="sideNavigation"
+                itemSelect=".onSideNavItemSelect"
+            >
+                <tnt:NavigationList id="navigationList">
+                    <tnt:NavigationListItem
+                        id="navDashboard"
+                        key="dashboard"
+                        text="{i18n>navDashboard}"
+                        icon="sap-icon://business-objects-experience"
+                    />
+                    <tnt:NavigationListItem
+                        id="navIntegrations"
+                        key="integrations"
+                        text="{i18n>navIntegrations}"
+                        icon="sap-icon://connected"
+                    />
+                    <tnt:NavigationListItem
+                        id="navUsers"
+                        key="users"
+                        text="{i18n>navUsers}"
+                        icon="sap-icon://person-placeholder"
+                    />
+                    <tnt:NavigationListItem
+                        id="navGroups"
+                        key="groups"
+                        text="{i18n>navGroups}"
+                        icon="sap-icon://group"
+                    />
+                </tnt:NavigationList>
+            </tnt:SideNavigation>
+        </tnt:sideContent>
+        <tnt:mainContents>
+            <NavContainer id="app" />
+        </tnt:mainContents>
+    </tnt:ToolPage>
 </mvc:View>

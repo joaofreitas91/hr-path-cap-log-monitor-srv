@@ -1,0 +1,63 @@
+<core:FragmentDefinition
+    xmlns:core="sap.ui.core"
+    xmlns="sap.m"
+>
+    <Dialog
+        id="fieldDialog"
+        title="{view>/dialogTitle}"
+        contentWidth="32rem"
+        escapeHandler=".onDialogEscape"
+    >
+        <VBox id="fieldDialogContent" class="sapUiSmallMargin">
+            <Label id="lblFieldName" text="{i18n>fieldName}" labelFor="inpFieldName" required="true" showColon="true" />
+            <Input
+                id="inpFieldName"
+                value="{fieldName}"
+                required="true"
+                maxLength="100"
+                class="lmcMonospace"
+            />
+            <Text id="txtFieldNameHelp" text="{i18n>fieldNameHelp}" class="lmcHint sapUiSmallMarginBottom" />
+            <Label id="lblFieldLabel" text="{i18n>fieldLabel}" labelFor="inpFieldLabel" required="true" showColon="true" />
+            <Input
+                id="inpFieldLabel"
+                value="{label}"
+                required="true"
+                maxLength="100"
+                class="sapUiSmallMarginBottom"
+            />
+            <Label id="lblFieldDescription" text="{i18n>description}" labelFor="inpFieldDescription" showColon="true" />
+            <TextArea
+                id="inpFieldDescription"
+                value="{description}"
+                maxLength="255"
+                rows="2"
+                width="100%"
+                placeholder="{i18n>fieldDescriptionPlaceholder}"
+                class="sapUiSmallMarginBottom"
+            />
+            <Label id="lblFieldFilterable" text="{i18n>filterable}" labelFor="swFieldFilterable" showColon="true" />
+            <Switch
+                id="swFieldFilterable"
+                state="{isFilterable}"
+                customTextOn="{i18n>yes}"
+                customTextOff="{i18n>no}"
+            />
+            <Text id="txtFieldFilterableHelp" text="{i18n>filterableHelp}" class="lmcHint sapUiSmallMarginBottom" />
+            <Label id="lblFieldSortable" text="{i18n>sortable}" labelFor="swFieldSortable" showColon="true" />
+            <Switch
+                id="swFieldSortable"
+                state="{isSortable}"
+                customTextOn="{i18n>yes}"
+                customTextOff="{i18n>no}"
+            />
+            <Text id="txtFieldSortableHelp" text="{i18n>sortableHelp}" class="lmcHint" />
+        </VBox>
+        <beginButton>
+            <Button id="btnFieldSave" text="{i18n>save}" type="Emphasized" press=".onDialogSave" />
+        </beginButton>
+        <endButton>
+            <Button id="btnFieldCancel" text="{i18n>cancel}" press=".onDialogCancel" />
+        </endButton>
+    </Dialog>
+</core:FragmentDefinition>

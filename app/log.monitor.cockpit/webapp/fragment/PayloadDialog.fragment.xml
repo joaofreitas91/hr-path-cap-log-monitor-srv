@@ -1,0 +1,64 @@
+<core:FragmentDefinition
+    xmlns:core="sap.ui.core"
+    xmlns="sap.m"
+>
+    <Dialog
+        id="payloadDialog"
+        title="{i18n>logDetail}"
+        contentWidth="60rem"
+        resizable="true"
+        draggable="true"
+    >
+        <VBox id="payloadDialogContent" class="sapUiSmallMargin">
+            <HBox id="payloadHeader" justifyContent="SpaceBetween" alignItems="Start">
+                <VBox id="payloadIntegration">
+                    <Title id="payloadIntegrationName" text="{payload>/description}" level="H3" />
+                    <Text id="payloadIntegrationSystems" text="{payload>/systems}" class="lmcHint" />
+                </VBox>
+                <ObjectStatus
+                    id="payloadStatus"
+                    text="{path: 'payload>/status', formatter: '.formatter.statusText'}"
+                    state="{path: 'payload>/status', formatter: '.formatter.statusState'}"
+                    icon="{path: 'payload>/status', formatter: '.formatter.statusIcon'}"
+                    inverted="true"
+                />
+            </HBox>
+            <HBox id="payloadAttributes" wrap="Wrap" class="lmcHeaderAttributes sapUiSmallMarginTop">
+                <VBox id="payloadAttrExecutedAt">
+                    <Label id="lblPayloadExecutedAt" text="{i18n>executedAtShort}" />
+                    <Text id="txtPayloadExecutedAt" text="{payload>/executedAt}" />
+                </VBox>
+                <VBox id="payloadAttrType">
+                    <Label id="lblPayloadType" text="{i18n>payloadType}" />
+                    <Text id="txtPayloadType" text="{payload>/type}" />
+                </VBox>
+                <VBox id="payloadAttrId">
+                    <Label id="lblPayloadId" text="{i18n>logId}" />
+                    <Text id="txtPayloadId" text="{payload>/id}" class="lmcMonospace" />
+                </VBox>
+            </HBox>
+            <OverflowToolbar id="payloadToolbar" style="Clear" class="sapUiSmallMarginTop">
+                <Title id="payloadTitle" text="{i18n>payload}" level="H4" />
+                <ToolbarSpacer id="payloadToolbarSpacer" />
+                <Button
+                    id="btnCopyPayload"
+                    text="{i18n>copy}"
+                    icon="sap-icon://copy"
+                    type="Transparent"
+                    press=".onCopyPayload"
+                />
+            </OverflowToolbar>
+            <TextArea
+                id="payloadText"
+                value="{payload>/text}"
+                editable="false"
+                width="100%"
+                rows="18"
+                class="lmcMonospace lmcPayload"
+            />
+        </VBox>
+        <endButton>
+            <Button id="btnClosePayload" text="{i18n>close}" press=".onClosePayload" />
+        </endButton>
+    </Dialog>
+</core:FragmentDefinition>

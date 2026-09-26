@@ -3,7 +3,13 @@
   "sap.app": {
     "id": "com.hrpath.log.monitor.cockpit",
     "type": "application",
-    "i18n": "i18n/i18n.properties",
+    "i18n": {
+      "bundleName": "com.hrpath.log.monitor.cockpit.i18n.i18n",
+      "supportedLocales": [
+        ""
+      ],
+      "fallbackLocale": ""
+    },
     "applicationVersion": {
       "version": "0.0.1"
     },
@@ -61,7 +67,11 @@
       "minUI5Version": "1.152.0",
       "libs": {
         "sap.m": {},
-        "sap.ui.core": {}
+        "sap.ui.core": {},
+        "sap.tnt": {},
+        "sap.f": {},
+        "sap.uxap": {},
+        "sap.viz": {}
       }
     },
     "contentDensities": {
@@ -72,7 +82,11 @@
       "i18n": {
         "type": "sap.ui.model.resource.ResourceModel",
         "settings": {
-          "bundleName": "com.hrpath.log.monitor.cockpit.i18n.i18n"
+          "bundleName": "com.hrpath.log.monitor.cockpit.i18n.i18n",
+          "supportedLocales": [
+            ""
+          ],
+          "fallbackLocale": ""
         }
       },
       "": {
@@ -94,10 +108,10 @@
     },
     "routing": {
       "config": {
-        "routerClass": "sap.m.routing.Router",
+        "routerClass": "sap.f.routing.Router",
         "controlAggregation": "pages",
         "controlId": "app",
-        "transition": "slide",
+        "transition": "show",
         "type": "View",
         "viewType": "XML",
         "path": "com.hrpath.log.monitor.cockpit.view",
@@ -106,17 +120,72 @@
       },
       "routes": [
         {
-          "name": "RouteDashboard",
-          "pattern": ":?query:",
+          "name": "dashboard",
+          "pattern": "",
           "target": [
-            "TargetDashboard"
+            "Dashboard"
+          ]
+        },
+        {
+          "name": "integrations",
+          "pattern": "integrations",
+          "target": [
+            "Integrations"
+          ]
+        },
+        {
+          "name": "integrationDetail",
+          "pattern": "integrations/{id}",
+          "target": [
+            "IntegrationDetail"
+          ]
+        },
+        {
+          "name": "users",
+          "pattern": "users",
+          "target": [
+            "Users"
+          ]
+        },
+        {
+          "name": "groups",
+          "pattern": "groups",
+          "target": [
+            "Groups"
+          ]
+        },
+        {
+          "name": "groupDetail",
+          "pattern": "groups/{id}",
+          "target": [
+            "GroupDetail"
           ]
         }
       ],
       "targets": {
-        "TargetDashboard": {
+        "Dashboard": {
           "id": "Dashboard",
           "name": "Dashboard"
+        },
+        "Integrations": {
+          "id": "Integrations",
+          "name": "Integrations"
+        },
+        "IntegrationDetail": {
+          "id": "IntegrationDetail",
+          "name": "IntegrationDetail"
+        },
+        "Users": {
+          "id": "Users",
+          "name": "Users"
+        },
+        "Groups": {
+          "id": "Groups",
+          "name": "Groups"
+        },
+        "GroupDetail": {
+          "id": "GroupDetail",
+          "name": "GroupDetail"
         }
       }
     },

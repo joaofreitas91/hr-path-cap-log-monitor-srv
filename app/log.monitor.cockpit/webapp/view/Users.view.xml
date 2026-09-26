@@ -1,0 +1,129 @@
+<mvc:View
+    controllerName="com.hrpath.log.monitor.cockpit.controller.Users"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:f="sap.f"
+    xmlns="sap.m"
+>
+    <f:DynamicPage
+        id="usersPage"
+        toggleHeaderOnTitleClick="false"
+        class="lmcPage"
+    >
+        <f:title>
+            <f:DynamicPageTitle id="usersPageTitle">
+                <f:heading>
+                    <Title
+                        id="usersHeading"
+                        text="{i18n>navUsers}"
+                        level="H1"
+                        class="lmcPageHeading"
+                    />
+                </f:heading>
+            </f:DynamicPageTitle>
+        </f:title>
+        <f:content>
+            <Table
+                id="usersTable"
+                class="lmcCard"
+                mode="MultiSelect"
+                growing="true"
+                growingThreshold="50"
+                sticky="ColumnHeaders,HeaderToolbar"
+                selectionChange=".onTableSelectionChange"
+                updateFinished=".onTableUpdateFinished"
+                items="{
+                    path: '/Users',
+                    parameters: {
+                        $count: true,
+                        $$updateGroupId: 'dialog',
+                        $expand: 'userGroups($select=ID)'
+                    },
+                    sorter: { path: 'name' }
+                }"
+            >
+                <headerToolbar>
+                    <OverflowToolbar id="usersToolbar">
+                        <Title
+                            id="usersTableTitle"
+                            text="{= ${i18n>navUsers} + ' (' + (${view>/counts/usersTable} || 0) + ')' }"
+                            level="H2"
+                        />
+                        <ToolbarSpacer id="usersToolbarSpacer" />
+                        <SearchField
+                            id="usersSearch"
+                            width="20rem"
+                            placeholder="{i18n>searchUsers}"
+                            liveChange=".onSearch"
+                        />
+                        <Button
+                            id="btnAddUser"
+                            text="{i18n>add}"
+                            icon="sap-icon://add"
+                            type="Emphasized"
+                            press=".onAdd"
+                        />
+                        <Button
+                            id="btnDeleteUsers"
+                            text="{i18n>delete}"
+                            icon="sap-icon://delete"
+                            type="Transparent"
+                            enabled="{= ${view>/selected/usersTable} > 0 }"
+                            press=".onDelete"
+                        />
+                    </OverflowToolbar>
+                </headerToolbar>
+                <noData>
+                    <IllustratedMessage
+                        id="usersNoData"
+                        illustrationType="{= ${view>/search/usersTable} ? 'sapIllus-NoSearchResults' : 'sapIllus-NoEntries' }"
+                        title="{i18n>noUsers}"
+                        description="{= ${view>/search/usersTable} ? ${i18n>noResultsFor}.replace('{0}', ${view>/search/usersTable}) : ${i18n>noUsersHint} }"
+                        enableVerticalResponsiveness="true"
+                    />
+                </noData>
+                <columns>
+                    <Column id="colUserName">
+                        <Text id="hdrUserName" text="{i18n>name}" />
+                    </Column>
+                    <Column id="colUserEmail">
+                        <Text id="hdrUserEmail" text="{i18n>email}" />
+                    </Column>
+                    <Column id="colUserGroups" hAlign="End" width="7rem">
+                        <Text id="hdrUserGroups" text="{i18n>groups}" />
+                    </Column>
+                    <Column id="colUserModified" width="11rem" minScreenWidth="Tablet" demandPopin="true">
+                        <Text id="hdrUserModified" text="{i18n>modifiedAt}" />
+                    </Column>
+                    <Column id="colUserEdit" hAlign="End" width="4rem" />
+                </columns>
+                <items>
+                    <ColumnListItem id="userItem">
+                        <cells>
+                            <Text id="cellUserName" text="{name}" />
+                            <Link id="cellUserEmail" text="{email}" href="{= 'mailto:' + ${email} }" />
+                            <Text id="cellUserGroups" text="{userGroups/$count}" />
+                            <Text
+                                id="cellUserModified"
+                                text="{
+                                    path: 'modifiedAt',
+                                    type: '.DateTimeType',
+                                    formatOptions: {
+                                        pattern: 'dd/MM/yyyy HH:mm',
+                                        source: { pattern: 'yyyy-MM-dd\'T\'HH:mm:ss.SSSX' }
+                                    }
+                                }"
+                            />
+                            <Button
+                                id="btnEditUser"
+                                icon="sap-icon://edit"
+                                type="Transparent"
+                                tooltip="{i18n>edit}"
+                                press=".onEdit"
+                            />
+                        </cells>
+                    </ColumnListItem>
+                </items>
+            </Table>
+        </f:content>
+    </f:DynamicPage>
+</mvc:View>
