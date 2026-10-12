@@ -1,0 +1,137 @@
+<core:FragmentDefinition
+    xmlns:core="sap.ui.core"
+    xmlns="sap.m"
+>
+    <Dialog
+        id="integrationApiDialog"
+        title="{i18n>integrationApi}"
+        contentWidth="60rem"
+        contentHeight="36rem"
+        resizable="true"
+        draggable="true"
+    >
+        <IconTabBar
+            id="apiTabBar"
+            expandable="false"
+            stretchContentHeight="true"
+            class="sapUiResponsiveContentPadding"
+        >
+            <items>
+                <IconTabFilter id="apiTabExample" key="example" text="{i18n>apiTabExample}">
+                    <VBox id="apiExampleContent">
+                        <Label id="lblApiEndpoint" text="{i18n>apiEndpoint}" />
+                        <HBox id="apiEndpointRow" alignItems="Center" wrap="Wrap" class="sapUiTinyMarginBottom">
+                            <ObjectStatus
+                                id="apiMethod"
+                                text="POST"
+                                state="Information"
+                                inverted="true"
+                                visible="{= !!${apiSample>/endpoint} }"
+                                class="sapUiTinyMarginEnd"
+                            />
+                            <Text
+                                id="txtApiEndpoint"
+                                text="{= ${apiSample>/endpoint} || ${i18n>apiEndpointUnavailable} }"
+                                class="lmcMonospace"
+                            />
+                            <Button
+                                id="btnCopyApiEndpoint"
+                                icon="sap-icon://copy"
+                                type="Transparent"
+                                tooltip="{i18n>copy}"
+                                visible="{= !!${apiSample>/endpoint} }"
+                                press=".onCopyApiEndpoint"
+                            />
+                        </HBox>
+                        <OverflowToolbar id="apiSampleToolbar" style="Clear">
+                            <Title id="apiSampleTitle" text="{i18n>apiSampleBody}" level="H4" />
+                            <ToolbarSpacer id="apiSampleToolbarSpacer" />
+                            <Button
+                                id="btnCopyApiSample"
+                                text="{i18n>copy}"
+                                icon="sap-icon://copy"
+                                type="Transparent"
+                                press=".onCopyApiSample"
+                            />
+                        </OverflowToolbar>
+                        <TextArea
+                            id="apiSampleText"
+                            value="{apiSample>/display}"
+                            editable="false"
+                            width="100%"
+                            rows="16"
+                            class="lmcMonospace lmcPayload"
+                        />
+                        <Text id="apiSampleHint" text="{i18n>apiSampleHint}" class="lmcHint sapUiTinyMarginTop" />
+                        <Text
+                            id="apiNoFieldsHint"
+                            text="{i18n>apiNoFieldsHint}"
+                            visible="{= !${apiSample>/hasFields} }"
+                            class="lmcHint sapUiTinyMarginTop"
+                        />
+                    </VBox>
+                </IconTabFilter>
+                <IconTabFilter id="apiTabSchema" key="schema" text="{i18n>apiTabSchema}">
+                    <VBox id="apiSchemaContent">
+                        <Table id="apiSchemaTable" class="lmcCard">
+                            <columns>
+                                <Column id="colApiSchemaField">
+                                    <Text id="hdrApiSchemaField" text="{i18n>apiSchemaField}" />
+                                </Column>
+                                <Column id="colApiSchemaType" minScreenWidth="Tablet" demandPopin="true">
+                                    <Text id="hdrApiSchemaType" text="{i18n>apiSchemaType}" />
+                                </Column>
+                                <Column id="colApiSchemaRequired" hAlign="Center" width="8rem">
+                                    <Text id="hdrApiSchemaRequired" text="{i18n>apiSchemaRequired}" />
+                                </Column>
+                                <Column id="colApiSchemaValues" minScreenWidth="Tablet" demandPopin="true">
+                                    <Text id="hdrApiSchemaValues" text="{i18n>apiSchemaValues}" />
+                                </Column>
+                            </columns>
+                            <items>
+                                <ColumnListItem id="apiSchemaRowIntegration">
+                                    <cells>
+                                        <Text id="cellApiSchemaIntegrationField" text="integration_ID" class="lmcMonospace" />
+                                        <Text id="cellApiSchemaIntegrationType" text="{i18n>apiTypeUuid}" />
+                                        <Text id="cellApiSchemaIntegrationRequired" text="{i18n>yes}" />
+                                        <Text id="cellApiSchemaIntegrationValues" text="{i18n>apiValuesIntegration}" />
+                                    </cells>
+                                </ColumnListItem>
+                                <ColumnListItem id="apiSchemaRowExecutedAt">
+                                    <cells>
+                                        <Text id="cellApiSchemaExecutedAtField" text="executedAt" class="lmcMonospace" />
+                                        <Text id="cellApiSchemaExecutedAtType" text="{i18n>apiTypeTimestamp}" />
+                                        <Text id="cellApiSchemaExecutedAtRequired" text="{i18n>yes}" />
+                                        <Text id="cellApiSchemaExecutedAtValues" text="{i18n>apiValuesExecutedAt}" />
+                                    </cells>
+                                </ColumnListItem>
+                                <ColumnListItem id="apiSchemaRowStatus">
+                                    <cells>
+                                        <Text id="cellApiSchemaStatusField" text="status" class="lmcMonospace" />
+                                        <Text id="cellApiSchemaStatusType" text="{i18n>apiTypeString}" />
+                                        <Text id="cellApiSchemaStatusRequired" text="{i18n>yes}" />
+                                        <Text id="cellApiSchemaStatusValues" text="RUNNING, SUCCESS, ERROR, WARNING" class="lmcMonospace" />
+                                    </cells>
+                                </ColumnListItem>
+                                <ColumnListItem id="apiSchemaRowPayload">
+                                    <cells>
+                                        <Text id="cellApiSchemaPayloadField" text="payload" class="lmcMonospace" />
+                                        <Text id="cellApiSchemaPayloadType" text="{i18n>apiTypeJsonString}" />
+                                        <Text id="cellApiSchemaPayloadRequired" text="{i18n>no}" />
+                                        <Text id="cellApiSchemaPayloadValues" text="{i18n>apiValuesPayload}" />
+                                    </cells>
+                                </ColumnListItem>
+                            </items>
+                        </Table>
+                        <Text id="apiSchemaPayloadNote" text="{i18n>apiSchemaPayloadNote}" class="sapUiSmallMarginTop" />
+                        <Text id="apiSchemaFieldsNote" text="{i18n>apiSchemaFieldsNote}" class="lmcHint sapUiTinyMarginTop" />
+                        <Text id="apiSchemaEndpointNote" text="{i18n>apiSchemaEndpointNote}" class="lmcHint sapUiTinyMarginTop" />
+                    </VBox>
+                </IconTabFilter>
+            </items>
+        </IconTabBar>
+        <endButton>
+            <Button id="btnCloseApiDialog" text="{i18n>close}" press=".onCloseApiDialog" />
+        </endButton>
+    </Dialog>
+</core:FragmentDefinition>

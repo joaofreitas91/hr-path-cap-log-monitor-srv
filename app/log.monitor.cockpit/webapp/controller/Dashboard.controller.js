@@ -6,9 +6,8 @@ sap.ui.define([
     "sap/ui/core/format/DateFormat",
     "sap/ui/core/format/NumberFormat",
     "sap/ui/core/theming/Parameters",
-    "sap/m/MessageBox",
-    "sap/m/MessageToast"
-], (BaseController, Filter, FilterOperator, JSONModel, DateFormat, NumberFormat, Parameters, MessageBox, MessageToast) => {
+    "sap/m/MessageBox"
+], (BaseController, Filter, FilterOperator, JSONModel, DateFormat, NumberFormat, Parameters, MessageBox) => {
     "use strict";
 
     const STATUS_ORDER = ["SUCCESS", "ERROR", "WARNING", "RUNNING"];
@@ -203,13 +202,8 @@ sap.ui.define([
             }
         },
 
-        async onCopyPayload() {
-            try {
-                await navigator.clipboard.writeText(this.getView().getModel("payload").getProperty("/text"));
-                MessageToast.show(this.getText("payloadCopied"));
-            } catch {
-                MessageToast.show(this.getText("payloadCopyFailed"));
-            }
+        onCopyPayload() {
+            this.copyToClipboard(this.getView().getModel("payload").getProperty("/text"), "payloadCopied", "payloadCopyFailed");
         },
 
         onClosePayload() {

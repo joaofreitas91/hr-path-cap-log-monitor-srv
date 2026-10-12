@@ -202,3 +202,15 @@ Authorization: Basic {{username}}:{{password}}
 # @name IntegrationGroups_GET_AFTER_DELETE_SF_TO_S4 (expect empty, group still exists)
 GET {{server}}/odata/v4/log-monitor-cockpit/IntegrationGroups?$filter=integration_ID eq a1b2c3d4-0001-4000-8000-000000000001
 Authorization: Basic {{username}}:{{password}}
+
+
+### Integrations
+# @name integrationApiPath
+GET {{server}}/odata/v4/log-monitor-cockpit/integrationApiPath()
+Authorization: Basic {{username}}:{{password}}
+
+
+### Integrations
+# @name integrationApiPath_REPORT_VIEWER (expect 403)
+GET {{server}}/odata/v4/log-monitor-cockpit/integrationApiPath()
+Authorization: Basic alice@dummy.com:{{password}}

@@ -37,4 +37,6 @@ service LogMonitorCockpit @(requires: ['administrator',
     }
 
     function logMetrics(![from]: Timestamp, to: Timestamp, integrationID: UUID) returns LogMetrics;
+
+    function integrationApiPath() returns String;
 }

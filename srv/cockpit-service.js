@@ -96,4 +96,11 @@ export default function () {
 
         return { byStatus, byIntegration };
     });
+
+    // The ingestion endpoint belongs to LogMonitorIntegration, so the cockpit asks for its path
+    // instead of repeating it in the app.
+    this.on('integrationApiPath', () => {
+        const sPath = cds.services.LogMonitorIntegration?.path ?? '/odata/v4/log-monitor-integration';
+        return `${sPath}/IntegrationLogs`;
+    });
 }

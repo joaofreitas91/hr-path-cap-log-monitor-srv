@@ -82,6 +82,9 @@
                     />
                 </noData>
                 <columns>
+                    <Column id="colIntegrationId" width="21rem" minScreenWidth="Desktop" demandPopin="true">
+                        <Text id="hdrIntegrationId" text="{i18n>id}" />
+                    </Column>
                     <Column id="colIntegrationDescription">
                         <Text id="hdrIntegrationDescription" text="{i18n>description}" />
                     </Column>
@@ -109,6 +112,7 @@
                         press=".onRowPress"
                     >
                         <cells>
+                            <Text id="cellIntegrationId" text="{ID}" class="lmcMonospace" />
                             <ObjectIdentifier id="cellIntegrationDescription" title="{description}" />
                             <Text id="cellIntegrationSource" text="{source}" />
                             <Text id="cellIntegrationTarget" text="{target}" />

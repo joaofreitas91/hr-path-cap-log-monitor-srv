@@ -27,6 +27,13 @@
                 </uxap:expandedContent>
                 <uxap:actions>
                     <Button
+                        id="btnIntegrationApi"
+                        text="{i18n>integrationApi}"
+                        icon="sap-icon://chain-link"
+                        type="Transparent"
+                        press=".onShowApi"
+                    />
+                    <Button
                         id="btnEditIntegrationDetail"
                         text="{i18n>edit}"
                         icon="sap-icon://edit"
@@ -45,6 +52,10 @@
                 <VBox id="attrTarget">
                     <Label id="lblAttrTarget" text="{i18n>target}" />
                     <Text id="txtAttrTarget" text="{target}" class="lmcStrong" />
+                </VBox>
+                <VBox id="attrId">
+                    <Label id="lblAttrId" text="{i18n>id}" />
+                    <Text id="txtAttrId" text="{ID}" class="lmcMonospace" />
                 </VBox>
                 <VBox id="attrCreated">
                     <Label id="lblAttrCreated" text="{i18n>createdAt}" />

@@ -44,6 +44,16 @@ sap.ui.define([
             return this.getView().getModel("view");
         },
 
+        /** Copies text to the clipboard and reports the outcome with a toast. */
+        async copyToClipboard(sText, sSuccessKey, sFailureKey) {
+            try {
+                await navigator.clipboard.writeText(sText);
+                MessageToast.show(this.getText(sSuccessKey));
+            } catch {
+                MessageToast.show(this.getText(sFailureKey));
+            }
+        },
+
         /* ---------- list pattern ---------- */
 
         onTableUpdateFinished(oEvent) {
