@@ -1,0 +1,39 @@
+<core:FragmentDefinition
+    xmlns:core="sap.ui.core"
+    xmlns="sap.m"
+>
+    <TableSelectDialog
+        id="linkNotificationUsersDialog"
+        title="{i18n>linkNotificationUsersTitle}"
+        multiSelect="true"
+        rememberSelections="false"
+        confirmButtonText="{i18n>link}"
+        noDataText="{i18n>noUsersToNotify}"
+        searchPlaceholder="{i18n>searchUsers}"
+        growingThreshold="50"
+        contentWidth="48rem"
+        search=".onNotificationLinkDialogSearch"
+        liveChange=".onNotificationLinkDialogSearch"
+        confirm=".onNotificationLinkDialogConfirm"
+        items="{
+            path: '/Users',
+            sorter: { path: 'name' },
+            suspended: true
+        }"
+    >
+        <columns>
+            <Column id="colLinkNotificationUserName">
+                <Text id="hdrLinkNotificationUserName" text="{i18n>name}" />
+            </Column>
+            <Column id="colLinkNotificationUserEmail">
+                <Text id="hdrLinkNotificationUserEmail" text="{i18n>email}" />
+            </Column>
+        </columns>
+        <ColumnListItem id="linkNotificationUserItem">
+            <cells>
+                <Text id="cellLinkNotificationUserName" text="{name}" />
+                <Text id="cellLinkNotificationUserEmail" text="{email}" />
+            </cells>
+        </ColumnListItem>
+    </TableSelectDialog>
+</core:FragmentDefinition>

@@ -1,0 +1,167 @@
+@server=http://localhost:4004
+@username=john.doe@dummy.com
+@password=1234
+
+
+### IntegrationNotifications
+# @name IntegrationNotifications_GET_OF_SF_TO_S4
+GET {{server}}/odata/v4/log-monitor-cockpit/IntegrationNotifications?$filter=integration_ID eq a1b2c3d4-0001-4000-8000-000000000001&$expand=user,integrationGroup($expand=group)
+Authorization: Basic {{username}}:{{password}}
+
+
+### IntegrationNotifications
+# @name IntegrationNotifications_POST_USER_JOHN_DOE
+POST {{server}}/odata/v4/log-monitor-cockpit/IntegrationNotifications
+Content-Type: application/json
+Authorization: Basic {{username}}:{{password}}
+
+{
+  "ID": "c3d4e5f6-0001-4000-8000-000000000001",
+  "integration_ID": "a1b2c3d4-0001-4000-8000-000000000001",
+  "user_ID": "591361b7-b299-42ef-955e-ba7878eeb060",
+  "notifyOnError": true
+}
+
+
+### IntegrationNotifications
+# @name IntegrationNotifications_POST_GROUP_HR_TEAM_EC
+POST {{server}}/odata/v4/log-monitor-cockpit/IntegrationNotifications
+Content-Type: application/json
+Authorization: Basic {{username}}:{{password}}
+
+{
+  "ID": "c3d4e5f6-0002-4000-8000-000000000002",
+  "integration_ID": "a1b2c3d4-0001-4000-8000-000000000001",
+  "integrationGroup_ID": "a2b3c4d5-0001-4000-8000-000000000001",
+  "notifyOnError": true
+}
+
+
+### IntegrationNotifications
+# @name IntegrationNotifications_POST_USER_JOHN_DOE_DUPLICATE (expect 409)
+POST {{server}}/odata/v4/log-monitor-cockpit/IntegrationNotifications
+Content-Type: application/json
+Authorization: Basic {{username}}:{{password}}
+
+{
+  "integration_ID": "a1b2c3d4-0001-4000-8000-000000000001",
+  "user_ID": "591361b7-b299-42ef-955e-ba7878eeb060",
+  "notifyOnError": true
+}
+
+
+### IntegrationNotifications
+# @name IntegrationNotifications_POST_GROUP_HR_TEAM_EC_DUPLICATE (expect 409)
+POST {{server}}/odata/v4/log-monitor-cockpit/IntegrationNotifications
+Content-Type: application/json
+Authorization: Basic {{username}}:{{password}}
+
+{
+  "integration_ID": "a1b2c3d4-0001-4000-8000-000000000001",
+  "integrationGroup_ID": "a2b3c4d5-0001-4000-8000-000000000001",
+  "notifyOnError": true
+}
+
+
+### IntegrationNotifications
+# @name IntegrationNotifications_BATCH_SAME_USER_TWICE (expect 409 for the second)
+POST {{server}}/odata/v4/log-monitor-cockpit/$batch
+Content-Type: application/json
+Authorization: Basic {{username}}:{{password}}
+
+{
+  "requests": [
+    {
+      "id": "r1",
+      "atomicityGroup": "g1",
+      "method": "POST",
+      "url": "IntegrationNotifications",
+      "headers": { "content-type": "application/json" },
+      "body": {
+        "integration_ID": "a1b2c3d4-0001-4000-8000-000000000001",
+        "user_ID": "9291ac54-b142-423f-bd22-dd3c4a821be4",
+        "notifyOnError": true
+      }
+    },
+    {
+      "id": "r2",
+      "atomicityGroup": "g1",
+      "method": "POST",
+      "url": "IntegrationNotifications",
+      "headers": { "content-type": "application/json" },
+      "body": {
+        "integration_ID": "a1b2c3d4-0001-4000-8000-000000000001",
+        "user_ID": "9291ac54-b142-423f-bd22-dd3c4a821be4",
+        "notifyOnError": true
+      }
+    }
+  ]
+}
+
+
+### IntegrationNotifications
+# @name IntegrationNotifications_POST_BOTH_RECIPIENTS (expect 400)
+POST {{server}}/odata/v4/log-monitor-cockpit/IntegrationNotifications
+Content-Type: application/json
+Authorization: Basic {{username}}:{{password}}
+
+{
+  "integration_ID": "a1b2c3d4-0001-4000-8000-000000000001",
+  "user_ID": "9291ac54-b142-423f-bd22-dd3c4a821be4",
+  "integrationGroup_ID": "a2b3c4d5-0001-4000-8000-000000000001",
+  "notifyOnError": true
+}
+
+
+### IntegrationNotifications
+# @name IntegrationNotifications_POST_NO_RECIPIENT (expect 400)
+POST {{server}}/odata/v4/log-monitor-cockpit/IntegrationNotifications
+Content-Type: application/json
+Authorization: Basic {{username}}:{{password}}
+
+{
+  "integration_ID": "a1b2c3d4-0001-4000-8000-000000000001",
+  "notifyOnError": true
+}
+
+
+### IntegrationNotifications
+# @name IntegrationNotifications_POST_GROUP_OF_ANOTHER_INTEGRATION (expect 400)
+POST {{server}}/odata/v4/log-monitor-cockpit/IntegrationNotifications
+Content-Type: application/json
+Authorization: Basic {{username}}:{{password}}
+
+{
+  "integration_ID": "a1b2c3d4-0001-4000-8000-000000000001",
+  "integrationGroup_ID": "a2b3c4d5-0002-4000-8000-000000000002",
+  "notifyOnError": true
+}
+
+
+### IntegrationNotifications
+# @name IntegrationNotifications_PATCH_BOTH_RECIPIENTS (expect 400)
+PATCH {{server}}/odata/v4/log-monitor-cockpit/IntegrationNotifications/c3d4e5f6-0001-4000-8000-000000000001
+Content-Type: application/json
+Authorization: Basic {{username}}:{{password}}
+
+{
+  "integrationGroup_ID": "a2b3c4d5-0001-4000-8000-000000000001"
+}
+
+
+### IntegrationNotifications
+# @name IntegrationNotifications_PATCH_FLAGS_USER_JOHN_DOE
+PATCH {{server}}/odata/v4/log-monitor-cockpit/IntegrationNotifications/c3d4e5f6-0001-4000-8000-000000000001
+Content-Type: application/json
+Authorization: Basic {{username}}:{{password}}
+
+{
+  "notifyOnWarning": true,
+  "notifyOnSuccess": false
+}
+
+
+### IntegrationNotifications
+# @name IntegrationNotifications_DELETE_GROUP_HR_TEAM_EC
+DELETE {{server}}/odata/v4/log-monitor-cockpit/IntegrationNotifications/c3d4e5f6-0002-4000-8000-000000000002
+Authorization: Basic {{username}}:{{password}}

@@ -16,3 +16,19 @@ Authorization: Basic {{username}}:{{password}}
   "status": "ERROR",
   "payload": "{\"employeeId\":\"999\",\"costCenter\":\"001\",\"lastName\":\"Freitas\",\"firstName\":\"joao\",\"jobTitle\":\"developer\"}"
 }
+
+### IntegrationLogs
+# @name IntegrationLogs_POST_CONCUR_ERROR_NOTIFICATION
+# Dispara a notificação por e-mail: a integração precisa ter destinatários com "Erro"
+# marcado (aba Notificação do cockpit ou "8 - integration-notifications.http") e o SMTP
+# local configurado (npx maildev + .cdsrc-private.json). Sem "ID" para poder repetir.
+POST {{server}}/odata/v4/log-monitor-integration/IntegrationLogs
+Content-Type: application/json
+Authorization: Basic {{username}}:{{password}}
+
+{
+  "integration_ID": "a1b2c3d4-0003-4000-8000-000000000003",
+  "executedAt": "2026-10-18T13:30:00.000Z",
+  "status": "ERROR",
+  "payload": "{\"employeeId\":\"999\",\"costCenter\":\"001\",\"expenseReportId\":\"EXP-4711\"}"
+}

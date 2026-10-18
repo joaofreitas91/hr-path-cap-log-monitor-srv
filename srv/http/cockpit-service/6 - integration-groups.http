@@ -75,3 +75,9 @@ Authorization: Basic {{username}}:{{password}}
 # @name IntegrationGroups_DELETE_CONCUR_TO_S4_HR_TEAM_LMS
 DELETE {{server}}/odata/v4/log-monitor-cockpit/IntegrationGroups/a2b3c4d5-0002-4000-8000-000000000002
 Authorization: Basic {{username}}:{{password}}
+
+
+### IntegrationGroups
+# @name IntegrationNotifications_GET_AFTER_DELETE_SF_TO_S4_HR_TEAM_EC (expect empty)
+GET {{server}}/odata/v4/log-monitor-cockpit/IntegrationNotifications?$filter=integrationGroup_ID eq a2b3c4d5-0001-4000-8000-000000000001
+Authorization: Basic {{username}}:{{password}}

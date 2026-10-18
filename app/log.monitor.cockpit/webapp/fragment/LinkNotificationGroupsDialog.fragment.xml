@@ -1,0 +1,42 @@
+<core:FragmentDefinition
+    xmlns:core="sap.ui.core"
+    xmlns="sap.m"
+>
+    <TableSelectDialog
+        id="linkNotificationGroupsDialog"
+        title="{i18n>linkNotificationGroupsTitle}"
+        multiSelect="true"
+        rememberSelections="false"
+        confirmButtonText="{i18n>link}"
+        noDataText="{i18n>noGroupsToNotify}"
+        searchPlaceholder="{i18n>searchGroups}"
+        growingThreshold="50"
+        contentWidth="48rem"
+        search=".onNotificationLinkDialogSearch"
+        liveChange=".onNotificationLinkDialogSearch"
+        confirm=".onNotificationLinkDialogConfirm"
+        items="{
+            path: '/IntegrationGroups',
+            parameters: {
+                $expand: 'group($select=ID,description,iasUserGroup)'
+            },
+            sorter: { path: 'group/description' },
+            suspended: true
+        }"
+    >
+        <columns>
+            <Column id="colLinkNotificationGroupDescription">
+                <Text id="hdrLinkNotificationGroupDescription" text="{i18n>description}" />
+            </Column>
+            <Column id="colLinkNotificationGroupIas">
+                <Text id="hdrLinkNotificationGroupIas" text="{i18n>iasGroup}" />
+            </Column>
+        </columns>
+        <ColumnListItem id="linkNotificationGroupItem">
+            <cells>
+                <Text id="cellLinkNotificationGroupDescription" text="{group/description}" />
+                <Text id="cellLinkNotificationGroupIas" text="{= ${group/iasUserGroup} || '—' }" class="lmcMonospace" />
+            </cells>
+        </ColumnListItem>
+    </TableSelectDialog>
+</core:FragmentDefinition>

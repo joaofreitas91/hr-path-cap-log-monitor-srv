@@ -67,7 +67,12 @@ sap.ui.define([
             this._updateSelectedCount(oEvent.getSource());
         },
 
-        searchTable(sTableId, aPaths, sQuery) {
+        /**
+         * Filters a table by a search query. sFilterType defaults to the application filter;
+         * tables whose binding already carries an application filter (e.g. the recipient kind)
+         * pass FilterType.Control, so the search does not replace it.
+         */
+        searchTable(sTableId, aPaths, sQuery, sFilterType) {
             const sTrimmed = (sQuery ?? "").trim();
             this.getViewModel().setProperty(`/search/${sTableId}`, sTrimmed);
             const aFilters = sTrimmed ? [new Filter({
@@ -79,7 +84,7 @@ sap.ui.define([
                 })),
                 and: false
             })] : [];
-            this.byId(sTableId).getBinding("items").filter(aFilters);
+            this.byId(sTableId).getBinding("items").filter(aFilters, sFilterType);
         },
 
         /**

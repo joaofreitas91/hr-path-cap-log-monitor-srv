@@ -6,10 +6,14 @@ using {
 } from '@sap/cds/common';
 
 entity Users : cuid, managed {
-    name       : String(255) not null;
-    email      : String(255) not null;
-    userGroups : Association to many UserGroups
-                     on userGroups.user = $self;
+    name          : String(255) not null;
+    email         : String(255) not null;
+
+    userGroups    : Association to many UserGroups
+                        on userGroups.user = $self;
+
+    notifications : Association to many IntegrationNotifications
+                        on notifications.user = $self;
 }
 
 entity Groups : cuid, managed {
@@ -51,6 +55,9 @@ entity Integrations @(restrict: [
 
     logs              : Composition of many IntegrationLogs
                             on logs.integration = $self;
+
+    notifications     : Composition of many IntegrationNotifications
+                            on notifications.integration = $self;
 }
 
 entity IntegrationFields : cuid, managed {
@@ -63,8 +70,26 @@ entity IntegrationFields : cuid, managed {
 }
 
 entity IntegrationGroups : cuid, managed {
-    integration : Association to Integrations not null;
-    group       : Association to Groups not null;
+    integration   : Association to Integrations not null;
+    group         : Association to Groups not null;
+
+    notifications : Association to many IntegrationNotifications
+                        on notifications.integrationGroup = $self;
+}
+
+entity IntegrationNotifications @(restrict: [{
+    grant: ['*'],
+    to   : 'administrator',
+}]) : cuid, managed {
+    integration      : Association to Integrations not null;
+
+    // Exactly one of user / integrationGroup is set, enforced in srv/cockpit-service.js
+    user             : Association to Users;
+    integrationGroup : Association to IntegrationGroups;
+
+    notifyOnSuccess  : Boolean default false;
+    notifyOnWarning  : Boolean default false;
+    notifyOnError    : Boolean default false;
 }
 
 

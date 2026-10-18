@@ -73,3 +73,8 @@ Authorization: Basic {{username}}:{{password}}
 # @name IntegrationGroups_GET_AFTER_DELETE_HR_TEAM_EC (expect empty)
 GET {{server}}/odata/v4/log-monitor-cockpit/IntegrationGroups?$filter=group_ID eq b1b2b3b4-0001-4000-8000-000000000001
 Authorization: Basic {{username}}:{{password}}
+
+### Groups
+# @name IntegrationNotifications_GET_AFTER_DELETE_HR_TEAM_EC (expect no group recipient)
+GET {{server}}/odata/v4/log-monitor-cockpit/IntegrationNotifications?$filter=integrationGroup_ID ne null&$expand=integrationGroup
+Authorization: Basic {{username}}:{{password}}

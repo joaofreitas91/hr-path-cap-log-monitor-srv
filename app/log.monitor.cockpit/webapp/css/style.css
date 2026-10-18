@@ -199,3 +199,12 @@
 .lmcPayload textarea {
     background: var(--sapShell_Background);
 }
+
+/* The status checkboxes of the Notificação tab sit centered in their column */
+.lmcCenteredCheckBox {
+    margin: 0 auto;
+}
+
+.lmcCenteredCheckBox .sapMCbLabel {
+    display: none;
+}

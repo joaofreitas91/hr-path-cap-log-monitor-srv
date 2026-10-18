@@ -10,6 +10,7 @@
         useIconTabBar="true"
         showTitleInHeaderContent="false"
         upperCaseAnchorBar="false"
+        showAnchorBarPopover="false"
         class="lmcPage"
     >
         <uxap:headerTitle>
@@ -261,6 +262,278 @@
                                         <ObjectIdentifier id="cellAccessGroupDescription" title="{description}" />
                                         <Text id="cellAccessGroupIas" text="{= ${iasUserGroup} || '—' }" class="lmcMonospace" />
                                         <Text id="cellAccessGroupUsers" text="{userGroups/$count}" />
+                                    </cells>
+                                </ColumnListItem>
+                            </items>
+                        </Table>
+                    </uxap:ObjectPageSubSection>
+                </uxap:subSections>
+            </uxap:ObjectPageSection>
+            <uxap:ObjectPageSection id="sectionNotifications" title="{i18n>notifications}" titleUppercase="false">
+                <uxap:subSections>
+                    <uxap:ObjectPageSubSection id="subSectionNotificationUsers" showTitle="false">
+                        <Table
+                            id="notificationUsersTable"
+                            class="lmcCard"
+                            mode="MultiSelect"
+                            growing="true"
+                            growingThreshold="50"
+                            selectionChange=".onTableSelectionChange"
+                            updateFinished=".onTableUpdateFinished"
+                            items="{
+                                path: 'notifications',
+                                parameters: {
+                                    $count: true,
+                                    $$updateGroupId: '$auto',
+                                    $expand: 'user($select=ID,name,email)'
+                                },
+                                sorter: { path: 'user/name' },
+                                filters: { path: 'user_ID', operator: 'NE', value1: null }
+                            }"
+                        >
+                            <headerToolbar>
+                                <OverflowToolbar id="notificationUsersToolbar">
+                                    <Title
+                                        id="notificationUsersTableTitle"
+                                        text="{= ${i18n>users} + ' (' + (${view>/counts/notificationUsersTable} || 0) + ')' }"
+                                        level="H2"
+                                    />
+                                    <ToolbarSpacer id="notificationUsersToolbarSpacer" />
+                                    <SearchField
+                                        id="notificationUsersSearch"
+                                        width="20rem"
+                                        placeholder="{i18n>searchUsers}"
+                                        liveChange=".onSearchNotificationUsers"
+                                    />
+                                    <Button
+                                        id="btnLinkNotificationUsers"
+                                        text="{i18n>link}"
+                                        icon="sap-icon://chain-link"
+                                        type="Emphasized"
+                                        press=".onLinkNotificationUsers"
+                                    />
+                                    <Button
+                                        id="btnUnlinkNotificationUsers"
+                                        text="{i18n>unlink}"
+                                        icon="sap-icon://broken-link"
+                                        type="Transparent"
+                                        enabled="{= ${view>/selected/notificationUsersTable} > 0 }"
+                                        press=".onUnlinkNotificationUsers"
+                                    />
+                                </OverflowToolbar>
+                            </headerToolbar>
+                            <noData>
+                                <IllustratedMessage
+                                    id="notificationUsersNoData"
+                                    illustrationType="{= ${view>/search/notificationUsersTable} ? 'sapIllus-NoSearchResults' : 'sapIllus-NoEntries' }"
+                                    illustrationSize="Dot"
+                                    title="{i18n>noNotifiedUsers}"
+                                    description="{= ${view>/search/notificationUsersTable} ? ${i18n>noResultsFor}.replace('{0}', ${view>/search/notificationUsersTable}) : ${i18n>noNotifiedUsersHint} }"
+                                />
+                            </noData>
+                            <columns>
+                                <Column id="colNotificationUserName">
+                                    <Text id="hdrNotificationUserName" text="{i18n>name}" />
+                                </Column>
+                                <Column id="colNotificationUserEmail">
+                                    <Text id="hdrNotificationUserEmail" text="{i18n>email}" />
+                                </Column>
+                                <Column id="colNotificationUserSuccess" hAlign="Center" width="7rem">
+                                    <HBox id="hdrNotificationUserSuccessBox" alignItems="Center" justifyContent="Center">
+                                        <core:Icon
+                                            id="hdrNotificationUserSuccessIcon"
+                                            src="sap-icon://sys-enter-2"
+                                            color="Positive"
+                                            class="sapUiTinyMarginEnd"
+                                        />
+                                        <Text id="hdrNotificationUserSuccess" text="{i18n>status_SUCCESS}" />
+                                    </HBox>
+                                </Column>
+                                <Column id="colNotificationUserWarning" hAlign="Center" width="7rem">
+                                    <HBox id="hdrNotificationUserWarningBox" alignItems="Center" justifyContent="Center">
+                                        <core:Icon
+                                            id="hdrNotificationUserWarningIcon"
+                                            src="sap-icon://alert"
+                                            color="Critical"
+                                            class="sapUiTinyMarginEnd"
+                                        />
+                                        <Text id="hdrNotificationUserWarning" text="{i18n>status_WARNING}" />
+                                    </HBox>
+                                </Column>
+                                <Column id="colNotificationUserError" hAlign="Center" width="7rem">
+                                    <HBox id="hdrNotificationUserErrorBox" alignItems="Center" justifyContent="Center">
+                                        <core:Icon
+                                            id="hdrNotificationUserErrorIcon"
+                                            src="sap-icon://error"
+                                            color="Negative"
+                                            class="sapUiTinyMarginEnd"
+                                        />
+                                        <Text id="hdrNotificationUserError" text="{i18n>status_ERROR}" />
+                                    </HBox>
+                                </Column>
+                            </columns>
+                            <items>
+                                <ColumnListItem id="notificationUserItem">
+                                    <cells>
+                                        <Text id="cellNotificationUserName" text="{user/name}" />
+                                        <Link id="cellNotificationUserEmail" text="{user/email}" href="{= 'mailto:' + ${user/email} }" />
+                                        <CheckBox
+                                            id="cellNotificationUserSuccess"
+                                            selected="{notifyOnSuccess}"
+                                            tooltip="{i18n>status_SUCCESS}"
+                                            class="lmcCenteredCheckBox"
+                                        />
+                                        <CheckBox
+                                            id="cellNotificationUserWarning"
+                                            selected="{notifyOnWarning}"
+                                            tooltip="{i18n>status_WARNING}"
+                                            class="lmcCenteredCheckBox"
+                                        />
+                                        <CheckBox
+                                            id="cellNotificationUserError"
+                                            selected="{notifyOnError}"
+                                            tooltip="{i18n>status_ERROR}"
+                                            class="lmcCenteredCheckBox"
+                                        />
+                                    </cells>
+                                </ColumnListItem>
+                            </items>
+                        </Table>
+                    </uxap:ObjectPageSubSection>
+                    <uxap:ObjectPageSubSection id="subSectionNotificationGroups" showTitle="false">
+                        <Table
+                            id="notificationGroupsTable"
+                            class="lmcCard"
+                            mode="MultiSelect"
+                            growing="true"
+                            growingThreshold="50"
+                            selectionChange=".onTableSelectionChange"
+                            updateFinished=".onNotificationGroupsUpdateFinished"
+                            items="{
+                                path: 'notifications',
+                                parameters: {
+                                    $count: true,
+                                    $$updateGroupId: '$auto',
+                                    $expand: 'integrationGroup($select=ID;$expand=group($select=ID,description,iasUserGroup;$expand=userGroups($select=ID)))'
+                                },
+                                sorter: { path: 'integrationGroup/group/description' },
+                                filters: { path: 'integrationGroup_ID', operator: 'NE', value1: null }
+                            }"
+                        >
+                            <headerToolbar>
+                                <OverflowToolbar id="notificationGroupsToolbar">
+                                    <Title
+                                        id="notificationGroupsTableTitle"
+                                        text="{= ${i18n>accessGroups} + ' (' + (${view>/counts/notificationGroupsTable} || 0) + ')' }"
+                                        level="H2"
+                                    />
+                                    <ToolbarSpacer id="notificationGroupsToolbarSpacer" />
+                                    <SearchField
+                                        id="notificationGroupsSearch"
+                                        width="20rem"
+                                        placeholder="{i18n>searchGroups}"
+                                        liveChange=".onSearchNotificationGroups"
+                                    />
+                                    <Button
+                                        id="btnLinkNotificationGroups"
+                                        text="{i18n>link}"
+                                        icon="sap-icon://chain-link"
+                                        type="Emphasized"
+                                        press=".onLinkNotificationGroups"
+                                    />
+                                    <Button
+                                        id="btnUnlinkNotificationGroups"
+                                        text="{i18n>unlink}"
+                                        icon="sap-icon://broken-link"
+                                        type="Transparent"
+                                        enabled="{= ${view>/selected/notificationGroupsTable} > 0 }"
+                                        press=".onUnlinkNotificationGroups"
+                                    />
+                                </OverflowToolbar>
+                            </headerToolbar>
+                            <noData>
+                                <IllustratedMessage
+                                    id="notificationGroupsNoData"
+                                    illustrationType="{= ${view>/search/notificationGroupsTable} ? 'sapIllus-NoSearchResults' : 'sapIllus-NoEntries' }"
+                                    illustrationSize="Dot"
+                                    title="{i18n>noNotifiedGroups}"
+                                    description="{= ${view>/search/notificationGroupsTable} ? ${i18n>noResultsFor}.replace('{0}', ${view>/search/notificationGroupsTable}) : ${i18n>noNotifiedGroupsHint} }"
+                                />
+                            </noData>
+                            <columns>
+                                <Column id="colNotificationGroupDescription">
+                                    <Text id="hdrNotificationGroupDescription" text="{i18n>description}" />
+                                </Column>
+                                <Column id="colNotificationGroupIas">
+                                    <Text id="hdrNotificationGroupIas" text="{i18n>iasGroup}" />
+                                </Column>
+                                <Column id="colNotificationGroupUsers" hAlign="End" width="7rem">
+                                    <Text id="hdrNotificationGroupUsers" text="{i18n>users}" />
+                                </Column>
+                                <Column id="colNotificationGroupSuccess" hAlign="Center" width="7rem">
+                                    <HBox id="hdrNotificationGroupSuccessBox" alignItems="Center" justifyContent="Center">
+                                        <core:Icon
+                                            id="hdrNotificationGroupSuccessIcon"
+                                            src="sap-icon://sys-enter-2"
+                                            color="Positive"
+                                            class="sapUiTinyMarginEnd"
+                                        />
+                                        <Text id="hdrNotificationGroupSuccess" text="{i18n>status_SUCCESS}" />
+                                    </HBox>
+                                </Column>
+                                <Column id="colNotificationGroupWarning" hAlign="Center" width="7rem">
+                                    <HBox id="hdrNotificationGroupWarningBox" alignItems="Center" justifyContent="Center">
+                                        <core:Icon
+                                            id="hdrNotificationGroupWarningIcon"
+                                            src="sap-icon://alert"
+                                            color="Critical"
+                                            class="sapUiTinyMarginEnd"
+                                        />
+                                        <Text id="hdrNotificationGroupWarning" text="{i18n>status_WARNING}" />
+                                    </HBox>
+                                </Column>
+                                <Column id="colNotificationGroupError" hAlign="Center" width="7rem">
+                                    <HBox id="hdrNotificationGroupErrorBox" alignItems="Center" justifyContent="Center">
+                                        <core:Icon
+                                            id="hdrNotificationGroupErrorIcon"
+                                            src="sap-icon://error"
+                                            color="Negative"
+                                            class="sapUiTinyMarginEnd"
+                                        />
+                                        <Text id="hdrNotificationGroupError" text="{i18n>status_ERROR}" />
+                                    </HBox>
+                                </Column>
+                            </columns>
+                            <items>
+                                <ColumnListItem id="notificationGroupItem">
+                                    <cells>
+                                        <ObjectIdentifier id="cellNotificationGroupDescription" title="{integrationGroup/group/description}" />
+                                        <Text id="cellNotificationGroupIas" text="{= ${integrationGroup/group/iasUserGroup} || '—' }" class="lmcMonospace" />
+                                        <Text
+                                            id="cellNotificationGroupUsers"
+                                            text="{
+                                                parts: ['ID', 'view>/userCounts'],
+                                                formatter: '.formatter.notifiedGroupUserCount'
+                                            }"
+                                        />
+                                        <CheckBox
+                                            id="cellNotificationGroupSuccess"
+                                            selected="{notifyOnSuccess}"
+                                            tooltip="{i18n>status_SUCCESS}"
+                                            class="lmcCenteredCheckBox"
+                                        />
+                                        <CheckBox
+                                            id="cellNotificationGroupWarning"
+                                            selected="{notifyOnWarning}"
+                                            tooltip="{i18n>status_WARNING}"
+                                            class="lmcCenteredCheckBox"
+                                        />
+                                        <CheckBox
+                                            id="cellNotificationGroupError"
+                                            selected="{notifyOnError}"
+                                            tooltip="{i18n>status_ERROR}"
+                                            class="lmcCenteredCheckBox"
+                                        />
                                     </cells>
                                 </ColumnListItem>
                             </items>

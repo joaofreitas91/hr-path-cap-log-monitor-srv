@@ -5,7 +5,8 @@
   "dependencies": {
     "@cap-js/hana": "^3.1.1",
     "@sap/cds": "^10",
-    "@sap/xssec": "^4"
+    "@sap/xssec": "^4",
+    "nodemailer": "^7.0.9"
   },
   "devDependencies": {
     "@cap-js/sqlite": "^3.1.1",
@@ -64,6 +65,10 @@
         "auth": "xsuaa",
         "db": "hana"
       }
+    },
+    "notifications": {
+      "from": "log-monitor@hr-path.com",
+      "timezone": "America/Sao_Paulo"
     }
   },
   "workspaces": [

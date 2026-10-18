@@ -24,6 +24,16 @@ sap.ui.define([], () => {
             return StatusIcon[sStatus] ?? "";
         },
 
+        /**
+         * Number of users of a notified group, by notification ID. A binding to
+         * "integrationGroup/group/userGroups/$count" would make OData V4 request an $expand path
+         * the service rejects, so the counts are collected from the loaded rows (see
+         * IntegrationDetail.onNotificationGroupsUpdateFinished) and looked up here.
+         */
+        notifiedGroupUserCount(sNotificationId, mCounts) {
+            return mCounts?.[sNotificationId] ?? 0;
+        },
+
         // "this" is the control or the controller, depending on how UI5 binds the formatter
         statusText(sStatus) {
             if (!sStatus) return "";
