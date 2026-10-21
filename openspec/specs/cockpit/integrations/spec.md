@@ -7,11 +7,15 @@ Lets administrators maintain integrations and the payload fields (IntegrationFie
 ## Requirements
 
 ### Requirement: Integrations list
-The Integrações screen SHALL follow the same list pattern as the Usuários screen (title with counter "Integrações (N)", search field, multi-selection table, "Adicionar"/"Excluir" toolbar actions, per-row "Editar" opening the same create/edit dialog). Columns SHALL be Descrição, Origem (source), Destino (target), number of fields, number of groups, last modified date and "Editar". Search SHALL match description, source or target.
+The Integrações screen SHALL follow the same list pattern as the Usuários screen (title with counter "Integrações (N)", search field, multi-selection table, "Adicionar"/"Excluir" toolbar actions, per-row "Editar" opening the same create/edit dialog). Columns SHALL be ID, Descrição, Origem (source), Destino (target), number of fields, number of groups, last modified date and "Editar". The ID SHALL be the first column and SHALL show the integration's UUID in monospace, the same presentation already used for technical identifiers elsewhere in the cockpit. Search SHALL match description, source or target.
 
 #### Scenario: Search by source
 - **WHEN** the administrator searches for "successfactors"
 - **THEN** integrations whose description, source or target contain it are listed and the counter updates
+
+#### Scenario: ID is visible in the list
+- **WHEN** the administrator opens the Integrações screen
+- **THEN** the first column of each row shows the integration's UUID, so it can be read or selected without opening the detail page
 
 ### Requirement: Integration dialog
 The create/edit dialog SHALL have fields Descrição, Origem and Destino, all required, with the same validation and cancel behavior as the user dialog.
@@ -32,11 +36,19 @@ Deleting integrations SHALL require a confirmation that explicitly states that t
 - **THEN** the integration, its logs, its fields and its group links are deleted
 
 ### Requirement: Navigate to integration detail
-Pressing an integration row (outside the "Editar" button and selection checkbox) SHALL open the integration detail page, which shows the description as title, source → target and created/modified dates, and offers "Editar" using the same dialog.
+Pressing an integration row (outside the "Editar" button and selection checkbox) SHALL open the integration detail page, which shows the description as title, source → target, the integration's ID in monospace and created/modified dates, and offers "Editar" using the same dialog and "Integration API" opening the API reference. The page SHALL present its content in three sections, in this order: "Campos do payload", "Grupos com acesso" and "Notificação".
 
 #### Scenario: Open detail
 - **WHEN** the administrator presses the row of "S/4HANA → Salesforce"
 - **THEN** its detail page opens
+
+#### Scenario: ID is visible in the detail header
+- **WHEN** the integration detail page is open
+- **THEN** the header shows the integration's UUID alongside source, target and dates
+
+#### Scenario: Sections available
+- **WHEN** the integration detail page is open
+- **THEN** the sections "Campos do payload", "Grupos com acesso" and "Notificação" can each be reached from the page
 
 ### Requirement: Payload fields maintenance
 The integration detail page SHALL list the integration's payload fields using the same list pattern (title with counter, search, multi-select, "Adicionar"/"Excluir", per-row "Editar", one shared dialog). Columns SHALL be Nome técnico (`fieldName`), Rótulo (`label`), Descrição, Filtrável and Ordenável. The dialog SHALL have Nome técnico (required), Rótulo (required), Descrição (optional) and switches Filtrável and Ordenável (default off). New fields SHALL belong to the integration being displayed.

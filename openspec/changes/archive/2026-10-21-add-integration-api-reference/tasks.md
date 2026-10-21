@@ -31,8 +31,8 @@
 
 ## 6. Dialog sizing and end-to-end verification
 
-- [ ] 6.0 Give the `Dialog` an explicit `contentHeight` so the stretched `IconTabBar` does not collapse, and verify the dialog opens centered and readable
+- [x] 6.0 Give the `Dialog` an explicit `contentHeight` so the stretched `IconTabBar` does not collapse, and verify the dialog opens centered and readable
 
-- [ ] 6.1 With `cds watch` running, open the dialog for an integration that has `employeeId` and `costCenter`, press Copiar on the sample, paste the result into `srv/http/integration-service/integration-logs.http` and POST it as `integration`; verify the request is accepted and the new log appears for that integration in the cockpit dashboard's latest-errors/report
-- [ ] 6.2 Add a payload field, reopen the dialog and verify the new key appears in the sample; delete it and verify it disappears
+- [x] 6.1 With `cds watch` running, open the dialog for an integration that has `employeeId` and `costCenter`, press Copiar on the sample, paste the result into `srv/http/integration-service/integration-logs.http` and POST it as `integration`; verify the request is accepted and the new log appears for that integration in the cockpit dashboard's latest-errors/report
+- [x] 6.2 Add a payload field, reopen the dialog and verify the new key appears in the sample; delete it and verify it disappears
 - [x] 6.3 Run `npm run build` and verify the cockpit app builds with the new fragment and i18n keys included in the archive

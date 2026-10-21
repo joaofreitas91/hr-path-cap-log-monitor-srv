@@ -1,10 +1,10 @@
-# Spec Delta
+# integration/notification-email Specification
 
 ## Purpose
 
 Defines the e-mail a notified recipient receives for an integration log — its subject, its readable HTML and plain-text content and how the dynamic payload is presented — and how mail delivery is configured per environment.
 
-## ADDED Requirements
+## Requirements
 
 ### Requirement: Notification e-mail content
 The notification e-mail SHALL identify the execution without the recipient having to open the Log Monitor. Its subject SHALL contain the log's status, the integration's description and the execution date and time. Its body SHALL show, in this order: the status, the integration's description, its source and target, the execution timestamp, the log's ID and the payload. The e-mail SHALL be sent with an HTML body and an equivalent plain-text alternative, and SHALL use the application's pt-BR texts and date format (`dd/MM/yyyy HH:mm`).
@@ -41,7 +41,7 @@ The e-mail SHALL present the log's payload as readable name/value pairs. A paylo
 - **THEN** the e-mail is sent and states that the execution carries no payload
 
 ### Requirement: Mail delivery configuration
-Mail delivery SHALL be configured per environment: the server, port, encryption and sender address from the application configuration, and the credentials from the environment's bound mail service when one exists. When no mail server is configured — the default for local development — the system SHALL NOT attempt to send, SHALL log that the notification was skipped together with the log's ID and the recipients that would have been notified, and SHALL otherwise behave normally.
+Mail delivery SHALL be configured per environment through the environment itself: the mail server, its port, whether the connection is encrypted and the credentials from environment variables, and the sender address from the application configuration. When no mail server is configured — the default for local development — the system SHALL NOT attempt to send, SHALL log that the notification was skipped together with the log's ID and the recipients that would have been notified, and SHALL otherwise behave normally.
 
 #### Scenario: Local development
 - **WHEN** a log that matches a notification rule is created with no mail server configured
@@ -51,6 +51,6 @@ Mail delivery SHALL be configured per environment: the server, port, encryption 
 - **WHEN** a notification is sent with a configured sender address
 - **THEN** the e-mail's From address is that address
 
-#### Scenario: Credentials from the bound service
-- **WHEN** the application runs with a bound mail service that carries user and password
+#### Scenario: Credentials from the environment
+- **WHEN** the application runs with a mail server whose user and password are set in the environment
 - **THEN** those credentials are used to authenticate against the configured server, and they do not appear in any log output

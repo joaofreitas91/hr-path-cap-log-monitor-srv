@@ -70,23 +70,24 @@ SELECT.from(db.IntegrationNotifications)
 
 The result is flattened into a map keyed by lower-cased e-mail (dedupe, spec: *Recipient reached twice*), dropping users without an e-mail. If the deep expand turns out to be slow on HANA, the fallback is two flat queries (direct users; users of the notified groups via an `in` subselect) — same output, same contract.
 
-### SMTP configuration via `cds.env`, credentials from the bound service
+### SMTP configuration from environment variables
 
-Non-secret settings live in `package.json` under a `cds.notifications` section, so profiles work the same way as `db` and `auth`:
+Only the non-secret settings live in `package.json` under a `cds.notifications` section, so profiles work the same way as `db` and `auth`:
 
 ```json
 "notifications": {
   "from": "log-monitor@hr-path.com",
-  "timezone": "America/Sao_Paulo",
-  "smtp": { "service": "hr-path-cap-log-monitor-smtp", "host": "", "port": 587, "secure": false }
+  "timezone": "America/Sao_Paulo"
 }
 ```
 
-At runtime `srv/lib/mailer.js` merges, in this order: `cds.env.notifications.smtp`, then the credentials of the bound user-provided service named by `smtp.service` (read from `VCAP_SERVICES`) when present. Locally, `.cdsrc-private.json` can carry the same section under `[hybrid]`, and `cds watch` without any of it resolves no host — the mailer then returns no transporter and the handler logs the skipped notification with its recipients (spec: *Local development*). Credentials are never logged.
+The connection itself never goes into the repository: `srv/lib/mailer.js` reads `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER` and `SMTP_PASSWORD` from the environment. Locally they live in the gitignored `.env`, which `cds` reads on its own; in Cloud Foundry they are set with `cf set-env` on the `hr-path-cap-log-monitor-srv` app, which needs a `cf restart` to pick them up. With no `SMTP_HOST` — the default, since `.env` is not deployed — the mailer returns no transporter and the handler logs the skipped notification with its recipients (spec: *Local development*). Credentials are never logged. The two `package.json` settings are overridable per environment with `CDS_NOTIFICATIONS_FROM` / `CDS_NOTIFICATIONS_TIMEZONE`.
+
+A bound user-provided service was the alternative for the credentials; environment variables were chosen because they carry five plain strings that need no service instance created per space before the first deploy and no extra resource in `mta.yaml`.
 
 A custom `cds.notifications` section is used rather than an entry under `cds.requires` because nothing is ever `cds.connect.to`-ed here: a `requires` entry with an unknown kind only invites a bootstrap-time surprise. The transporter is created once, cached, and uses nodemailer's connection pool; one message is sent per recipient (`Promise.allSettled`), so recipients never see each other's addresses and one rejected address cannot suppress the rest.
 
-`mta.yaml` gains the user-provided service as an existing-service resource required by the srv module. It must exist in the space before deploying (`cf cups hr-path-cap-log-monitor-smtp -p '{"host":…,"port":…,"user":…,"password":…}'`).
+`mta.yaml` needs no new resource: nothing is bound, so the settings are applied to the deployed app with `cf set-env` and a `cf restart`.
 
 ### The e-mail template is a plain module, not a templating engine
 
@@ -117,10 +118,10 @@ In `srv/cockpit-service.js`:
 - **Slow or hanging SMTP server** → the send runs after the response, with nodemailer's connection and socket timeouts set, so it can only occupy a background task.
 - **The XOR rule is enforced in handlers, not in the schema** → a direct database write could create an invalid row; the ingestion handler simply ignores a row with no resolvable recipient.
 - **`searchTable` gains a parameter** used by two callers → the default keeps every existing caller behaving exactly as today.
-- **The user-provided SMTP service must exist before `cf deploy`** → missing binding fails the deploy; documented in CLAUDE.md with the `cf cups` command, and the application still starts (notifications skipped) if the binding is absent.
+- **The SMTP variables live outside the deployed archive** → a fresh space has none, so notifications are skipped until they are set with `cf set-env` and the app is restarted; documented in CLAUDE.md, and the application always starts whether they are there or not.
 
 ## Migration Plan
 
-1. Deploy order is the normal MTA flow: `cf cups hr-path-cap-log-monitor-smtp …` once per space, then `npm run build && npm run deploy`. The HDI deployer creates the new table; no existing table changes and no data migration is needed.
+1. Deploy order is the normal MTA flow: `npm run build && npm run deploy`, then `cf set-env` for the SMTP variables once per space and `cf restart hr-path-cap-log-monitor-srv`. The HDI deployer creates the new table; no existing table changes and no data migration is needed.
 2. With no notification rows, behaviour is identical to today — administrators opt in integration by integration.
-3. Rollback: redeploy the previous MTA archive. The new table stays behind, unused and empty of effect; no rollback script is needed. To stop all notifications without redeploying, unbind the SMTP service (the handler then logs and skips).
+3. Rollback: redeploy the previous MTA archive. The new table stays behind, unused and empty of effect; no rollback script is needed. To stop all notifications without redeploying, `cf unset-env hr-path-cap-log-monitor-srv SMTP_HOST` and restart (the handler then logs and skips).
