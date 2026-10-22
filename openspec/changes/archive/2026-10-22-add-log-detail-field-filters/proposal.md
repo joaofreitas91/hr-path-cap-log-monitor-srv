@@ -7,7 +7,7 @@ A log whose payload is an array carries one row per record in the custom fields 
 ## What Changes
 
 - **Search field**: the custom fields table gains a toolbar with a `SearchField` that keeps the rows in which **any** declared field contains the typed text, matching partial content and ignoring case — the same matching the cockpit's list pattern and the report's `matchingLogIds` already use.
-- **Per-field filters**: a "Filtros" action opens a dialog with one input per declared field, built from the integration's `IntegrationFields` the same way the report's filter bar builds its dynamic inputs. The inputs are combined with AND, and with the search field, so "the rows of employee 42 that mention 'rejeitado'" is expressible. The action shows how many field filters are active, and the dialog can clear them all at once.
+- **Per-field filters**: a "Filtros" action opens a `sap.m.ViewSettingsDialog` restricted to filtering, with one filter page per declared field listing the values the rows of the current log hold. Values chosen within a field are an OR, the fields are an AND with each other and with the search field, so "the rows of employee 42 that mention 'rejeitado'" is expressible. The action shows how many values are selected; confirming, cancelling and resetting are the dialog's own actions.
 - **Row counter**: the table title shows how many rows are currently displayed, so the effect of a filter is visible.
 - **Empty state**: when filters are applied and no row matches, the table says so and invites the viewer to adjust them — distinct from the existing empty state for an integration that declares no field at all.
 - Not changed: the payload block, which keeps showing the whole raw payload regardless of the filters.
@@ -24,7 +24,7 @@ None.
 ## Impact
 
 - `app/log.monitor.report/webapp/view/Detail.view.xml` — the toolbar of the custom fields table (title with counter, search field, "Filtros" action) and the second empty state.
-- `app/log.monitor.report/webapp/controller/Detail.controller.js` — the filter state in a view model, combining the search and the per-field criteria into the `logs>/rows` binding, and the counter updated on `updateFinished`.
-- `app/log.monitor.report/webapp/fragment/FieldFiltersDialog.fragment.xml` (new) — the dialog whose inputs are created from the integration's declared fields, reusing the dynamic-input pattern of `Report.controller.js`.
+- `app/log.monitor.report/webapp/controller/Detail.controller.js` — the filter state in a view model, combining the search and the selected values into the `logs>/rows` binding, the filter pages built from the payload rows, and the counter updated on `updateFinished`.
+- `app/log.monitor.report/webapp/fragment/FieldFiltersDialog.fragment.xml` (new) — the `ViewSettingsDialog` shell; its `filterItems` are added by the controller from the integration's declared fields.
 - `app/log.monitor.report/webapp/i18n/i18n.properties` — the new pt-BR texts.
 - No backend, data model, authorization or deployment change; the filtering happens over the payload rows already in the browser.

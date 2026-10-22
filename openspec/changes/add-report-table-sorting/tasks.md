@@ -19,6 +19,7 @@ Manual verification runs against `cds watch` with `npm run watch-log.monitor.rep
 - [ ] 3.1 In `_buildFieldsTable` of `app/log.monitor.report/webapp/controller/Detail.controller.js`, build each column header as the same pressable button instead of a plain `Label`, and verify a log of an integration with three declared fields shows three pressable headers
 - [ ] 3.2 Sort the `logs>/rows` binding client-side on press with the same three-state cycle and single-column rule, and verify a payload that is an array of 10 objects reorders by each field and returns to the payload's own order on the third press
 - [ ] 3.3 Verify a payload that is a single object (one row) and an integration with no declared fields both behave as before, with no error in the console
+- [ ] 3.4 Verify sorting composes with the field filters of `add-log-detail-field-filters`: filter the table down to a handful of rows, sort by a column, and confirm the result is the filtered rows in the sorted order, and that changing the filter afterwards keeps the chosen column and direction
 
 ## 4. Texts and end-to-end
 
