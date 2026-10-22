@@ -21,6 +21,7 @@ None.
 
 ## Impact
 
-- `app/log.monitor.report/webapp/view/Detail.view.xml` — the custom fields table is wrapped in a scroll container of fixed height and keeps its column headers sticky.
-- `app/log.monitor.report/webapp/css/style.css` — the height of 15 rows, expressed from the table's row height so it follows the content density.
-- No controller, backend, data model, authorization or deployment change.
+- `app/log.monitor.report/webapp/view/Detail.view.xml` — the custom fields table becomes a `sap.ui.table.Table` with a `Fixed` row mode of 15 rows, which caps the height and keeps the column headers out of the scroll by construction. The "no declared fields" empty state moves out of `noData`, which a column-less grid table ignores.
+- `app/log.monitor.report/webapp/controller/Detail.controller.js` — the columns and the `rows` binding are built for the new control, and the row count is lowered to the number of rows matching the filters, since a fixed row mode would otherwise keep empty rows for shorter payloads.
+- `app/log.monitor.report/webapp/manifest.json` — `sap.ui.table` added to `sap.ui5/dependencies/libs`.
+- No stylesheet, backend, data model, authorization or deployment change.

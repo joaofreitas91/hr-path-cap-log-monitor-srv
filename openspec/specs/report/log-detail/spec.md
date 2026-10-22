@@ -18,7 +18,7 @@ The detail column SHALL show the integration description as its title, the statu
 - **THEN** the list returns to a single full-width column
 
 ### Requirement: Custom fields table
-The detail SHALL show the payload fields declared for the log's integration in a table, one column per declared field. A payload that is a JSON array SHALL produce one row per array element; any other payload SHALL produce a single row. A field missing from the payload SHALL leave its cell empty rather than failing.
+The detail SHALL show the payload fields declared for the log's integration in a table, one column per declared field. A payload that is a JSON array SHALL produce one row per array element; any other payload SHALL produce a single row. A field missing from the payload SHALL leave its cell empty rather than failing. The table SHALL show at most 15 rows at a time: beyond that the remaining rows SHALL be reached by scrolling inside the table, with the column headers staying visible, and the page itself SHALL NOT grow with the number of rows. No row SHALL be dropped — the cap is on the visible height only, and the row counter SHALL keep reporting every row matching the current filters. With 15 rows or fewer the table SHALL shrink to its content and show no scroll area.
 
 #### Scenario: Object payload
 - **WHEN** the integration declares the fields `employeeId` and `name`, and the payload is `{"employeeId":"42","name":"Ana"}`
@@ -35,6 +35,14 @@ The detail SHALL show the payload fields declared for the log's integration in a
 #### Scenario: Integration without declared fields
 - **WHEN** the log's integration declares no payload field
 - **THEN** an illustrated empty state is shown in place of the field rows
+
+#### Scenario: Payload longer than the cap
+- **WHEN** the payload is a JSON array with 40 objects
+- **THEN** 15 rows are visible, the other 25 are reached by scrolling inside the table with the headers still visible, and the counter reports 40
+
+#### Scenario: Payload shorter than the cap
+- **WHEN** the payload is a JSON array with 3 objects
+- **THEN** the table is as tall as its 3 rows and offers no scroll area
 
 ### Requirement: Payload block
 The detail SHALL show the raw payload as read-only, pretty-printed JSON in a monospaced block, together with an indication of the payload type: JSON object, array with N objects, plain text when the payload is not valid JSON, or empty when there is no payload. A payload that is not valid JSON SHALL be shown verbatim, without an error.
