@@ -6,11 +6,15 @@ sap.ui.define([
     "sap/ui/comp/filterbar/FilterGroupItem",
     "sap/ui/model/type/DateTime",
     "sap/ui/model/json/JSONModel",
+    "sap/m/MessageToast",
+    "sap/ui/export/Spreadsheet",
+    "sap/ui/export/library",
     "com/hrpath/log/monitor/report/model/formatter"
-], (Controller, Filter, FilterOperator, Input, FilterGroupItem, DateTimeType, JSONModel, formatter) => {
+], (Controller, Filter, FilterOperator, Input, FilterGroupItem, DateTimeType, JSONModel, MessageToast, Spreadsheet, exportLibrary, formatter) => {
     "use strict";
 
     const NO_MATCH_ID = "00000000-0000-0000-0000-000000000000";
+    const EdmType = exportLibrary.EdmType;
 
     return Controller.extend("com.hrpath.log.monitor.report.controller.Report", {
         formatter,
@@ -19,6 +23,12 @@ sap.ui.define([
         onInit() {
             this._aDynamicFields = [];
             this._aDynamicFieldItems = [];
+            this._aFilters = [];
+            // Same formatting as the executedAt column, so the file reads like the table
+            this._oExportDateTime = new DateTimeType({
+                pattern: "dd/MM/yyyy HH:mm:ss",
+                source: { pattern: "yyyy-MM-dd'T'HH:mm:ss.SSSX" }
+            });
             this.getView().setModel(new JSONModel({ counts: {}, hasFilters: false }), "view");
         },
 
@@ -171,6 +181,7 @@ sap.ui.define([
             }
 
             this.getView().getModel("view").setProperty("/hasFilters", aFilters.length > 0);
+            this._aFilters = aFilters;
             oBinding.filter(aFilters);
         },
 
@@ -187,6 +198,77 @@ sap.ui.define([
         onTableUpdateFinished(oEvent) {
             const oHeaderContext = oEvent.getSource().getBinding("items").getHeaderContext();
             this.getView().getModel("view").setProperty("/counts/logsTable", oHeaderContext.getProperty("$count") ?? 0);
+        },
+
+        /* ---------- spreadsheet export of the filtered logs ---------- */
+
+        async onExportLogs() {
+            const oButton = this.byId("btnExportLogs");
+            oButton.setBusy(true);
+            try {
+                const oSheet = new Spreadsheet({
+                    workbook: { columns: this._buildExportColumns() },
+                    dataSource: await this._readLogsForExport(),
+                    fileName: `${this.getText("exportLogsFileName")}.xlsx`,
+                    // The library is served from the SAPUI5 CDN, so the export worker would
+                    // be cross-origin; the file is built on the main thread instead
+                    worker: false
+                });
+                await oSheet.build();
+                oSheet.destroy();
+            } catch (e) {
+                MessageToast.show(this.getText("exportFailed"));
+                console.error(e);
+            } finally {
+                oButton.setBusy(false);
+            }
+        },
+
+        _buildExportColumns() {
+            return [
+                { label: this.getText("integration"), property: "integration", type: EdmType.String, width: 32 },
+                { label: this.getText("source"), property: "source", type: EdmType.String, width: 20 },
+                { label: this.getText("target"), property: "target", type: EdmType.String, width: 20 },
+                { label: this.getText("dateTime"), property: "executedAt", type: EdmType.String, width: 20 },
+                { label: this.getText("status"), property: "status", type: EdmType.String, width: 14 }
+            ];
+        },
+
+        /**
+         * A binding of its own, with the filters in force: the table keeps showing the page
+         * it has loaded while the file gets every matching log. The values are written as
+         * the table displays them, which is why the export reads the rows instead of
+         * handing the download URL to the library.
+         */
+        async _readLogsForExport() {
+            const iCount = this.getView().getModel("view").getProperty("/counts/logsTable") ?? 0;
+            const oBinding = this.getView().getModel().bindList(
+                "/IntegrationLogs",
+                undefined,
+                undefined,
+                this._aFilters,
+                {
+                    $select: "ID,executedAt,status",
+                    $expand: "integration($select=description,source,target)"
+                }
+            );
+            const aContexts = await oBinding.requestContexts(0, iCount);
+            const aRows = aContexts.map(oContext => {
+                const oLog = oContext.getObject();
+                return {
+                    integration: oLog.integration?.description,
+                    source: oLog.integration?.source,
+                    target: oLog.integration?.target,
+                    executedAt: this._oExportDateTime.formatValue(oLog.executedAt, "string"),
+                    status: oLog.status ? this.getText(`status_${oLog.status}`) : ""
+                };
+            });
+            oBinding.destroy();
+            return aRows;
+        },
+
+        getText(sKey) {
+            return this.getOwnerComponent().getModel("i18n").getResourceBundle().getText(sKey);
         },
 
         onIntegrationPress(oEvent) {

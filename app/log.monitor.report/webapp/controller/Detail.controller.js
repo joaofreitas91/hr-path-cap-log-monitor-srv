@@ -10,9 +10,13 @@ sap.ui.define([
     "sap/m/Text",
     "sap/m/ViewSettingsFilterItem",
     "sap/m/ViewSettingsItem",
+    "sap/ui/export/Spreadsheet",
+    "sap/ui/export/library",
     "com/hrpath/log/monitor/report/model/formatter"
-], (Controller, JSONModel, Filter, FilterOperator, DateTimeType, MessageToast, Column, Label, Text, ViewSettingsFilterItem, ViewSettingsItem, formatter) => {
+], (Controller, JSONModel, Filter, FilterOperator, DateTimeType, MessageToast, Column, Label, Text, ViewSettingsFilterItem, ViewSettingsItem, Spreadsheet, exportLibrary, formatter) => {
     "use strict";
+
+    const EdmType = exportLibrary.EdmType;
 
     return Controller.extend("com.hrpath.log.monitor.report.controller.Detail", {
         formatter,
@@ -227,6 +231,40 @@ sap.ui.define([
                 (this._mFieldFilters[sFieldName] ??= []).push(oItem.data("value"));
             });
             this._filterFieldsTable();
+        },
+
+        /* ---------- spreadsheet export of the displayed rows ---------- */
+
+        /** One column per declared field, over the rows the table currently shows. */
+        async onExportFields() {
+            const oButton = this.byId("btnExportFields");
+            oButton.setBusy(true);
+            try {
+                const oBinding = this.byId("fieldsTable").getBinding("rows");
+                const aRows = (oBinding?.getContexts(0, oBinding.getLength()) ?? [])
+                    .map(oContext => oContext.getObject());
+                const oSheet = new Spreadsheet({
+                    workbook: {
+                        columns: this._aFields.map(oField => ({
+                            label: oField.label || oField.fieldName,
+                            property: oField.fieldName,
+                            type: EdmType.String
+                        }))
+                    },
+                    dataSource: aRows,
+                    fileName: `${this.getText("exportFieldsFileName")}.xlsx`,
+                    // The library is served from the SAPUI5 CDN, so the export worker would
+                    // be cross-origin; the file is built on the main thread instead
+                    worker: false
+                });
+                await oSheet.build();
+                oSheet.destroy();
+            } catch (e) {
+                MessageToast.show(this.getText("exportFailed"));
+                console.error(e);
+            } finally {
+                oButton.setBusy(false);
+            }
         },
 
         _toControlIdPart(sFieldName) {

@@ -191,6 +191,14 @@
                                             visible="{view>/hasFields}"
                                             press=".onOpenFieldFilters"
                                         />
+                                        <Button
+                                            id="btnExportFields"
+                                            text="{i18n>export}"
+                                            icon="sap-icon://excel-attachment"
+                                            type="Transparent"
+                                            enabled="{view>/hasFields}"
+                                            press=".onExportFields"
+                                        />
                                     </OverflowToolbar>
                                 </table:extension>
                                 <table:noData>

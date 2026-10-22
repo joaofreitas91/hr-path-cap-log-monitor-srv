@@ -162,6 +162,15 @@
                             text="{= ${i18n>logsTableTitle} + ' (' + (${view>/counts/logsTable} || 0) + ')' }"
                             level="H2"
                         />
+                        <ToolbarSpacer id="logsToolbarSpacer" />
+                        <Button
+                            id="btnExportLogs"
+                            text="{i18n>export}"
+                            icon="sap-icon://excel-attachment"
+                            type="Transparent"
+                            enabled="{= (${view>/counts/logsTable} || 0) &gt; 0 }"
+                            press=".onExportLogs"
+                        />
                     </OverflowToolbar>
                 </headerToolbar>
                 <noData>
