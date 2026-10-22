@@ -126,6 +126,7 @@
                 id="sectionFields"
                 title="{i18n>customFields}"
                 titleUppercase="false"
+                showTitle="false"
             >
                 <uxap:subSections>
                     <uxap:ObjectPageSubSection
@@ -137,14 +138,41 @@
                                 id="fieldsTable"
                                 class="lmcCard"
                                 width="100%"
+                                updateFinished=".onFieldsTableUpdateFinished"
                             >
+                                <headerToolbar>
+                                    <OverflowToolbar id="fieldsToolbar">
+                                        <Title
+                                            id="fieldsTableTitle"
+                                            text="{= ${i18n>customFields} + ' (' + (${view>/counts/fieldsTable} || 0) + ')' }"
+                                            level="H3"
+                                        />
+                                        <ToolbarSpacer id="fieldsToolbarSpacer" />
+                                        <SearchField
+                                            id="fieldsSearch"
+                                            width="18rem"
+                                            placeholder="{i18n>searchFields}"
+                                            visible="{view>/hasFields}"
+                                            liveChange=".onFieldsSearch"
+                                            search=".onFieldsSearch"
+                                        />
+                                        <Button
+                                            id="btnFieldFilters"
+                                            text="{view>/fieldFiltersText}"
+                                            icon="sap-icon://filter"
+                                            type="Transparent"
+                                            visible="{view>/hasFields}"
+                                            press=".onOpenFieldFilters"
+                                        />
+                                    </OverflowToolbar>
+                                </headerToolbar>
                                 <noData>
                                     <IllustratedMessage
                                         id="fieldsNoData"
-                                        illustrationType="sapIllus-NoEntries"
+                                        illustrationType="{= ${view>/hasFieldFilters} ? 'sapIllus-NoSearchResults' : 'sapIllus-NoEntries' }"
                                         illustrationSize="Dot"
-                                        title="{i18n>noFields}"
-                                        description="{i18n>noFieldsForLogHint}"
+                                        title="{= ${view>/hasFieldFilters} ? ${i18n>noFieldRows} : ${i18n>noFields} }"
+                                        description="{= ${view>/hasFieldFilters} ? ${i18n>noFieldRowsHint} : ${i18n>noFieldsForLogHint} }"
                                     />
                                 </noData>
                             </Table>
@@ -157,6 +185,7 @@
                 id="sectionPayload"
                 title="{i18n>payload}"
                 titleUppercase="false"
+                showTitle="false"
             >
                 <uxap:subSections>
                     <uxap:ObjectPageSubSection

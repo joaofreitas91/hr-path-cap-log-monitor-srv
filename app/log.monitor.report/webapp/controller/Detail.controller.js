@@ -9,8 +9,10 @@ sap.ui.define([
     "sap/m/Label",
     "sap/m/Text",
     "sap/m/ColumnListItem",
+    "sap/m/ViewSettingsFilterItem",
+    "sap/m/ViewSettingsItem",
     "com/hrpath/log/monitor/report/model/formatter"
-], (Controller, JSONModel, Filter, FilterOperator, DateTimeType, MessageToast, Column, Label, Text, ColumnListItem, formatter) => {
+], (Controller, JSONModel, Filter, FilterOperator, DateTimeType, MessageToast, Column, Label, Text, ColumnListItem, ViewSettingsFilterItem, ViewSettingsItem, formatter) => {
     "use strict";
 
     return Controller.extend("com.hrpath.log.monitor.report.controller.Detail", {
@@ -18,7 +20,15 @@ sap.ui.define([
         DateTimeType,
 
         onInit() {
+            this._aFields = [];
+            this._mFieldFilters = {};
             this.getView().setModel(new JSONModel({ text: "", type: "" }), "detail");
+            this.getView().setModel(new JSONModel({
+                counts: {},
+                hasFields: false,
+                hasFieldFilters: false,
+                fieldFiltersText: ""
+            }), "view");
             this.getOwnerComponent().getRouter()
                 .getRoute("RouteDetail")
                 .attachPatternMatched(this._onRouteMatched, this);
@@ -74,6 +84,7 @@ sap.ui.define([
             oTable.unbindItems();
             oTable.destroyColumns();
             oTable.destroyItems();
+            this._resetFieldFilters(aFields);
 
             if (aFields.length === 0) return;
 
@@ -96,6 +107,121 @@ sap.ui.define([
                 oTemplate.addCell(new Text({ text: `{logs>${oField.fieldName}}` }));
             });
             oTable.bindItems({ path: "logs>/rows", template: oTemplate });
+        },
+
+        /* ---------- search and per-field filters over the payload rows ---------- */
+
+        /** Drops the criteria of the previously shown log; the dialog is rebuilt on the next open. */
+        _resetFieldFilters(aFields) {
+            this._aFields = aFields;
+            this._mFieldFilters = {};
+            this.byId("fieldsSearch").setValue("");
+            // Destroyed whole: emptying its items would leave the dialog reopening on the
+            // filter page of the previous log, now without values
+            this._oFieldFiltersDialog?.destroy();
+            this._oFieldFiltersDialog = null;
+
+            const oViewModel = this.getView().getModel("view");
+            oViewModel.setProperty("/hasFields", aFields.length > 0);
+            oViewModel.setProperty("/hasFieldFilters", false);
+            oViewModel.setProperty("/counts/fieldsTable", 0);
+            oViewModel.setProperty("/fieldFiltersText", this.getText("fieldFilters"));
+        },
+
+        onFieldsSearch() {
+            this._filterFieldsTable();
+        },
+
+        onFieldsTableUpdateFinished(oEvent) {
+            const iCount = oEvent.getSource().getBinding("items")?.getLength() ?? 0;
+            this.getView().getModel("view").setProperty("/counts/fieldsTable", iCount);
+        },
+
+        /**
+         * The search matches any declared field (OR); the values chosen for a field are an OR
+         * of their own and every field adds an AND.
+         */
+        _filterFieldsTable() {
+            const oBinding = this.byId("fieldsTable").getBinding("items");
+            if (!oBinding) return;
+
+            const aFilters = [];
+            const sQuery = this.byId("fieldsSearch").getValue().trim();
+            if (sQuery && this._aFields.length > 0) {
+                aFilters.push(new Filter({
+                    filters: this._aFields.map(oField => new Filter({
+                        path: oField.fieldName,
+                        operator: FilterOperator.Contains,
+                        value1: sQuery,
+                        caseSensitive: false
+                    })),
+                    and: false
+                }));
+            }
+            Object.entries(this._mFieldFilters).forEach(([sFieldName, aValues]) => {
+                aFilters.push(new Filter({
+                    filters: aValues.map(vValue => new Filter(sFieldName, FilterOperator.EQ, vValue)),
+                    and: false
+                }));
+            });
+
+            const iCriteria = Object.values(this._mFieldFilters).reduce((iSum, a) => iSum + a.length, 0);
+            const oViewModel = this.getView().getModel("view");
+            oViewModel.setProperty("/hasFieldFilters", aFilters.length > 0);
+            oViewModel.setProperty("/fieldFiltersText", iCriteria === 0
+                ? this.getText("fieldFilters")
+                : this.getCountText("fieldFiltersActive", iCriteria));
+
+            oBinding.filter(aFilters);
+        },
+
+        async onOpenFieldFilters() {
+            this._oFieldFiltersDialog ??= await this.loadFragment({
+                name: "com.hrpath.log.monitor.report.fragment.FieldFiltersDialog"
+            });
+            if (this._oFieldFiltersDialog.getFilterItems().length === 0) this._buildFieldFilterItems();
+            this._oFieldFiltersDialog.open();
+        },
+
+        /** One filter page per declared field, listing the values its rows actually hold. */
+        _buildFieldFilterItems() {
+            const aRows = this.getView().getModel("logs")?.getProperty("/rows") ?? [];
+
+            this._aFields.forEach(oField => {
+                const mValues = new Map();
+                aRows.forEach(oRow => {
+                    const vValue = oRow[oField.fieldName];
+                    if (vValue !== null && vValue !== undefined && vValue !== "") mValues.set(String(vValue), vValue);
+                });
+                if (mValues.size === 0) return;
+
+                const sFieldKey = this._toControlIdPart(oField.fieldName);
+                this._oFieldFiltersDialog.addFilterItem(new ViewSettingsFilterItem({
+                    key: sFieldKey,
+                    text: oField.label || oField.fieldName,
+                    items: [...mValues.keys()].sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
+                        .map(sText => {
+                            const oItem = new ViewSettingsItem({ key: `${sFieldKey}:${sText}`, text: sText });
+                            // The raw value keeps its type, so a numeric cell still matches its filter
+                            oItem.data("fieldName", oField.fieldName);
+                            oItem.data("value", mValues.get(sText));
+                            return oItem;
+                        })
+                }));
+            });
+        },
+
+        onConfirmFieldFilters(oEvent) {
+            this._mFieldFilters = {};
+            oEvent.getParameter("filterItems").forEach(oItem => {
+                const sFieldName = oItem.data("fieldName");
+                (this._mFieldFilters[sFieldName] ??= []).push(oItem.data("value"));
+            });
+            this._filterFieldsTable();
+        },
+
+        _toControlIdPart(sFieldName) {
+            return sFieldName.replace(/[^A-Za-z0-9]/g, "_");
         },
 
         _describePayload(sPayload) {

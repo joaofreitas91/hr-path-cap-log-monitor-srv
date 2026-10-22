@@ -1,0 +1,11 @@
+<core:FragmentDefinition
+    xmlns:core="sap.ui.core"
+    xmlns="sap.m"
+>
+    <!-- Filter only; one ViewSettingsFilterItem per declared field, added by the controller -->
+    <ViewSettingsDialog
+        id="fieldFiltersDialog"
+        title="{i18n>fieldFiltersTitle}"
+        confirm=".onConfirmFieldFilters"
+    />
+</core:FragmentDefinition>
