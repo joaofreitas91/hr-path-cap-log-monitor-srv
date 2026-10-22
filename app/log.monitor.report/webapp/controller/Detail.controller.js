@@ -91,6 +91,7 @@ sap.ui.define([
             aFields.forEach(oField => {
                 oTable.addColumn(new Column({
                     label: new Label({ text: oField.label || oField.fieldName }),
+                    sortProperty: oField.fieldName, // sorted by the table's own column menu
                     template: new Text({ text: `{logs>${oField.fieldName}}`, wrapping: false })
                 }));
             });
