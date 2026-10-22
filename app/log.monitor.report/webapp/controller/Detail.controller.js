@@ -5,14 +5,13 @@ sap.ui.define([
     "sap/ui/model/FilterOperator",
     "sap/ui/model/type/DateTime",
     "sap/m/MessageToast",
-    "sap/m/Column",
+    "sap/ui/table/Column",
     "sap/m/Label",
     "sap/m/Text",
-    "sap/m/ColumnListItem",
     "sap/m/ViewSettingsFilterItem",
     "sap/m/ViewSettingsItem",
     "com/hrpath/log/monitor/report/model/formatter"
-], (Controller, JSONModel, Filter, FilterOperator, DateTimeType, MessageToast, Column, Label, Text, ColumnListItem, ViewSettingsFilterItem, ViewSettingsItem, formatter) => {
+], (Controller, JSONModel, Filter, FilterOperator, DateTimeType, MessageToast, Column, Label, Text, ViewSettingsFilterItem, ViewSettingsItem, formatter) => {
     "use strict";
 
     return Controller.extend("com.hrpath.log.monitor.report.controller.Detail", {
@@ -81,15 +80,19 @@ sap.ui.define([
          */
         _buildFieldsTable(aFields, sPayload) {
             const oTable = this.byId("fieldsTable");
-            oTable.unbindItems();
+            oTable.unbindRows();
             oTable.destroyColumns();
-            oTable.destroyItems();
             this._resetFieldFilters(aFields);
 
             if (aFields.length === 0) return;
 
+            // No width: the columns are variable-width and share the table evenly, which is
+            // what a payload with an unknown number of fields needs
             aFields.forEach(oField => {
-                oTable.addColumn(new Column({ header: new Label({ text: oField.label || oField.fieldName }) }));
+                oTable.addColumn(new Column({
+                    label: new Label({ text: oField.label || oField.fieldName }),
+                    template: new Text({ text: `{logs>${oField.fieldName}}`, wrapping: false })
+                }));
             });
 
             let aRecords = [{}];
@@ -102,11 +105,20 @@ sap.ui.define([
             ));
             this.getView().setModel(new JSONModel({ rows: aRows }), "logs");
 
-            const oTemplate = new ColumnListItem();
-            aFields.forEach(oField => {
-                oTemplate.addCell(new Text({ text: `{logs>${oField.fieldName}}` }));
-            });
-            oTable.bindItems({ path: "logs>/rows", template: oTemplate });
+            oTable.bindRows({ path: "logs>/rows" });
+            this._syncFieldsRowCount();
+        },
+
+        /**
+         * The row mode caps the table at 15 rows but would keep empty ones for shorter
+         * payloads, so the count of the rows currently matching the filters becomes the
+         * row count as well — and the counter in the toolbar title.
+         */
+        _syncFieldsRowCount() {
+            const oTable = this.byId("fieldsTable");
+            const iCount = oTable.getBinding("rows")?.getLength() ?? 0;
+            oTable.getRowMode().setRowCount(Math.min(iCount, 15));
+            this.getView().getModel("view").setProperty("/counts/fieldsTable", iCount);
         },
 
         /* ---------- search and per-field filters over the payload rows ---------- */
@@ -132,17 +144,12 @@ sap.ui.define([
             this._filterFieldsTable();
         },
 
-        onFieldsTableUpdateFinished(oEvent) {
-            const iCount = oEvent.getSource().getBinding("items")?.getLength() ?? 0;
-            this.getView().getModel("view").setProperty("/counts/fieldsTable", iCount);
-        },
-
         /**
          * The search matches any declared field (OR); the values chosen for a field are an OR
          * of their own and every field adds an AND.
          */
         _filterFieldsTable() {
-            const oBinding = this.byId("fieldsTable").getBinding("items");
+            const oBinding = this.byId("fieldsTable").getBinding("rows");
             if (!oBinding) return;
 
             const aFilters = [];
@@ -173,6 +180,7 @@ sap.ui.define([
                 : this.getCountText("fieldFiltersActive", iCriteria));
 
             oBinding.filter(aFilters);
+            this._syncFieldsRowCount();
         },
 
         async onOpenFieldFilters() {

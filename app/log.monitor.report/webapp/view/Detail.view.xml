@@ -3,6 +3,8 @@
     xmlns:mvc="sap.ui.core.mvc"
     xmlns="sap.m"
     xmlns:uxap="sap.uxap"
+    xmlns:table="sap.ui.table"
+    xmlns:rowmodes="sap.ui.table.rowmodes"
 >
     <uxap:ObjectPageLayout
         id="detailPage"
@@ -134,14 +136,39 @@
                         showTitle="false"
                     >
                         <uxap:blocks>
-                            <Table
+                            <!-- rowCount is the cap only: the controller lowers it to the
+                                 number of rows, since a fixed row mode would otherwise keep
+                                 empty rows for shorter payloads -->
+                            <!-- With no declared field the table has no columns, and a
+                                 column-less grid table ignores its noData, so that empty
+                                 state lives outside of it -->
+                            <IllustratedMessage
+                                id="fieldsNoFields"
+                                visible="{= !${view>/hasFields} }"
+                                illustrationType="sapIllus-NoEntries"
+                                illustrationSize="Dot"
+                                title="{i18n>noFields}"
+                                description="{i18n>noFieldsForLogHint}"
+                            />
+                            <table:Table
                                 id="fieldsTable"
                                 class="lmcCard"
                                 width="100%"
-                                updateFinished=".onFieldsTableUpdateFinished"
+                                visible="{view>/hasFields}"
+                                selectionMode="None"
+                                enableColumnReordering="false"
                             >
-                                <headerToolbar>
-                                    <OverflowToolbar id="fieldsToolbar">
+                                <table:rowMode>
+                                    <rowmodes:Fixed
+                                        id="fieldsRowMode"
+                                        rowCount="15"
+                                    />
+                                </table:rowMode>
+                                <table:extension>
+                                    <OverflowToolbar
+                                        id="fieldsToolbar"
+                                        style="Clear"
+                                    >
                                         <Title
                                             id="fieldsTableTitle"
                                             text="{= ${i18n>customFields} + ' (' + (${view>/counts/fieldsTable} || 0) + ')' }"
@@ -165,8 +192,8 @@
                                             press=".onOpenFieldFilters"
                                         />
                                     </OverflowToolbar>
-                                </headerToolbar>
-                                <noData>
+                                </table:extension>
+                                <table:noData>
                                     <IllustratedMessage
                                         id="fieldsNoData"
                                         illustrationType="{= ${view>/hasFieldFilters} ? 'sapIllus-NoSearchResults' : 'sapIllus-NoEntries' }"
@@ -174,8 +201,8 @@
                                         title="{= ${view>/hasFieldFilters} ? ${i18n>noFieldRows} : ${i18n>noFields} }"
                                         description="{= ${view>/hasFieldFilters} ? ${i18n>noFieldRowsHint} : ${i18n>noFieldsForLogHint} }"
                                     />
-                                </noData>
-                            </Table>
+                                </table:noData>
+                            </table:Table>
                         </uxap:blocks>
                     </uxap:ObjectPageSubSection>
                 </uxap:subSections>
