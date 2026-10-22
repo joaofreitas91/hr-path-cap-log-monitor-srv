@@ -27,7 +27,6 @@ Authorization: Basic {{username}}:{{password}}
   "fieldName": "jobTitle",
   "label": "Cargo",
   "description": "Employee job title as defined in SuccessFactors",
-  "isSortable": true,
   "isFilterable": true
 }
 
@@ -39,8 +38,7 @@ Content-Type: application/json
 Authorization: Basic {{username}}:{{password}}
 
 {
-  "label": "Cargo Atual",
-  "isSortable": false
+  "label": "Cargo Atual"
 }
 
 

@@ -43,15 +43,7 @@
                 customTextOn="{i18n>yes}"
                 customTextOff="{i18n>no}"
             />
-            <Text id="txtFieldFilterableHelp" text="{i18n>filterableHelp}" class="lmcHint sapUiSmallMarginBottom" />
-            <Label id="lblFieldSortable" text="{i18n>sortable}" labelFor="swFieldSortable" showColon="true" />
-            <Switch
-                id="swFieldSortable"
-                state="{isSortable}"
-                customTextOn="{i18n>yes}"
-                customTextOff="{i18n>no}"
-            />
-            <Text id="txtFieldSortableHelp" text="{i18n>sortableHelp}" class="lmcHint" />
+            <Text id="txtFieldFilterableHelp" text="{i18n>filterableHelp}" class="lmcHint" />
         </VBox>
         <beginButton>
             <Button id="btnFieldSave" text="{i18n>save}" type="Emphasized" press=".onDialogSave" />

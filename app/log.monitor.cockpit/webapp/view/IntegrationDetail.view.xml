@@ -170,9 +170,6 @@
                                 <Column id="colFieldFilterable" hAlign="Center" width="7rem">
                                     <Text id="hdrFieldFilterable" text="{i18n>filterable}" />
                                 </Column>
-                                <Column id="colFieldSortable" hAlign="Center" width="7rem">
-                                    <Text id="hdrFieldSortable" text="{i18n>sortable}" />
-                                </Column>
                                 <Column id="colFieldEdit" hAlign="End" width="4rem" />
                             </columns>
                             <items>
@@ -186,12 +183,6 @@
                                             src="{= %{isFilterable} ? 'sap-icon://accept' : 'sap-icon://less' }"
                                             color="{= %{isFilterable} ? 'Positive' : 'Neutral' }"
                                             tooltip="{= %{isFilterable} ? ${i18n>yes} : ${i18n>no} }"
-                                        />
-                                        <core:Icon
-                                            id="cellFieldSortable"
-                                            src="{= %{isSortable} ? 'sap-icon://accept' : 'sap-icon://less' }"
-                                            color="{= %{isSortable} ? 'Positive' : 'Neutral' }"
-                                            tooltip="{= %{isSortable} ? ${i18n>yes} : ${i18n>no} }"
                                         />
                                         <Button
                                             id="btnEditField"

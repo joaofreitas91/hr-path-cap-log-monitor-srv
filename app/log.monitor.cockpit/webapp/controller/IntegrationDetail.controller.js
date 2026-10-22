@@ -98,7 +98,7 @@ sap.ui.define([
                 title: this.getText("newField"),
                 listPath: "fields",
                 parentContext: this.getView().getBindingContext(),
-                initialData: { isFilterable: false, isSortable: false },
+                initialData: { isFilterable: false },
                 refreshTableId: "fieldsTable"
             });
         },
