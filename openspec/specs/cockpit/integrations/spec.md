@@ -36,7 +36,7 @@ Deleting integrations SHALL require a confirmation that explicitly states that t
 - **THEN** the integration, its logs, its fields and its group links are deleted
 
 ### Requirement: Navigate to integration detail
-Pressing an integration row (outside the "Editar" button and selection checkbox) SHALL open the integration detail page, which shows the description as title, source → target, the integration's ID in monospace and created/modified dates, and offers "Editar" using the same dialog and "Integration API" opening the API reference. The page SHALL present its content in three sections, in this order: "Campos do payload", "Grupos com acesso" and "Notificação".
+Pressing an integration row (outside the "Editar" button and selection checkbox) SHALL open the integration detail page, which shows the description as title, source → target, the integration's ID in monospace and created/modified dates, and offers "Editar" using the same dialog and "Integration API" opening the API reference. The page SHALL present its content in four sections, in this order: "Campos do payload", "Grupos com acesso", "Reprocessamento" and "Notificação".
 
 #### Scenario: Open detail
 - **WHEN** the administrator presses the row of "S/4HANA → Salesforce"
@@ -48,7 +48,11 @@ Pressing an integration row (outside the "Editar" button and selection checkbox)
 
 #### Scenario: Sections available
 - **WHEN** the integration detail page is open
-- **THEN** the sections "Campos do payload", "Grupos com acesso" and "Notificação" can each be reached from the page
+- **THEN** the sections "Campos do payload", "Grupos com acesso", "Reprocessamento" and "Notificação" can each be reached from the page
+
+#### Scenario: Reprocessamento sits before Notificação
+- **WHEN** the administrator moves through the sections in order
+- **THEN** "Reprocessamento" comes after "Grupos com acesso" and before "Notificação"
 
 ### Requirement: Payload fields maintenance
 The integration detail page SHALL list the integration's payload fields using the same list pattern (title with counter, search, multi-select, "Adicionar"/"Excluir", per-row "Editar", one shared dialog). Columns SHALL be Nome técnico (`fieldName`), Rótulo (`label`), Descrição and Filtrável. The dialog SHALL have Nome técnico (required), Rótulo (required), Descrição (optional) and a switch Filtrável (default off). A payload field SHALL NOT carry a sortability flag: whether the report can sort by a field is not configurable per field. New fields SHALL belong to the integration being displayed.
