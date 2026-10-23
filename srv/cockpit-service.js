@@ -44,6 +44,38 @@ export default function () {
     this.before('CREATE', UserGroups, rejectDuplicateLink(UserGroups, 'user'));
     this.before('CREATE', IntegrationGroups, rejectDuplicateLink(IntegrationGroups, 'integration'));
 
+    // A field an integration points at for reprocessing cannot be removed on its own: the
+    // configuration would be left pointing at nothing. Deleting the integration still cascades.
+    this.before('DELETE', IntegrationFields, async req => {
+        const oUsedBy = await cds.run(SELECT.one.from(db.Integrations).columns('ID').where({ reprocessField_ID: req.data.ID }));
+        if (oUsedBy) req.reject(409, 'FIELD_USED_FOR_REPROCESSING');
+    });
+
+    const REPROCESS_KEYS = ['allowReprocessing', 'reprocessDestination', 'reprocessPath', 'reprocessField_ID'];
+
+    // Reprocessing is either off or completely configured, and the payload field it points at
+    // belongs to the integration being saved. Switching it off keeps the stored values.
+    this.before(['CREATE', 'UPDATE'], Integrations, async req => {
+        const bTouchesReprocessing = REPROCESS_KEYS.some(sKey => sKey in req.data) || 'reprocessField' in req.data;
+        if (!bTouchesReprocessing) return;
+
+        const oRow = req.event === 'UPDATE'
+            ? await this.run(SELECT.one.from(req.subject).columns('ID', ...REPROCESS_KEYS))
+            : { ID: req.data.ID };
+        for (const sKey of REPROCESS_KEYS) {
+            if (sKey in req.data) oRow[sKey] = req.data[sKey];
+        }
+        if ('reprocessField' in req.data) oRow.reprocessField_ID = req.data.reprocessField?.ID ?? null;
+
+        if (oRow.reprocessField_ID) {
+            const oField = await this.run(SELECT.one.from(IntegrationFields).columns('integration_ID').where({ ID: oRow.reprocessField_ID }));
+            if (oField?.integration_ID !== oRow.ID) return req.reject(400, 'REPROCESS_FIELD_OTHER_INTEGRATION');
+        }
+
+        if (!oRow.allowReprocessing) return;
+        if (!oRow.reprocessDestination || !oRow.reprocessPath || !oRow.reprocessField_ID) return req.reject(400, 'REPROCESS_NOT_CONFIGURED');
+    });
+
     const NOTIFICATION_KEYS = [['integration_ID', 'integration'], ['user_ID', 'user'], ['integrationGroup_ID', 'integrationGroup']];
 
     // A notification row names exactly one recipient, a notified group must be one with access to the integration,

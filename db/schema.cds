@@ -43,21 +43,28 @@ entity Integrations @(restrict: [
         to   : 'administrator',
     }
 ]) : cuid, managed {
-    description       : String(255) not null;
-    source            : String(100) not null;
-    target            : String(100) not null;
+    description          : String(255) not null;
+    source               : String(100) not null;
+    target               : String(100) not null;
 
-    integrationGroups : Association to many IntegrationGroups
-                            on integrationGroups.integration = $self;
+    // Reprocessing: the BTP destination through which the trigger is called, the endpoint
+    // within it, and the payload field that identifies a record. Validated in srv/cockpit-service.js.
+    allowReprocessing    : Boolean default false;
+    reprocessDestination : String(255);
+    reprocessPath        : String(255);
+    reprocessField       : Association to IntegrationFields;
 
-    fields            : Composition of many IntegrationFields
-                            on fields.integration = $self;
+    integrationGroups    : Association to many IntegrationGroups
+                               on integrationGroups.integration = $self;
 
-    logs              : Composition of many IntegrationLogs
-                            on logs.integration = $self;
+    fields               : Composition of many IntegrationFields
+                               on fields.integration = $self;
 
-    notifications     : Composition of many IntegrationNotifications
-                            on notifications.integration = $self;
+    logs                 : Composition of many IntegrationLogs
+                               on logs.integration = $self;
+
+    notifications        : Composition of many IntegrationNotifications
+                               on notifications.integration = $self;
 }
 
 entity IntegrationFields : cuid, managed {

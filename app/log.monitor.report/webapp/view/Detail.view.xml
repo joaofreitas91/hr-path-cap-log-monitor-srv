@@ -155,7 +155,8 @@
                                 class="lmcCard"
                                 width="100%"
                                 visible="{view>/hasFields}"
-                                selectionMode="None"
+                                selectionMode="{= ${view>/canReprocess} ? 'MultiToggle' : 'None' }"
+                                rowSelectionChange=".onFieldsRowSelectionChange"
                                 enableColumnReordering="false"
                             >
                                 <table:rowMode>
@@ -198,6 +199,17 @@
                                             type="Transparent"
                                             enabled="{view>/hasFields}"
                                             press=".onExportFields"
+                                        />
+                                        <!-- Only for integrations whose administrator enabled
+                                             reprocessing, and only with rows selected -->
+                                        <Button
+                                            id="btnReprocess"
+                                            text="{i18n>reprocess}"
+                                            icon="sap-icon://redo"
+                                            type="Emphasized"
+                                            visible="{view>/canReprocess}"
+                                            enabled="{= ${view>/reprocessSelected} > 0 }"
+                                            press=".onReprocess"
                                         />
                                     </OverflowToolbar>
                                 </table:extension>

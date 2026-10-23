@@ -13,6 +13,8 @@ sap.ui.define([
     const SAMPLE_EXECUTED_AT = "2026-01-15T10:30:00.000Z";
     const NOTIFICATION_TABLE_IDS = ["notificationUsersTable", "notificationGroupsTable"];
     const LINK_GROUP = "link";
+    // The deferred group of BaseController, shared with the entity dialogs
+    const DIALOG_GROUP = "dialog";
 
     // Users and groups with access become notification recipients the same way; only these settings differ
     const NOTIFICATION_KINDS = {
@@ -240,6 +242,34 @@ sap.ui.define([
                 toastKey: unlinkedToastKey,
                 confirmText: this.getText("unlink")
             });
+        },
+
+        /* ---------- reprocessing configuration ---------- */
+
+        /**
+         * The section edits the page's own entity in the deferred "dialog" group, so the switch,
+         * the destination, the trigger path and the chosen field are saved in one request and the
+         * server's rejection of an incomplete configuration reaches the administrator.
+         */
+        async onSaveReprocessing() {
+            const oModel = this.getView().getModel();
+            const oCard = this.byId("reprocessingCard");
+            oCard.setBusy(true);
+            try {
+                await oModel.submitBatch(DIALOG_GROUP);
+                if (oModel.hasPendingChanges(DIALOG_GROUP)) {
+                    MessageBox.error(this._lastErrorMessage());
+                    oModel.resetChanges(DIALOG_GROUP);
+                    return;
+                }
+                MessageToast.show(this.getText("saved"));
+            } finally {
+                oCard.setBusy(false);
+            }
+        },
+
+        onCancelReprocessing() {
+            this.getView().getModel().resetChanges(DIALOG_GROUP);
         },
 
         onAccessGroupPress(oEvent) {

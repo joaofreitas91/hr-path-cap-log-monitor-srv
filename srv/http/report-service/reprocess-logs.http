@@ -1,0 +1,86 @@
+@server=http://localhost:4004
+@admin=john.doe@dummy.com
+@viewer=alice@dummy.com
+@password=1234
+
+# A integração precisa estar configurada para reprocessamento no cockpit (Permitir
+# reprocessamento, Destination, Trigger URL e campo personalizado) e a destination
+# precisa existir — localmente na variável `destinations` do .env.
+@integrationID=79ec2ef9-14e9-4ea2-b207-314d1eb0aee0
+@fieldName=purchaseOrder
+
+# Integração visível para o report-viewer, com o seu próprio campo configurado
+@viewerIntegrationID=a59d189f-e6b8-424f-8a5f-3b9457f06a8a
+@viewerFieldName=expenseReportId
+
+
+### reprocessLogs — administrador
+# @name reprocessLogs_POST
+POST {{server}}/odata/v4/log-monitor-report/reprocessLogs
+Authorization: Basic {{admin}}:{{password}}
+Content-Type: application/json
+
+{
+    "integrationID": "{{integrationID}}",
+    "items": [
+        { "key": "{{fieldName}}", "value": "4500001" },
+        { "key": "{{fieldName}}", "value": "4500002" },
+        { "key": "{{fieldName}}", "value": "4500003" }
+    ]
+}
+
+
+### reprocessLogs — report-viewer, integração que ele pode ver
+# @name reprocessLogs_viewer_POST
+POST {{server}}/odata/v4/log-monitor-report/reprocessLogs
+Authorization: Basic {{viewer}}:{{password}}
+Content-Type: application/json
+
+{
+    "integrationID": "{{viewerIntegrationID}}",
+    "items": [
+        { "key": "{{viewerFieldName}}", "value": "EXP-0001" }
+    ]
+}
+
+
+### reprocessLogs — usuário sem papel: 403
+# @name reprocessLogs_forbidden_POST
+POST {{server}}/odata/v4/log-monitor-report/reprocessLogs
+Authorization: Basic integration:{{password}}
+Content-Type: application/json
+
+{
+    "integrationID": "{{integrationID}}",
+    "items": [
+        { "key": "{{fieldName}}", "value": "4500001" }
+    ]
+}
+
+
+### reprocessLogs — reprocessamento desligado na integração: 400 REPROCESS_NOT_ENABLED
+# @name reprocessLogs_notEnabled_POST
+POST {{server}}/odata/v4/log-monitor-report/reprocessLogs
+Authorization: Basic {{admin}}:{{password}}
+Content-Type: application/json
+
+{
+    "integrationID": "30a86be9-8c8c-48d0-8894-5d442e3b51cd",
+    "items": [
+        { "key": "employeeId", "value": "00123456" }
+    ]
+}
+
+
+### reprocessLogs — seleção sem valor: 400 REPROCESS_FIELD_WITHOUT_VALUE
+# @name reprocessLogs_withoutValue_POST
+POST {{server}}/odata/v4/log-monitor-report/reprocessLogs
+Authorization: Basic {{admin}}:{{password}}
+Content-Type: application/json
+
+{
+    "integrationID": "{{integrationID}}",
+    "items": [
+        { "key": "{{fieldName}}", "value": "" }
+    ]
+}

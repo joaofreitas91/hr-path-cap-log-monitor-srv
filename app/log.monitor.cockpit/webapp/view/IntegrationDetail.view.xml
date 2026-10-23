@@ -260,6 +260,122 @@
                     </uxap:ObjectPageSubSection>
                 </uxap:subSections>
             </uxap:ObjectPageSection>
+            <uxap:ObjectPageSection id="sectionReprocessing" title="{i18n>reprocessing}" titleUppercase="false">
+                <uxap:subSections>
+                    <uxap:ObjectPageSubSection id="subSectionReprocessing" showTitle="false">
+                        <VBox id="reprocessingCard" class="lmcCard">
+                            <OverflowToolbar id="reprocessingToolbar" style="Clear">
+                                <Title id="reprocessingTitle" text="{i18n>reprocessing}" level="H2" />
+                                <ToolbarSpacer id="reprocessingToolbarSpacer" />
+                                <Button
+                                    id="btnCancelReprocessing"
+                                    text="{i18n>cancel}"
+                                    type="Transparent"
+                                    press=".onCancelReprocessing"
+                                />
+                                <Button
+                                    id="btnSaveReprocessing"
+                                    text="{i18n>save}"
+                                    icon="sap-icon://save"
+                                    type="Emphasized"
+                                    press=".onSaveReprocessing"
+                                />
+                            </OverflowToolbar>
+                            <VBox
+                                id="reprocessingForm"
+                                width="32rem"
+                                class="sapUiSmallMarginBeginEnd sapUiMediumMarginBottom"
+                            >
+                                <Label
+                                    id="lblAllowReprocessing"
+                                    text="{i18n>allowReprocessing}"
+                                    labelFor="swAllowReprocessing"
+                                    showColon="true"
+                                />
+                                <Switch
+                                    id="swAllowReprocessing"
+                                    state="{allowReprocessing}"
+                                    customTextOn="{i18n>yes}"
+                                    customTextOff="{i18n>no}"
+                                />
+                                <Text
+                                    id="txtAllowReprocessingHelp"
+                                    text="{i18n>allowReprocessingHelp}"
+                                    class="lmcHint sapUiSmallMarginBottom"
+                                />
+                                <Label
+                                    id="lblReprocessDestination"
+                                    text="{i18n>reprocessDestination}"
+                                    labelFor="inpReprocessDestination"
+                                    required="{= %{allowReprocessing} }"
+                                    showColon="true"
+                                />
+                                <Input
+                                    id="inpReprocessDestination"
+                                    value="{reprocessDestination}"
+                                    enabled="{= %{allowReprocessing} }"
+                                    maxLength="255"
+                                    class="lmcMonospace"
+                                />
+                                <Text
+                                    id="txtReprocessDestinationHelp"
+                                    text="{i18n>reprocessDestinationHelp}"
+                                    class="lmcHint sapUiSmallMarginBottom"
+                                />
+                                <Label
+                                    id="lblReprocessPath"
+                                    text="{i18n>reprocessPath}"
+                                    labelFor="inpReprocessPath"
+                                    required="{= %{allowReprocessing} }"
+                                    showColon="true"
+                                />
+                                <Input
+                                    id="inpReprocessPath"
+                                    value="{reprocessPath}"
+                                    enabled="{= %{allowReprocessing} }"
+                                    maxLength="255"
+                                    class="lmcMonospace"
+                                />
+                                <Text
+                                    id="txtReprocessPathHelp"
+                                    text="{i18n>reprocessPathHelp}"
+                                    class="lmcHint sapUiSmallMarginBottom"
+                                />
+                                <Label
+                                    id="lblReprocessField"
+                                    text="{i18n>reprocessField}"
+                                    labelFor="selReprocessField"
+                                    required="{= %{allowReprocessing} }"
+                                    showColon="true"
+                                />
+                                <!-- Only the fields of the integration being displayed: the binding
+                                     is relative to the page's own entity -->
+                                <Select
+                                    id="selReprocessField"
+                                    selectedKey="{reprocessField_ID}"
+                                    enabled="{= %{allowReprocessing} }"
+                                    forceSelection="false"
+                                    showSecondaryValues="true"
+                                    width="100%"
+                                    items="{
+                                        path: 'fields',
+                                        parameters: { $select: 'ID,label,fieldName' },
+                                        sorter: { path: 'fieldName' }
+                                    }"
+                                >
+                                    <core:ListItem
+                                        id="itemReprocessField"
+                                        key="{ID}"
+                                        text="{label}"
+                                        additionalText="{fieldName}"
+                                    />
+                                </Select>
+                                <Text id="txtReprocessFieldHelp" text="{i18n>reprocessFieldHelp}" class="lmcHint" />
+                            </VBox>
+                        </VBox>
+                    </uxap:ObjectPageSubSection>
+                </uxap:subSections>
+            </uxap:ObjectPageSection>
             <uxap:ObjectPageSection id="sectionNotifications" title="{i18n>notifications}" titleUppercase="false">
                 <uxap:subSections>
                     <uxap:ObjectPageSubSection id="subSectionNotificationUsers" showTitle="false">

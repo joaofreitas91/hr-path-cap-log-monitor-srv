@@ -4,6 +4,7 @@ sap.ui.define([
     "sap/ui/model/Filter",
     "sap/ui/model/FilterOperator",
     "sap/ui/model/type/DateTime",
+    "sap/m/MessageBox",
     "sap/m/MessageToast",
     "sap/ui/table/Column",
     "sap/m/Label",
@@ -13,7 +14,7 @@ sap.ui.define([
     "sap/ui/export/Spreadsheet",
     "sap/ui/export/library",
     "com/hrpath/log/monitor/report/model/formatter"
-], (Controller, JSONModel, Filter, FilterOperator, DateTimeType, MessageToast, Column, Label, Text, ViewSettingsFilterItem, ViewSettingsItem, Spreadsheet, exportLibrary, formatter) => {
+], (Controller, JSONModel, Filter, FilterOperator, DateTimeType, MessageBox, MessageToast, Column, Label, Text, ViewSettingsFilterItem, ViewSettingsItem, Spreadsheet, exportLibrary, formatter) => {
     "use strict";
 
     const EdmType = exportLibrary.EdmType;
@@ -30,7 +31,9 @@ sap.ui.define([
                 counts: {},
                 hasFields: false,
                 hasFieldFilters: false,
-                fieldFiltersText: ""
+                fieldFiltersText: "",
+                canReprocess: false,
+                reprocessSelected: 0
             }), "view");
             this.getOwnerComponent().getRouter()
                 .getRoute("RouteDetail")
@@ -50,13 +53,18 @@ sap.ui.define([
                 oView.bindElement({ path: `/IntegrationLogs(${sLogId})` });
                 const oContext = oView.getElementBinding().getBoundContext();
 
-                const [sPayload, sIntegrationId] = await Promise.all([
+                const [sPayload, sIntegrationId, bAllowReprocessing, sReprocessFieldId] = await Promise.all([
                     oContext.requestProperty("payload"),
-                    oContext.requestProperty("integration_ID")
+                    oContext.requestProperty("integration_ID"),
+                    oContext.requestProperty("integration/allowReprocessing"),
+                    oContext.requestProperty("integration/reprocessField_ID")
                 ]);
+                this._sIntegrationId = sIntegrationId;
 
                 oView.getModel("detail").setData(this._describePayload(sPayload));
-                this._buildFieldsTable(await this._readFields(sIntegrationId), sPayload);
+                const aFields = await this._readFields(sIntegrationId);
+                this._buildFieldsTable(aFields, sPayload);
+                this._setupReprocessing(bAllowReprocessing, sReprocessFieldId, aFields);
             } catch (e) {
                 MessageToast.show(this.getText("errorLoadingLogs"));
                 console.error(e);
@@ -185,6 +193,8 @@ sap.ui.define([
                 : this.getCountText("fieldFiltersActive", iCriteria));
 
             oBinding.filter(aFilters);
+            // The selection is by row index, so rows leaving the table must not stay selected
+            this._clearReprocessSelection();
             this._syncFieldsRowCount();
         },
 
@@ -231,6 +241,63 @@ sap.ui.define([
                 (this._mFieldFilters[sFieldName] ??= []).push(oItem.data("value"));
             });
             this._filterFieldsTable();
+        },
+
+        /* ---------- reprocessing of the selected rows ---------- */
+
+        /**
+         * Reprocessing is offered only when the log's integration allows it and declares the
+         * payload field that identifies a record; that field's value is what gets sent.
+         */
+        _setupReprocessing(bAllowReprocessing, sReprocessFieldId, aFields) {
+            this._oReprocessField = bAllowReprocessing
+                ? aFields.find(oField => oField.ID === sReprocessFieldId)
+                : undefined;
+            this.getView().getModel("view").setProperty("/canReprocess", !!this._oReprocessField);
+            this._clearReprocessSelection();
+        },
+
+        _clearReprocessSelection() {
+            this.byId("fieldsTable").clearSelection();
+            this.getView().getModel("view").setProperty("/reprocessSelected", 0);
+        },
+
+        onFieldsRowSelectionChange() {
+            this.getView().getModel("view")
+                .setProperty("/reprocessSelected", this.byId("fieldsTable").getSelectedIndices().length);
+        },
+
+        /** One call for the whole selection: the server takes the endpoint from the integration. */
+        async onReprocess() {
+            const oTable = this.byId("fieldsTable");
+            const { fieldName: sKey, label: sLabel } = this._oReprocessField;
+            const aRows = oTable.getSelectedIndices()
+                .map(iIndex => oTable.getContextByIndex(iIndex)?.getObject())
+                .filter(Boolean);
+            if (aRows.length === 0) return;
+
+            const aItems = aRows.map(oRow => ({ key: sKey, value: oRow[sKey] }));
+            const iWithoutValue = aItems.filter(oItem => String(oItem.value ?? "").trim() === "").length;
+            if (iWithoutValue > 0) {
+                MessageBox.error(this.getCountText("reprocessMissingValue", iWithoutValue, [sLabel || sKey]));
+                return;
+            }
+
+            const oPage = this.byId("detailPage");
+            const oOperation = this.getView().getModel().bindContext("/reprocessLogs(...)");
+            oOperation.setParameter("integrationID", this._sIntegrationId);
+            oOperation.setParameter("items", aItems);
+            oPage.setBusy(true);
+            try {
+                await oOperation.execute();
+                MessageToast.show(this.getCountText("reprocessTriggered", aItems.length));
+                this._clearReprocessSelection();
+            } catch (oError) {
+                MessageBox.error(oError.message);
+            } finally {
+                oOperation.destroy();
+                oPage.setBusy(false);
+            }
         },
 
         /* ---------- spreadsheet export of the displayed rows ---------- */
@@ -300,8 +367,8 @@ sap.ui.define([
         },
 
         // Picks "<key>_one" or "<key>_other" by count and passes the count as {0}
-        getCountText(sKey, iCount) {
-            return this.getText(`${sKey}_${iCount === 1 ? "one" : "other"}`, [iCount]);
+        getCountText(sKey, iCount, aMoreArgs = []) {
+            return this.getText(`${sKey}_${iCount === 1 ? "one" : "other"}`, [iCount, ...aMoreArgs]);
         },
 
         onFullScreen() {
