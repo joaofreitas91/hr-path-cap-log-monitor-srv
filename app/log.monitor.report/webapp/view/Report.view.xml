@@ -153,7 +153,7 @@
                 growingTriggerText="{i18n>more}"
                 sticky="ColumnHeaders,HeaderToolbar"
                 updateFinished=".onTableUpdateFinished"
-                items="{path: '/IntegrationLogs', parameters: {$count: true}}"
+                items="{path: '/IntegrationLogs', sorter: {path: 'executedAt', descending: true}, parameters: {$count: true}}"
             >
                 <headerToolbar>
                     <OverflowToolbar id="logsToolbar">
