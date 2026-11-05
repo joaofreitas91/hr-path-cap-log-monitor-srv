@@ -32,6 +32,8 @@ modules:
   requires:
   - name: hr-path-cap-log-monitor-html5-repo-host
     parameters:
+      config:
+        HTML5Runtime_enabled: true
       content-target: true
   build-parameters:
     build-result: resources
@@ -54,38 +56,6 @@ modules:
     - npm install
     - npm run build:cf
     supported-platforms: []
-- name: hr-path-cap-log-monitor-app-deployer
-  type: com.sap.application.content
-  path: gen
-  requires:
-  - name: hr-path-cap-log-monitor-auth
-  - name: srv-api
-  - name: hr-path-cap-log-monitor-html5-repo-host
-    parameters:
-      config:
-        HTML5Runtime_enabled: true
-      content-target: true
-  parameters:
-    config:
-      destinations:
-      - Authentication: NoAuthentication
-        DynamicDestination: true
-        ForwardAuthToken: true
-        Name: srv-api
-        ProxyType: Internet
-        Type: HTTP
-        URL: ~{srv-api/srv-url}
-  build-parameters:
-    build-result: app/
-    requires:
-    - artifacts:
-      - comhrpathlogmonitorreport.zip
-      name: comhrpathlogmonitorreport
-      target-path: app/
-    - artifacts:
-      - comhrpathlogmonitorcockpit.zip
-      name: comhrpathlogmonitorcockpit
-      target-path: app/
 - name: hr-path-cap-log-monitor-destinations
   type: com.sap.application.content
   requires:
